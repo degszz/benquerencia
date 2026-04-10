@@ -1,0 +1,59 @@
+---
+import Layout from '@/layouts/Layout.astro';
+const base = import.meta.env.BASE_URL;
+---
+
+<Layout title="Inicio">
+  <!-- Hero -->
+  <section class="max-w-6xl mx-auto px-4 py-24 flex flex-col items-center text-center gap-6">
+    <img
+      src={`${base}/logo.png`}
+      alt="Estancia Benquerencia"
+      class="w-28 h-28 rounded-full shadow-2xl ring-4 ring-ben-600/30"
+    />
+    <div class="space-y-3">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
+        Estancia Benquerencia
+      </h1>
+      <p class="text-lg text-ben-400 max-w-xl">
+        Sistema integral de gestión para el barrio privado.<br />
+        Paquetería, accesos, comunicados y más.
+      </p>
+    </div>
+    <div class="flex gap-3 flex-wrap justify-center">
+      <a
+        href={`${base}/porteria`}
+        class="inline-flex items-center gap-2 bg-ben-600 text-white hover:bg-ben-500 transition-colors px-6 py-3 rounded-lg font-semibold text-sm"
+      >
+        📦 Ir a Portería
+      </a>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="max-w-6xl mx-auto px-4 pb-20">
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="rounded-xl border border-ben-700 bg-ben-800 p-6 space-y-3">
+        <div class="text-3xl">📦</div>
+        <h3 class="font-semibold">Gestión de Paquetes</h3>
+        <p class="text-sm text-ben-400">
+          Registrá y notificá los paquetes que llegan a portería al instante.
+        </p>
+      </div>
+      <div class="rounded-xl border border-ben-700 bg-ben-800 p-6 space-y-3">
+        <div class="text-3xl">💬</div>
+        <h3 class="font-semibold">Notificaciones WhatsApp</h3>
+        <p class="text-sm text-ben-400">
+          Avisá a los propietarios con un mensaje pre-armado desde portería.
+        </p>
+      </div>
+      <div class="rounded-xl border border-ben-700 bg-ben-800 p-6 space-y-3">
+        <div class="text-3xl">🟡</div>
+        <h3 class="font-semibold">Integración MercadoLibre</h3>
+        <p class="text-sm text-ben-400">
+          Identificá destinatarios y códigos de seguridad automáticamente.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>
