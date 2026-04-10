@@ -1,23 +1,8 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import PorteriaScanner from '@/components/PorteriaScanner';
 ---
 
 <Layout title="Portería" description="Sistema de portería — Estancia Benquerencia">
-  <div class="max-w-6xl mx-auto px-4 py-16 space-y-8">
-    <div class="space-y-2">
-      <h1 class="text-3xl font-bold">Sistema de Portería</h1>
-      <p class="text-ben-400">
-        Gestión de paquetes, accesos y comunicaciones desde la portería de la estancia.
-      </p>
-    </div>
-
-    <div class="rounded-xl border border-ben-700 bg-ben-800 p-8 text-center space-y-4">
-      <div class="text-5xl">🚧</div>
-      <h2 class="text-xl font-semibold">Versión web en desarrollo</h2>
-      <p class="text-ben-400 text-sm max-w-sm mx-auto">
-        La versión web con scanner por cámara estará disponible próximamente.
-        Mientras tanto, usá la app de escritorio en la PC de portería.
-      </p>
-    </div>
-  </div>
+  <PorteriaScanner client:only="react" />
 </Layout>
