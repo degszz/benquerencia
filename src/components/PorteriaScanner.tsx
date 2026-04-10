@@ -46,6 +46,9 @@ export default function PorteriaScanner() {
   const [inputManual, setInputManual] = useState('');
   const [error, setError] = useState('');
   const [copiado, setCopiado] = useState(false);
+  // Formulario manual (cuando no hay chacras cargadas)
+  const [nombreManual, setNombreManual] = useState('');
+  const [telefonoManual, setTelefonoManual] = useState('');
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
@@ -121,6 +124,8 @@ export default function PorteriaScanner() {
     setChacraSeleccionada(null);
     setBusqueda('');
     setInputManual('');
+    setNombreManual('');
+    setTelefonoManual('');
     setVista('inicio');
   }
 
@@ -135,11 +140,18 @@ export default function PorteriaScanner() {
   }
 
   function enviarWhatsApp() {
-    if (!chacraSeleccionada || !courier) return;
-    const msg = generarMensaje(chacraSeleccionada.propietario, courier.nombre, tracking);
-    const tel = chacraSeleccionada.telefono.replace(/\D/g, '');
+    if (!courier) return;
+    const nombre = chacraSeleccionada?.propietario ?? nombreManual.trim();
+    const tel = (chacraSeleccionada?.telefono ?? telefonoManual).replace(/\D/g, '');
+    if (!nombre || !tel) return;
+    const msg = generarMensaje(nombre, courier.nombre, tracking);
     window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
   }
+
+  const puedeEnviar = courier && (
+    chacraSeleccionada != null ||
+    (nombreManual.trim().length > 2 && telefonoManual.replace(/\D/g, '').length >= 10)
+  );
 
   async function copiarTracking() {
     try {
@@ -289,30 +301,25 @@ export default function PorteriaScanner() {
               </button>
             </div>
 
-            {/* Buscar propietario */}
+            {/* Buscar propietario o ingresar manualmente */}
             <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
               <p className="text-xs text-ben-400 font-semibold uppercase tracking-wide">
-                ¿Para qué chacra?
+                ¿Para quién es el paquete?
               </p>
 
-              {chacras.length === 0 ? (
-                <p className="text-sm text-ben-400 text-center py-4">
-                  No hay chacras cargadas aún.<br/>
-                  <span className="text-xs">Editá src/data/chacras.ts</span>
-                </p>
-              ) : (
+              {chacras.length > 0 ? (
+                /* ── Con chacras: búsqueda ── */
                 <>
                   <input
                     type="text"
                     value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                    placeholder="Buscá por número o nombre…"
+                    onChange={(e) => { setBusqueda(e.target.value); setChacraSeleccionada(null); }}
+                    placeholder="Buscá por número de chacra o nombre…"
                     className="w-full rounded-lg bg-ben-900 border border-ben-700 px-3 py-2.5
                                text-sm text-white placeholder-ben-400/60 outline-none
                                focus:border-ben-400 transition-colors"
                     autoFocus
                   />
-
                   <div className="space-y-1.5 max-h-52 overflow-y-auto">
                     {charasFiltradas.map((c) => (
                       <button
@@ -333,21 +340,61 @@ export default function PorteriaScanner() {
                     )}
                   </div>
                 </>
+              ) : (
+                /* ── Sin chacras: formulario manual ── */
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-ben-400 mb-1.5 block">
+                      Nombre del destinatario <span className="text-ben-300">(leelo del paquete)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={nombreManual}
+                      onChange={(e) => setNombreManual(e.target.value)}
+                      placeholder="Ej: Juan Pérez"
+                      autoFocus
+                      className="w-full rounded-lg bg-ben-900 border border-ben-700 px-3 py-2.5
+                                 text-sm text-white placeholder-ben-400/60 outline-none
+                                 focus:border-ben-400 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-ben-400 mb-1.5 block">
+                      WhatsApp del propietario
+                    </label>
+                    <input
+                      type="tel"
+                      value={telefonoManual}
+                      onChange={(e) => setTelefonoManual(e.target.value)}
+                      placeholder="Ej: 5491112345678"
+                      className="w-full rounded-lg bg-ben-900 border border-ben-700 px-3 py-2.5
+                                 text-sm text-white placeholder-ben-400/60 outline-none
+                                 focus:border-ben-400 transition-colors"
+                    />
+                    <p className="text-xs text-ben-400/60 mt-1">Formato: 54 + código área + número</p>
+                  </div>
+                </div>
               )}
             </div>
 
-            {/* Botón WhatsApp */}
-            {chacraSeleccionada && (
+            {/* Preview y botón WhatsApp */}
+            {puedeEnviar && (
               <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span>✅</span>
-                  <span className="font-semibold">{chacraSeleccionada.propietario}</span>
-                  <span className="text-ben-400 text-sm">· Chacra #{chacraSeleccionada.numero}</span>
-                </div>
+                {chacraSeleccionada && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span>✅</span>
+                    <span className="font-semibold">{chacraSeleccionada.propietario}</span>
+                    <span className="text-ben-400">· Chacra #{chacraSeleccionada.numero}</span>
+                  </div>
+                )}
 
                 {/* Preview del mensaje */}
                 <div className="rounded-lg bg-ben-900 border border-ben-700 p-3 text-xs text-ben-300 whitespace-pre-wrap">
-                  {generarMensaje(chacraSeleccionada.propietario, courier.nombre, tracking)}
+                  {generarMensaje(
+                    chacraSeleccionada?.propietario ?? nombreManual.trim(),
+                    courier!.nombre,
+                    tracking,
+                  )}
                 </div>
 
                 <button
