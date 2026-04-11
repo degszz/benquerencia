@@ -2,23 +2,26 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { supabase, type ChacraDB } from '@/lib/supabase';
 
-// ── MercadoLibre API ─────────────────────────────────────────────────────────
+// ── MercadoLibre via Edge Function (sin CORS) ────────────────────────────────
 
-async function consultarML(trackingNumber: string, token: string) {
+const ML_PROXY = 'https://wjjomwkjphejtzixog.supabase.co/functions/v1/ml-proxy';
+const SUPABASE_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
+  'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indqam9td2pranBoZWp0eml4eG9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDg1MTksImV4cCI6MjA5MTQyNDUxOX0.' +
+  'n7vEl9p_3goS9EAON7wB8TFdDv0F2e2ADtgO2-a8VFQ';
+
+async function consultarML(trackingNumber: string) {
   try {
-    const res = await fetch(
-      `https://api.mercadolibre.com/shipments/${trackingNumber}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
+    const res = await fetch(ML_PROXY, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON}`,
+      },
+      body: JSON.stringify({ tracking: trackingNumber }),
+    });
     if (!res.ok) return null;
-    const data = await res.json();
-    return {
-      nombre:    data?.receiver_address?.receiver_name as string | undefined,
-      estado:    data?.status as string | undefined,
-      direccion: data?.receiver_address?.street_name
-                 ? `${data.receiver_address.street_name} ${data.receiver_address.street_number ?? ''}`.trim()
-                 : undefined,
-    };
+    return await res.json() as { nombre?: string; estado?: string; producto?: string };
   } catch {
     return null;
   }
@@ -63,10 +66,11 @@ function detectarCourier(codigo: string): Courier {
   return { nombre: 'Courier', emoji: '📦' };
 }
 
-function generarMensaje(propietario: string, courier: string, tracking: string) {
+function generarMensaje(propietario: string, courier: string, tracking: string, producto?: string) {
   return (
     `📦 *Benquerencia Farm Club — Portería*\n\n` +
     `Hola ${propietario}, tiene un paquete esperándolo.\n\n` +
+    (producto ? `*Producto:* ${producto}\n` : '') +
     `*Empresa:* ${courier}\n` +
     `*N° de seguimiento:* ${tracking}\n\n` +
     `Puede pasar a retirarlo cuando guste.`
@@ -92,28 +96,22 @@ export default function PorteriaScanner() {
   const [copiado, setCopiado]                 = useState(false);
   const [paqueteId, setPaqueteId]             = useState<string | null>(null);
   const [enviado, setEnviado]                 = useState(false);
-  const [mlToken, setMlToken]                 = useState<string | null>(null);
   const [consultandoML, setConsultandoML]     = useState(false);
-  const [datoML, setDatoML]                   = useState<{ nombre?: string; estado?: string; direccion?: string } | null>(null);
+  const [datoML, setDatoML]                   = useState<{ nombre?: string; estado?: string; producto?: string } | null>(null);
 
   const videoRef     = useRef<HTMLVideoElement>(null);
   const controlsRef  = useRef<{ stop: () => void } | null>(null);
 
-  // ── Cargar chacras y token ML desde Supabase al montar ───────────────────
+  // ── Cargar chacras desde Supabase al montar ──────────────────────────────
   useEffect(() => {
     (async () => {
       setCargandoChacras(true);
-      const [{ data: chacrasData }, { data: tokenData }] = await Promise.all([
-        supabase.from('chacras').select('id,numero,propietario,telefono,telefono_alternativo')
-          .eq('activo', true).order('numero', { ascending: true }),
-        supabase.from('ml_tokens').select('access_token,expires_at').eq('id', 1).single(),
-      ]);
-      setChacras((chacrasData as ChacraDB[]) ?? []);
-      // Verificar que el token no esté expirado
-      if (tokenData?.access_token) {
-        const expira = tokenData.expires_at ? new Date(tokenData.expires_at) : null;
-        if (!expira || expira > new Date()) setMlToken(tokenData.access_token);
-      }
+      const { data } = await supabase
+        .from('chacras')
+        .select('id,numero,propietario,telefono,telefono_alternativo')
+        .eq('activo', true)
+        .order('numero', { ascending: true });
+      setChacras((data as ChacraDB[]) ?? []);
       setCargandoChacras(false);
     })();
   }, []);
@@ -178,25 +176,27 @@ export default function PorteriaScanner() {
     setVista('inicio');
   }
 
-  // ── Cuando hay tracking + token ML, consultar API automáticamente ─────────
+  // ── Cuando hay un tracking ML, consultar via edge function ───────────────
   useEffect(() => {
-    if (!tracking || !mlToken || !courier) return;
+    if (!tracking || !courier) return;
     const esMercadoLibre = /^(MLA|MLB|MLC|MLM|MX|MP)\d+/i.test(tracking);
     if (!esMercadoLibre) return;
 
     setConsultandoML(true);
-    consultarML(tracking, mlToken).then((datos) => {
+    consultarML(tracking).then((datos) => {
       setConsultandoML(false);
-      if (!datos) return;
+      if (!datos || datos.error) return;
       setDatoML(datos);
-      // Intentar auto-match con chacra
       if (datos.nombre) {
         const match = buscarChacraParaNombre(datos.nombre, chacras);
-        if (match) setSeleccionada(match);
-        else setNombreManual(datos.nombre); // pre-llenar si no matchea
+        if (match) {
+          setSeleccionada(match);
+        } else {
+          setNombreManual(datos.nombre);
+        }
       }
     });
-  }, [tracking, mlToken, courier]);
+  }, [tracking, courier]);
 
   function reiniciar() {
     setTracking(''); setCourier(null); setSeleccionada(null);
@@ -411,21 +411,21 @@ export default function PorteriaScanner() {
                   🟡 Datos de MercadoLibre
                 </p>
                 {datoML.nombre && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-ben-400 w-24 shrink-0">Destinatario</span>
-                    <span className="font-semibold text-white">{datoML.nombre}</span>
+                  <div className="flex items-start gap-2">
+                    <span className="text-xs text-ben-400 w-20 shrink-0 pt-0.5">Para</span>
+                    <span className="font-bold text-white text-base">{datoML.nombre}</span>
                   </div>
                 )}
-                {datoML.direccion && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-ben-400 w-24 shrink-0">Dirección</span>
-                    <span className="text-sm text-ben-300">{datoML.direccion}</span>
+                {datoML.producto && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-xs text-ben-400 w-20 shrink-0 pt-0.5">Producto</span>
+                    <span className="text-sm text-ben-300">{datoML.producto}</span>
                   </div>
                 )}
                 {datoML.estado && (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-ben-400 w-24 shrink-0">Estado envío</span>
-                    <span className="text-sm text-ben-300">{datoML.estado}</span>
+                    <span className="text-xs text-ben-400 w-20 shrink-0">Estado</span>
+                    <span className="text-xs text-ben-300 bg-ben-700 px-2 py-0.5 rounded-full">{datoML.estado}</span>
                   </div>
                 )}
                 {seleccionada && (
@@ -528,6 +528,7 @@ export default function PorteriaScanner() {
                     seleccionada?.propietario ?? nombreManual.trim(),
                     courier.nombre,
                     tracking,
+                    datoML?.producto,
                   )}
                 </div>
                 <button
