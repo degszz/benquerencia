@@ -10,7 +10,7 @@ const SUPABASE_ANON =
   'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indqam9td2pranBoZWp0eml4eG9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDg1MTksImV4cCI6MjA5MTQyNDUxOX0.' +
   'n7vEl9p_3goS9EAON7wB8TFdDv0F2e2ADtgO2-a8VFQ';
 
-async function consultarML(trackingNumber: string) {
+async function consultarML(trackingNumber: string): Promise<{ nombre?: string; estado?: string; producto?: string; _error?: string } | null> {
   try {
     const res = await fetch(ML_PROXY, {
       method: 'POST',
@@ -20,10 +20,11 @@ async function consultarML(trackingNumber: string) {
       },
       body: JSON.stringify({ tracking: trackingNumber }),
     });
-    if (!res.ok) return null;
-    return await res.json() as { nombre?: string; estado?: string; producto?: string };
-  } catch {
-    return null;
+    const data = await res.json();
+    if (!res.ok) return { _error: data?.error ?? `HTTP ${res.status}` };
+    return data;
+  } catch (e) {
+    return { _error: String(e) };
   }
 }
 
@@ -63,6 +64,8 @@ function detectarCourier(codigo: string): Courier {
   if (/^\d{20}$/.test(c) || /^\d{9}$/.test(c)) return { nombre: 'Andreani',         emoji: '🟠' };
   if (/^\d{12}$/.test(c))                       return { nombre: 'OCA',              emoji: '🔵' };
   if (/^\d{10}$/.test(c))                       return { nombre: 'DHL',              emoji: '🔴' };
+  // IDs numéricos de ML (ej. 40012345678901 — 14 dígitos)
+  if (/^\d{13,20}$/.test(c))                    return { nombre: 'MercadoLibre',     emoji: '🟡' };
   return { nombre: 'Courier', emoji: '📦' };
 }
 
@@ -98,6 +101,7 @@ export default function PorteriaScanner() {
   const [enviado, setEnviado]                 = useState(false);
   const [consultandoML, setConsultandoML]     = useState(false);
   const [datoML, setDatoML]                   = useState<{ nombre?: string; estado?: string; producto?: string } | null>(null);
+  const [errorML, setErrorML]                 = useState<string | null>(null);
 
   const videoRef     = useRef<HTMLVideoElement>(null);
   const controlsRef  = useRef<{ stop: () => void } | null>(null);
@@ -176,16 +180,32 @@ export default function PorteriaScanner() {
     setVista('inicio');
   }
 
-  // ── Cuando hay un tracking ML, consultar via edge function ───────────────
+  // ── Cuando hay un tracking, intentar consultar ML via edge function ────────
+  // Se intenta para MercadoLibre detectado y también para códigos genéricos.
+  // Si ML devuelve 404 o no hay token, se ignora silenciosamente.
   useEffect(() => {
     if (!tracking || !courier) return;
-    const esMercadoLibre = /^(MLA|MLB|MLC|MLM|MX|MP)\d+/i.test(tracking);
-    if (!esMercadoLibre) return;
+    // Intentar ML para: prefijo MLA/etc, numéricos largos (shipment ID) o genérico
+    const intentarML =
+      /^(MLA|MLB|MLC|MLM|MX|MP)\d+/i.test(tracking) ||
+      courier.nombre === 'MercadoLibre' ||
+      courier.nombre === 'Courier';
+    if (!intentarML) return;
 
     setConsultandoML(true);
+    setErrorML(null);
     consultarML(tracking).then((datos) => {
       setConsultandoML(false);
-      if (!datos || datos.error) return;
+      if (!datos) { setErrorML('Sin respuesta del servidor'); return; }
+      if (datos._error) {
+        // 404 = no es un envío ML → ignorar silenciosamente
+        if (datos._error.includes('404') || datos._error.toLowerCase().includes('not found')) {
+          setErrorML(null);
+        } else {
+          setErrorML(datos._error);
+        }
+        return;
+      }
       setDatoML(datos);
       if (datos.nombre) {
         const match = buscarChacraParaNombre(datos.nombre, chacras);
@@ -202,7 +222,7 @@ export default function PorteriaScanner() {
     setTracking(''); setCourier(null); setSeleccionada(null);
     setBusqueda(''); setInputManual(''); setNombreManual('');
     setTelefonoManual(''); setPaqueteId(null); setEnviado(false);
-    setDatoML(null); setConsultandoML(false);
+    setDatoML(null); setConsultandoML(false); setErrorML(null);
     setVista('inicio');
   }
 
@@ -244,7 +264,7 @@ export default function PorteriaScanner() {
 
     if (data?.id) setPaqueteId(data.id);
 
-    const msg = generarMensaje(nombre, courier.nombre, tracking);
+    const msg = generarMensaje(nombre, courier.nombre, tracking, datoML?.producto);
     window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
     setEnviado(true);
   }
@@ -402,6 +422,13 @@ export default function PorteriaScanner() {
               <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 flex items-center gap-3">
                 <div className="w-4 h-4 rounded-full border-2 border-ben-400 border-t-transparent animate-spin shrink-0" />
                 <p className="text-sm text-ben-400">Consultando MercadoLibre…</p>
+              </div>
+            )}
+
+            {errorML && !consultandoML && (
+              <div className="rounded-xl bg-red-950/40 border border-red-800/50 p-3 text-xs text-red-300 space-y-0.5">
+                <p className="font-semibold">⚠️ ML no respondió — completá los datos manualmente</p>
+                <p className="text-red-400/70 font-mono break-all">{errorML}</p>
               </div>
             )}
 
