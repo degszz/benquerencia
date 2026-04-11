@@ -2,32 +2,6 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { supabase, type ChacraDB } from '@/lib/supabase';
 
-// ── MercadoLibre via Edge Function (sin CORS) ────────────────────────────────
-
-const ML_PROXY = 'https://wjjomwjkjphejtzixxog.supabase.co/functions/v1/ml-proxy';
-const SUPABASE_ANON =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
-  'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indqam9td2pranBoZWp0eml4eG9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDg1MTksImV4cCI6MjA5MTQyNDUxOX0.' +
-  'n7vEl9p_3goS9EAON7wB8TFdDv0F2e2ADtgO2-a8VFQ';
-
-async function consultarML(trackingNumber: string): Promise<{ nombre?: string; estado?: string; producto?: string; _error?: string } | null> {
-  try {
-    const res = await fetch(ML_PROXY, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON}`,
-      },
-      body: JSON.stringify({ tracking: trackingNumber }),
-    });
-    const data = await res.json();
-    if (!res.ok) return { _error: data?.error ?? `HTTP ${res.status}` };
-    return data;
-  } catch (e) {
-    return { _error: String(e) };
-  }
-}
-
 // ── Fuzzy match nombre → chacra ───────────────────────────────────────────────
 
 function normalizar(s: string) {
@@ -35,7 +9,7 @@ function normalizar(s: string) {
 }
 
 function buscarChacraParaNombre(nombre: string, chacras: ChacraDB[]): ChacraDB | null {
-  if (!nombre || !chacras.length) return null;
+  if (!nombre || nombre.length < 3 || !chacras.length) return null;
   const palabras = normalizar(nombre).split(/\s+/).filter(Boolean);
   let mejor: ChacraDB | null = null;
   let mejorScore = 0;
@@ -64,16 +38,14 @@ function detectarCourier(codigo: string): Courier {
   if (/^\d{20}$/.test(c) || /^\d{9}$/.test(c)) return { nombre: 'Andreani',         emoji: '🟠' };
   if (/^\d{12}$/.test(c))                       return { nombre: 'OCA',              emoji: '🔵' };
   if (/^\d{10}$/.test(c))                       return { nombre: 'DHL',              emoji: '🔴' };
-  // IDs numéricos de ML (ej. 40012345678901 — 14 dígitos)
-  if (/^\d{13,20}$/.test(c))                    return { nombre: 'MercadoLibre',     emoji: '🟡' };
+  if (/^\d{13,19}$/.test(c))                    return { nombre: 'MercadoLibre',     emoji: '🟡' };
   return { nombre: 'Courier', emoji: '📦' };
 }
 
-function generarMensaje(propietario: string, courier: string, tracking: string, producto?: string) {
+function generarMensaje(propietario: string, courier: string, tracking: string) {
   return (
     `📦 *Benquerencia Farm Club — Portería*\n\n` +
     `Hola ${propietario}, tiene un paquete esperándolo.\n\n` +
-    (producto ? `*Producto:* ${producto}\n` : '') +
     `*Empresa:* ${courier}\n` +
     `*N° de seguimiento:* ${tracking}\n\n` +
     `Puede pasar a retirarlo cuando guste.`
@@ -99,9 +71,6 @@ export default function PorteriaScanner() {
   const [copiado, setCopiado]                 = useState(false);
   const [paqueteId, setPaqueteId]             = useState<string | null>(null);
   const [enviado, setEnviado]                 = useState(false);
-  const [consultandoML, setConsultandoML]     = useState(false);
-  const [datoML, setDatoML]                   = useState<{ nombre?: string; estado?: string; producto?: string } | null>(null);
-  const [errorML, setErrorML]                 = useState<string | null>(null);
 
   const videoRef     = useRef<HTMLVideoElement>(null);
   const controlsRef  = useRef<{ stop: () => void } | null>(null);
@@ -120,12 +89,23 @@ export default function PorteriaScanner() {
     })();
   }, []);
 
-  // ── Filtrado de chacras ───────────────────────────────────────────────────
-  const charasFiltradas = chacras.filter(
-    (c) =>
-      c.numero.includes(busqueda) ||
-      c.propietario.toLowerCase().includes(busqueda.toLowerCase()),
-  );
+  // ── Filtrado de chacras por búsqueda ─────────────────────────────────────
+  const charasFiltradas = busqueda.trim()
+    ? chacras.filter(
+        (c) =>
+          c.numero.includes(busqueda) ||
+          normalizar(c.propietario).includes(normalizar(busqueda)),
+      )
+    : chacras;
+
+  // ── Auto-match cuando el guardia escribe nombre manual ───────────────────
+  useEffect(() => {
+    if (!nombreManual || chacras.length === 0) return;
+    const match = buscarChacraParaNombre(nombreManual, chacras);
+    if (match) {
+      setSeleccionada(match);
+    }
+  }, [nombreManual, chacras]);
 
   // ── Iniciar cámara ────────────────────────────────────────────────────────
   const iniciarScanner = useCallback(() => {
@@ -150,7 +130,7 @@ export default function PorteriaScanner() {
             setCourier(detectarCourier(codigo));
             setSeleccionada(null);
             setBusqueda('');
-            setDatoML(null);
+            setNombreManual('');
             setVista('resultado');
           },
         );
@@ -180,49 +160,10 @@ export default function PorteriaScanner() {
     setVista('inicio');
   }
 
-  // ── Cuando hay un tracking, intentar consultar ML via edge function ────────
-  // Se intenta para MercadoLibre detectado y también para códigos genéricos.
-  // Si ML devuelve 404 o no hay token, se ignora silenciosamente.
-  useEffect(() => {
-    if (!tracking || !courier) return;
-    // Intentar ML para: prefijo MLA/etc, numéricos largos (shipment ID) o genérico
-    const intentarML =
-      /^(MLA|MLB|MLC|MLM|MX|MP)\d+/i.test(tracking) ||
-      courier.nombre === 'MercadoLibre' ||
-      courier.nombre === 'Courier';
-    if (!intentarML) return;
-
-    setConsultandoML(true);
-    setErrorML(null);
-    consultarML(tracking).then((datos) => {
-      setConsultandoML(false);
-      if (!datos) { setErrorML('Sin respuesta del servidor'); return; }
-      if (datos._error) {
-        // 404 = no es un envío ML → ignorar silenciosamente
-        if (datos._error.includes('404') || datos._error.toLowerCase().includes('not found')) {
-          setErrorML(null);
-        } else {
-          setErrorML(datos._error);
-        }
-        return;
-      }
-      setDatoML(datos);
-      if (datos.nombre) {
-        const match = buscarChacraParaNombre(datos.nombre, chacras);
-        if (match) {
-          setSeleccionada(match);
-        } else {
-          setNombreManual(datos.nombre);
-        }
-      }
-    });
-  }, [tracking, courier]);
-
   function reiniciar() {
     setTracking(''); setCourier(null); setSeleccionada(null);
     setBusqueda(''); setInputManual(''); setNombreManual('');
     setTelefonoManual(''); setPaqueteId(null); setEnviado(false);
-    setDatoML(null); setConsultandoML(false); setErrorML(null);
     setVista('inicio');
   }
 
@@ -233,6 +174,7 @@ export default function PorteriaScanner() {
     setCourier(detectarCourier(cod));
     setSeleccionada(null);
     setBusqueda('');
+    setNombreManual('');
     setVista('resultado');
   }
 
@@ -264,7 +206,7 @@ export default function PorteriaScanner() {
 
     if (data?.id) setPaqueteId(data.id);
 
-    const msg = generarMensaje(nombre, courier.nombre, tracking, datoML?.producto);
+    const msg = generarMensaje(nombre, courier.nombre, tracking);
     window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
     setEnviado(true);
   }
@@ -311,7 +253,7 @@ export default function PorteriaScanner() {
           <>
             {error && (
               <div className="rounded-xl bg-red-950/40 border border-red-800/50 p-4 text-sm text-red-300">
-                ⚠️ {error}
+                {error}
               </div>
             )}
 
@@ -417,54 +359,6 @@ export default function PorteriaScanner() {
               </button>
             </div>
 
-            {/* Datos de ML — se muestran automáticamente si está conectado */}
-            {consultandoML && (
-              <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 flex items-center gap-3">
-                <div className="w-4 h-4 rounded-full border-2 border-ben-400 border-t-transparent animate-spin shrink-0" />
-                <p className="text-sm text-ben-400">Consultando MercadoLibre…</p>
-              </div>
-            )}
-
-            {errorML && !consultandoML && (
-              <div className="rounded-xl bg-red-950/40 border border-red-800/50 p-3 text-xs text-red-300 space-y-0.5">
-                <p className="font-semibold">⚠️ ML no respondió — completá los datos manualmente</p>
-                <p className="text-red-400/70 font-mono break-all">{errorML}</p>
-              </div>
-            )}
-
-            {datoML && !consultandoML && (
-              <div className="rounded-xl bg-ben-800 border border-ben-600/50 p-4 space-y-2">
-                <p className="text-xs text-ben-400 font-semibold uppercase tracking-wide flex items-center gap-1.5">
-                  🟡 Datos de MercadoLibre
-                </p>
-                {datoML.nombre && (
-                  <div className="flex items-start gap-2">
-                    <span className="text-xs text-ben-400 w-20 shrink-0 pt-0.5">Para</span>
-                    <span className="font-bold text-white text-base">{datoML.nombre}</span>
-                  </div>
-                )}
-                {datoML.producto && (
-                  <div className="flex items-start gap-2">
-                    <span className="text-xs text-ben-400 w-20 shrink-0 pt-0.5">Producto</span>
-                    <span className="text-sm text-ben-300">{datoML.producto}</span>
-                  </div>
-                )}
-                {datoML.estado && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-ben-400 w-20 shrink-0">Estado</span>
-                    <span className="text-xs text-ben-300 bg-ben-700 px-2 py-0.5 rounded-full">{datoML.estado}</span>
-                  </div>
-                )}
-                {seleccionada && (
-                  <div className="mt-1 pt-2 border-t border-ben-700 flex items-center gap-2 text-sm">
-                    <span className="text-emerald-400">✅ Auto-match:</span>
-                    <span className="font-semibold">{seleccionada.propietario}</span>
-                    <span className="text-ben-400">· Chacra #{seleccionada.numero}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Buscar propietario */}
             <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
               <p className="text-xs text-ben-400 font-semibold uppercase tracking-wide">
@@ -474,43 +368,67 @@ export default function PorteriaScanner() {
               {cargandoChacras ? (
                 <p className="text-sm text-ben-400 text-center py-3">Cargando propietarios…</p>
               ) : chacras.length > 0 ? (
+                /* Con chacras cargadas: búsqueda por nombre o número */
                 <>
-                  <input
-                    type="text"
-                    value={busqueda}
-                    onChange={(e) => { setBusqueda(e.target.value); setSeleccionada(null); }}
-                    placeholder="Buscá por número de chacra o nombre…"
-                    autoFocus
-                    className="w-full rounded-lg bg-ben-900 border border-ben-700 px-3 py-2.5
-                               text-sm text-white placeholder-ben-400/60 outline-none
-                               focus:border-ben-400 transition-colors"
-                  />
-                  <div className="space-y-1.5 max-h-52 overflow-y-auto">
-                    {charasFiltradas.slice(0, 20).map((c) => (
+                  {seleccionada && (
+                    <div className="rounded-lg bg-emerald-950/40 border border-emerald-800/50 p-3 flex items-center gap-3">
+                      <span className="text-emerald-400 text-lg">✅</span>
+                      <div>
+                        <p className="font-bold text-white">{seleccionada.propietario}</p>
+                        <p className="text-xs text-ben-400">Chacra #{seleccionada.numero} · {seleccionada.telefono}</p>
+                      </div>
                       <button
-                        key={c.id}
-                        onClick={() => setSeleccionada(c)}
-                        className={`w-full rounded-lg px-3 py-2.5 text-left text-sm
-                          transition-colors flex items-center gap-3
-                          ${seleccionada?.id === c.id
-                            ? 'bg-ben-600 border border-ben-500'
-                            : 'bg-ben-900 border border-ben-700 hover:border-ben-500'}`}
+                        onClick={() => { setSeleccionada(null); setBusqueda(''); }}
+                        className="ml-auto text-xs text-ben-400 hover:text-white"
                       >
-                        <span className="font-bold text-ben-300 w-8 shrink-0">#{c.numero}</span>
-                        <span className="text-white">{c.propietario}</span>
+                        Cambiar
                       </button>
-                    ))}
-                    {charasFiltradas.length === 0 && (
-                      <p className="text-center text-ben-400 text-sm py-3">Sin resultados</p>
-                    )}
-                  </div>
+                    </div>
+                  )}
+
+                  {!seleccionada && (
+                    <>
+                      <p className="text-xs text-ben-300">
+                        Escribí el nombre que figura en la etiqueta del paquete
+                      </p>
+                      <input
+                        type="text"
+                        value={busqueda}
+                        onChange={(e) => setBusqueda(e.target.value)}
+                        placeholder="Nombre o número de chacra…"
+                        autoFocus
+                        className="w-full rounded-lg bg-ben-900 border border-ben-700 px-3 py-2.5
+                                   text-sm text-white placeholder-ben-400/60 outline-none
+                                   focus:border-ben-400 transition-colors"
+                      />
+                      <div className="space-y-1.5 max-h-52 overflow-y-auto">
+                        {charasFiltradas.slice(0, 20).map((c) => (
+                          <button
+                            key={c.id}
+                            onClick={() => setSeleccionada(c)}
+                            className="w-full rounded-lg px-3 py-2.5 text-left text-sm
+                              bg-ben-900 border border-ben-700 hover:border-ben-500
+                              transition-colors flex items-center gap-3"
+                          >
+                            <span className="font-bold text-ben-300 w-8 shrink-0">#{c.numero}</span>
+                            <span className="text-white">{c.propietario}</span>
+                          </button>
+                        ))}
+                        {busqueda.trim() && charasFiltradas.length === 0 && (
+                          <p className="text-center text-ben-400 text-sm py-3">
+                            Sin resultados — probá con otro nombre
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </>
               ) : (
                 /* Sin chacras: formulario manual */
                 <div className="space-y-3">
                   <div>
                     <label className="text-xs text-ben-400 mb-1.5 block">
-                      Nombre del destinatario <span className="text-ben-300">(leelo del paquete)</span>
+                      Nombre del destinatario <span className="text-ben-300">(leelo de la etiqueta)</span>
                     </label>
                     <input
                       type="text"
@@ -543,19 +461,11 @@ export default function PorteriaScanner() {
             {/* Preview + WhatsApp */}
             {puedeEnviar && !enviado && (
               <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
-                {seleccionada && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <span>✅</span>
-                    <span className="font-semibold">{seleccionada.propietario}</span>
-                    <span className="text-ben-400">· Chacra #{seleccionada.numero}</span>
-                  </div>
-                )}
                 <div className="rounded-lg bg-ben-900 border border-ben-700 p-3 text-xs text-ben-300 whitespace-pre-wrap">
                   {generarMensaje(
                     seleccionada?.propietario ?? nombreManual.trim(),
                     courier.nombre,
                     tracking,
-                    datoML?.producto,
                   )}
                 </div>
                 <button
