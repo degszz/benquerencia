@@ -2,6 +2,48 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { supabase, type ChacraDB } from '@/lib/supabase';
 
+// ── MercadoLibre API ─────────────────────────────────────────────────────────
+
+async function consultarML(trackingNumber: string, token: string) {
+  try {
+    const res = await fetch(
+      `https://api.mercadolibre.com/shipments/${trackingNumber}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return {
+      nombre:    data?.receiver_address?.receiver_name as string | undefined,
+      estado:    data?.status as string | undefined,
+      direccion: data?.receiver_address?.street_name
+                 ? `${data.receiver_address.street_name} ${data.receiver_address.street_number ?? ''}`.trim()
+                 : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ── Fuzzy match nombre → chacra ───────────────────────────────────────────────
+
+function normalizar(s: string) {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function buscarChacraParaNombre(nombre: string, chacras: ChacraDB[]): ChacraDB | null {
+  if (!nombre || !chacras.length) return null;
+  const palabras = normalizar(nombre).split(/\s+/).filter(Boolean);
+  let mejor: ChacraDB | null = null;
+  let mejorScore = 0;
+  for (const c of chacras) {
+    const palabrasC = normalizar(c.propietario).split(/\s+/).filter(Boolean);
+    const coinciden = palabras.filter(p => palabrasC.some(pc => pc.includes(p) || p.includes(pc))).length;
+    const score = coinciden / Math.max(palabras.length, palabrasC.length);
+    if (score > mejorScore && score >= 0.4) { mejorScore = score; mejor = c; }
+  }
+  return mejor;
+}
+
 // ── Courier detection ────────────────────────────────────────────────────────
 
 interface Courier {
@@ -50,20 +92,28 @@ export default function PorteriaScanner() {
   const [copiado, setCopiado]                 = useState(false);
   const [paqueteId, setPaqueteId]             = useState<string | null>(null);
   const [enviado, setEnviado]                 = useState(false);
+  const [mlToken, setMlToken]                 = useState<string | null>(null);
+  const [consultandoML, setConsultandoML]     = useState(false);
+  const [datoML, setDatoML]                   = useState<{ nombre?: string; estado?: string; direccion?: string } | null>(null);
 
   const videoRef     = useRef<HTMLVideoElement>(null);
   const controlsRef  = useRef<{ stop: () => void } | null>(null);
 
-  // ── Cargar chacras desde Supabase al montar ───────────────────────────────
+  // ── Cargar chacras y token ML desde Supabase al montar ───────────────────
   useEffect(() => {
     (async () => {
       setCargandoChacras(true);
-      const { data } = await supabase
-        .from('chacras')
-        .select('id, numero, propietario, telefono, telefono_alternativo')
-        .eq('activo', true)
-        .order('numero', { ascending: true });
-      setChacras((data as ChacraDB[]) ?? []);
+      const [{ data: chacrasData }, { data: tokenData }] = await Promise.all([
+        supabase.from('chacras').select('id,numero,propietario,telefono,telefono_alternativo')
+          .eq('activo', true).order('numero', { ascending: true }),
+        supabase.from('ml_tokens').select('access_token,expires_at').eq('id', 1).single(),
+      ]);
+      setChacras((chacrasData as ChacraDB[]) ?? []);
+      // Verificar que el token no esté expirado
+      if (tokenData?.access_token) {
+        const expira = tokenData.expires_at ? new Date(tokenData.expires_at) : null;
+        if (!expira || expira > new Date()) setMlToken(tokenData.access_token);
+      }
       setCargandoChacras(false);
     })();
   }, []);
@@ -98,6 +148,7 @@ export default function PorteriaScanner() {
             setCourier(detectarCourier(codigo));
             setSeleccionada(null);
             setBusqueda('');
+            setDatoML(null);
             setVista('resultado');
           },
         );
@@ -127,10 +178,31 @@ export default function PorteriaScanner() {
     setVista('inicio');
   }
 
+  // ── Cuando hay tracking + token ML, consultar API automáticamente ─────────
+  useEffect(() => {
+    if (!tracking || !mlToken || !courier) return;
+    const esMercadoLibre = /^(MLA|MLB|MLC|MLM|MX|MP)\d+/i.test(tracking);
+    if (!esMercadoLibre) return;
+
+    setConsultandoML(true);
+    consultarML(tracking, mlToken).then((datos) => {
+      setConsultandoML(false);
+      if (!datos) return;
+      setDatoML(datos);
+      // Intentar auto-match con chacra
+      if (datos.nombre) {
+        const match = buscarChacraParaNombre(datos.nombre, chacras);
+        if (match) setSeleccionada(match);
+        else setNombreManual(datos.nombre); // pre-llenar si no matchea
+      }
+    });
+  }, [tracking, mlToken, courier]);
+
   function reiniciar() {
     setTracking(''); setCourier(null); setSeleccionada(null);
     setBusqueda(''); setInputManual(''); setNombreManual('');
     setTelefonoManual(''); setPaqueteId(null); setEnviado(false);
+    setDatoML(null); setConsultandoML(false);
     setVista('inicio');
   }
 
@@ -325,10 +397,51 @@ export default function PorteriaScanner() {
               </button>
             </div>
 
+            {/* Datos de ML — se muestran automáticamente si está conectado */}
+            {consultandoML && (
+              <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 flex items-center gap-3">
+                <div className="w-4 h-4 rounded-full border-2 border-ben-400 border-t-transparent animate-spin shrink-0" />
+                <p className="text-sm text-ben-400">Consultando MercadoLibre…</p>
+              </div>
+            )}
+
+            {datoML && !consultandoML && (
+              <div className="rounded-xl bg-ben-800 border border-ben-600/50 p-4 space-y-2">
+                <p className="text-xs text-ben-400 font-semibold uppercase tracking-wide flex items-center gap-1.5">
+                  🟡 Datos de MercadoLibre
+                </p>
+                {datoML.nombre && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-ben-400 w-24 shrink-0">Destinatario</span>
+                    <span className="font-semibold text-white">{datoML.nombre}</span>
+                  </div>
+                )}
+                {datoML.direccion && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-ben-400 w-24 shrink-0">Dirección</span>
+                    <span className="text-sm text-ben-300">{datoML.direccion}</span>
+                  </div>
+                )}
+                {datoML.estado && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-ben-400 w-24 shrink-0">Estado envío</span>
+                    <span className="text-sm text-ben-300">{datoML.estado}</span>
+                  </div>
+                )}
+                {seleccionada && (
+                  <div className="mt-1 pt-2 border-t border-ben-700 flex items-center gap-2 text-sm">
+                    <span className="text-emerald-400">✅ Auto-match:</span>
+                    <span className="font-semibold">{seleccionada.propietario}</span>
+                    <span className="text-ben-400">· Chacra #{seleccionada.numero}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Buscar propietario */}
             <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
               <p className="text-xs text-ben-400 font-semibold uppercase tracking-wide">
-                ¿Para quién es el paquete?
+                {seleccionada ? '✅ Propietario encontrado' : '¿Para quién es el paquete?'}
               </p>
 
               {cargandoChacras ? (
