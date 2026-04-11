@@ -1,78 +1,89 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { BrowserMultiFormatReader, NotFoundException } from '@zxing/browser';
-import { chacras, type Chacra } from '@/data/chacras';
+import { BrowserMultiFormatReader } from '@zxing/browser';
+import { supabase, type ChacraDB } from '@/lib/supabase';
 
-// ── Courier detection (mismo logic que la app Flutter) ──────────────────────
+// ── Courier detection ────────────────────────────────────────────────────────
 
 interface Courier {
   nombre: string;
   emoji: string;
-  color: string;
 }
 
 function detectarCourier(codigo: string): Courier {
   const c = codigo.trim().toUpperCase();
-  if (/^(MLA|MLB|MLC|MLM|MX|MP)\d+/.test(c))
-    return { nombre: 'MercadoLibre', emoji: '🟡', color: '#f59e0b' };
-  if (/^RA\d{9}AR$/.test(c))
-    return { nombre: 'Correo Argentino', emoji: '🔵', color: '#3b82f6' };
-  if (/^(OCA|AND)/.test(c))
-    return c.startsWith('AND')
-      ? { nombre: 'Andreani', emoji: '🟠', color: '#f97316' }
-      : { nombre: 'OCA', emoji: '🔵', color: '#2563eb' };
-  if (/^\d{20}$/.test(c) || /^\d{9}$/.test(c))
-    return { nombre: 'Andreani', emoji: '🟠', color: '#f97316' };
-  if (/^\d{12}$/.test(c))
-    return { nombre: 'OCA', emoji: '🔵', color: '#2563eb' };
-  if (/^\d{10}$/.test(c))
-    return { nombre: 'DHL', emoji: '🔴', color: '#ef4444' };
-  return { nombre: 'Courier', emoji: '📦', color: '#6b7280' };
+  if (/^(MLA|MLB|MLC|MLM|MX|MP)\d+/.test(c))  return { nombre: 'MercadoLibre',     emoji: '🟡' };
+  if (/^RA\d{9}AR$/.test(c))                   return { nombre: 'Correo Argentino', emoji: '🔵' };
+  if (/^AND/.test(c))                           return { nombre: 'Andreani',         emoji: '🟠' };
+  if (/^OCA/.test(c))                           return { nombre: 'OCA',              emoji: '🔵' };
+  if (/^\d{20}$/.test(c) || /^\d{9}$/.test(c)) return { nombre: 'Andreani',         emoji: '🟠' };
+  if (/^\d{12}$/.test(c))                       return { nombre: 'OCA',              emoji: '🔵' };
+  if (/^\d{10}$/.test(c))                       return { nombre: 'DHL',              emoji: '🔴' };
+  return { nombre: 'Courier', emoji: '📦' };
 }
 
-function generarMensaje(propietario: string, courier: string, tracking: string): string {
-  return `Hola ${propietario}! 📦 Llegó un paquete de *${courier}* a la portería de Estancia Benquerencia.\nTracking: \`${tracking}\``;
+function generarMensaje(propietario: string, courier: string, tracking: string) {
+  return (
+    `📦 *Benquerencia Farm Club — Portería*\n\n` +
+    `Hola ${propietario}, tiene un paquete esperándolo.\n\n` +
+    `*Empresa:* ${courier}\n` +
+    `*N° de seguimiento:* ${tracking}\n\n` +
+    `Puede pasar a retirarlo cuando guste.`
+  );
 }
 
-// ── Componente principal ─────────────────────────────────────────────────────
+// ── Componente ───────────────────────────────────────────────────────────────
 
 type Vista = 'inicio' | 'escaneando' | 'resultado';
 
 export default function PorteriaScanner() {
-  const [vista, setVista] = useState<Vista>('inicio');
-  const [tracking, setTracking] = useState('');
-  const [courier, setCourier] = useState<Courier | null>(null);
-  const [busqueda, setBusqueda] = useState('');
-  const [chacraSeleccionada, setChacraSeleccionada] = useState<Chacra | null>(null);
-  const [inputManual, setInputManual] = useState('');
-  const [error, setError] = useState('');
-  const [copiado, setCopiado] = useState(false);
-  // Formulario manual (cuando no hay chacras cargadas)
-  const [nombreManual, setNombreManual] = useState('');
-  const [telefonoManual, setTelefonoManual] = useState('');
+  const [vista, setVista]                     = useState<Vista>('inicio');
+  const [tracking, setTracking]               = useState('');
+  const [courier, setCourier]                 = useState<Courier | null>(null);
+  const [chacras, setChacras]                 = useState<ChacraDB[]>([]);
+  const [cargandoChacras, setCargandoChacras] = useState(true);
+  const [busqueda, setBusqueda]               = useState('');
+  const [seleccionada, setSeleccionada]       = useState<ChacraDB | null>(null);
+  const [inputManual, setInputManual]         = useState('');
+  const [nombreManual, setNombreManual]       = useState('');
+  const [telefonoManual, setTelefonoManual]   = useState('');
+  const [error, setError]                     = useState('');
+  const [copiado, setCopiado]                 = useState(false);
+  const [paqueteId, setPaqueteId]             = useState<string | null>(null);
+  const [enviado, setEnviado]                 = useState(false);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const readerRef = useRef<BrowserMultiFormatReader | null>(null);
-  const controlsRef = useRef<{ stop: () => void } | null>(null);
+  const videoRef     = useRef<HTMLVideoElement>(null);
+  const controlsRef  = useRef<{ stop: () => void } | null>(null);
 
-  // Filtrar chacras según búsqueda
+  // ── Cargar chacras desde Supabase al montar ───────────────────────────────
+  useEffect(() => {
+    (async () => {
+      setCargandoChacras(true);
+      const { data } = await supabase
+        .from('chacras')
+        .select('id, numero, propietario, telefono, telefono_alternativo')
+        .eq('activo', true)
+        .order('numero', { ascending: true });
+      setChacras((data as ChacraDB[]) ?? []);
+      setCargandoChacras(false);
+    })();
+  }, []);
+
+  // ── Filtrado de chacras ───────────────────────────────────────────────────
   const charasFiltradas = chacras.filter(
     (c) =>
       c.numero.includes(busqueda) ||
       c.propietario.toLowerCase().includes(busqueda.toLowerCase()),
   );
 
-  // Iniciar cámara y lector
-  const iniciarScanner = useCallback(async () => {
+  // ── Iniciar cámara ────────────────────────────────────────────────────────
+  const iniciarScanner = useCallback(() => {
     setError('');
     setVista('escaneando');
   }, []);
 
   useEffect(() => {
     if (vista !== 'escaneando') return;
-
     const reader = new BrowserMultiFormatReader();
-    readerRef.current = reader;
-
     let active = true;
 
     (async () => {
@@ -80,16 +91,14 @@ export default function PorteriaScanner() {
         const controls = await reader.decodeFromVideoDevice(
           undefined,
           videoRef.current!,
-          (result, err) => {
-            if (!active) return;
-            if (result) {
-              const codigo = result.getText();
-              setTracking(codigo);
-              setCourier(detectarCourier(codigo));
-              setChacraSeleccionada(null);
-              setBusqueda('');
-              setVista('resultado');
-            }
+          (result) => {
+            if (!active || !result) return;
+            const codigo = result.getText();
+            setTracking(codigo);
+            setCourier(detectarCourier(codigo));
+            setSeleccionada(null);
+            setBusqueda('');
+            setVista('resultado');
           },
         );
         controlsRef.current = controls;
@@ -97,7 +106,7 @@ export default function PorteriaScanner() {
         if (active) {
           setError(
             e?.name === 'NotAllowedError'
-              ? 'Permiso de cámara denegado. Habilitalo en el navegador.'
+              ? 'Permiso de cámara denegado. Habilitalo en la configuración del navegador.'
               : 'No se pudo acceder a la cámara.',
           );
           setVista('inicio');
@@ -119,13 +128,9 @@ export default function PorteriaScanner() {
   }
 
   function reiniciar() {
-    setTracking('');
-    setCourier(null);
-    setChacraSeleccionada(null);
-    setBusqueda('');
-    setInputManual('');
-    setNombreManual('');
-    setTelefonoManual('');
+    setTracking(''); setCourier(null); setSeleccionada(null);
+    setBusqueda(''); setInputManual(''); setNombreManual('');
+    setTelefonoManual(''); setPaqueteId(null); setEnviado(false);
     setVista('inicio');
   }
 
@@ -134,32 +139,61 @@ export default function PorteriaScanner() {
     if (!cod) return;
     setTracking(cod);
     setCourier(detectarCourier(cod));
-    setChacraSeleccionada(null);
+    setSeleccionada(null);
     setBusqueda('');
     setVista('resultado');
   }
 
-  function enviarWhatsApp() {
+  // ── Guardar paquete en Supabase y enviar WhatsApp ─────────────────────────
+  async function enviarWhatsApp() {
     if (!courier) return;
-    const nombre = chacraSeleccionada?.propietario ?? nombreManual.trim();
-    const tel = (chacraSeleccionada?.telefono ?? telefonoManual).replace(/\D/g, '');
+    const nombre = seleccionada?.propietario ?? nombreManual.trim();
+    const tel    = (seleccionada?.telefono ?? telefonoManual).replace(/\D/g, '');
+    const chacraId     = seleccionada?.id ?? null;
+    const chacraNro    = seleccionada?.numero ?? null;
+
     if (!nombre || !tel) return;
+
+    // Registrar en Supabase
+    const { data } = await supabase
+      .from('paquetes')
+      .insert({
+        tracking,
+        courier: courier.nombre,
+        chacra_id: chacraId,
+        chacra_numero: chacraNro,
+        propietario: nombre,
+        estado: 'notificado',
+        notificado_at: new Date().toISOString(),
+        origen: 'web',
+      })
+      .select('id')
+      .single();
+
+    if (data?.id) setPaqueteId(data.id);
+
     const msg = generarMensaje(nombre, courier.nombre, tracking);
     window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
+    setEnviado(true);
   }
 
-  const puedeEnviar = courier && (
-    chacraSeleccionada != null ||
-    (nombreManual.trim().length > 2 && telefonoManual.replace(/\D/g, '').length >= 10)
-  );
+  async function marcarRetirado() {
+    if (!paqueteId) return;
+    await supabase.from('paquetes').update({
+      estado: 'retirado',
+      retirado_at: new Date().toISOString(),
+    }).eq('id', paqueteId);
+    reiniciar();
+  }
 
   async function copiarTracking() {
-    try {
-      await navigator.clipboard.writeText(tracking);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 2000);
-    } catch {}
+    try { await navigator.clipboard.writeText(tracking); setCopiado(true); setTimeout(() => setCopiado(false), 2000); } catch {}
   }
+
+  const puedeEnviar = !!courier && (
+    seleccionada != null ||
+    (nombreManual.trim().length > 2 && telefonoManual.replace(/\D/g, '').length >= 10)
+  );
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -173,11 +207,14 @@ export default function PorteriaScanner() {
           <h1 className="font-bold text-sm">Portería</h1>
           <p className="text-xs text-ben-400">Estancia Benquerencia</p>
         </div>
+        {!cargandoChacras && chacras.length > 0 && (
+          <span className="ml-auto text-xs text-ben-400">{chacras.length} chacras</span>
+        )}
       </div>
 
       <div className="max-w-lg mx-auto px-4 pt-6 space-y-4">
 
-        {/* ── VISTA: INICIO ── */}
+        {/* ── INICIO ── */}
         {vista === 'inicio' && (
           <>
             {error && (
@@ -186,7 +223,6 @@ export default function PorteriaScanner() {
               </div>
             )}
 
-            {/* Botón principal */}
             <button
               onClick={iniciarScanner}
               className="w-full rounded-2xl bg-ben-600 hover:bg-ben-500 active:bg-ben-700
@@ -224,39 +260,28 @@ export default function PorteriaScanner() {
               </div>
             </div>
 
-            {/* Info couriers */}
+            {/* Estado chacras */}
             <div className="rounded-xl bg-ben-800/50 border border-ben-700 p-4">
-              <p className="text-xs text-ben-400 mb-3 font-semibold uppercase tracking-wide">
-                Couriers soportados
-              </p>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {[
-                  ['🟡', 'MercadoLibre'],
-                  ['🔵', 'Correo Argentino'],
-                  ['🔵', 'OCA'],
-                  ['🟠', 'Andreani'],
-                  ['🔴', 'DHL'],
-                ].map(([emoji, nombre]) => (
-                  <div key={nombre} className="flex items-center gap-2 text-ben-300">
-                    <span>{emoji}</span><span>{nombre}</span>
-                  </div>
-                ))}
-              </div>
+              {cargandoChacras ? (
+                <p className="text-sm text-ben-400 text-center">Cargando propietarios…</p>
+              ) : chacras.length === 0 ? (
+                <p className="text-sm text-ben-400 text-center">
+                  Sin propietarios cargados aún — el guardia puede ingresar el nombre a mano.
+                </p>
+              ) : (
+                <p className="text-sm text-ben-300 text-center">
+                  ✅ {chacras.length} propietarios disponibles para búsqueda rápida
+                </p>
+              )}
             </div>
           </>
         )}
 
-        {/* ── VISTA: ESCANEANDO ── */}
+        {/* ── ESCANEANDO ── */}
         {vista === 'escaneando' && (
           <div className="space-y-4">
             <div className="relative rounded-2xl overflow-hidden bg-black aspect-square">
-              <video
-                ref={videoRef}
-                className="w-full h-full object-cover"
-                playsInline
-                muted
-              />
-              {/* Guía de escaneo */}
+              <video ref={videoRef} className="w-full h-full object-cover" playsInline muted />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-56 h-32 border-2 border-ben-400 rounded-xl opacity-80" />
               </div>
@@ -266,7 +291,6 @@ export default function PorteriaScanner() {
                 </span>
               </div>
             </div>
-
             <button
               onClick={detener}
               className="w-full rounded-xl border border-ben-700 bg-ben-800
@@ -277,7 +301,7 @@ export default function PorteriaScanner() {
           </div>
         )}
 
-        {/* ── VISTA: RESULTADO ── */}
+        {/* ── RESULTADO ── */}
         {vista === 'resultado' && courier && (
           <div className="space-y-4">
 
@@ -301,33 +325,34 @@ export default function PorteriaScanner() {
               </button>
             </div>
 
-            {/* Buscar propietario o ingresar manualmente */}
+            {/* Buscar propietario */}
             <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
               <p className="text-xs text-ben-400 font-semibold uppercase tracking-wide">
                 ¿Para quién es el paquete?
               </p>
 
-              {chacras.length > 0 ? (
-                /* ── Con chacras: búsqueda ── */
+              {cargandoChacras ? (
+                <p className="text-sm text-ben-400 text-center py-3">Cargando propietarios…</p>
+              ) : chacras.length > 0 ? (
                 <>
                   <input
                     type="text"
                     value={busqueda}
-                    onChange={(e) => { setBusqueda(e.target.value); setChacraSeleccionada(null); }}
+                    onChange={(e) => { setBusqueda(e.target.value); setSeleccionada(null); }}
                     placeholder="Buscá por número de chacra o nombre…"
+                    autoFocus
                     className="w-full rounded-lg bg-ben-900 border border-ben-700 px-3 py-2.5
                                text-sm text-white placeholder-ben-400/60 outline-none
                                focus:border-ben-400 transition-colors"
-                    autoFocus
                   />
                   <div className="space-y-1.5 max-h-52 overflow-y-auto">
-                    {charasFiltradas.map((c) => (
+                    {charasFiltradas.slice(0, 20).map((c) => (
                       <button
-                        key={c.numero}
-                        onClick={() => setChacraSeleccionada(c)}
+                        key={c.id}
+                        onClick={() => setSeleccionada(c)}
                         className={`w-full rounded-lg px-3 py-2.5 text-left text-sm
                           transition-colors flex items-center gap-3
-                          ${chacraSeleccionada?.numero === c.numero
+                          ${seleccionada?.id === c.id
                             ? 'bg-ben-600 border border-ben-500'
                             : 'bg-ben-900 border border-ben-700 hover:border-ben-500'}`}
                       >
@@ -341,7 +366,7 @@ export default function PorteriaScanner() {
                   </div>
                 </>
               ) : (
-                /* ── Sin chacras: formulario manual ── */
+                /* Sin chacras: formulario manual */
                 <div className="space-y-3">
                   <div>
                     <label className="text-xs text-ben-400 mb-1.5 block">
@@ -359,49 +384,43 @@ export default function PorteriaScanner() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-ben-400 mb-1.5 block">
-                      WhatsApp del propietario
-                    </label>
+                    <label className="text-xs text-ben-400 mb-1.5 block">WhatsApp del propietario</label>
                     <input
                       type="tel"
                       value={telefonoManual}
                       onChange={(e) => setTelefonoManual(e.target.value)}
-                      placeholder="Ej: 5491112345678"
+                      placeholder="5491112345678"
                       className="w-full rounded-lg bg-ben-900 border border-ben-700 px-3 py-2.5
                                  text-sm text-white placeholder-ben-400/60 outline-none
                                  focus:border-ben-400 transition-colors"
                     />
-                    <p className="text-xs text-ben-400/60 mt-1">Formato: 54 + código área + número</p>
+                    <p className="text-xs text-ben-400/60 mt-1">54 + código de área + número</p>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Preview y botón WhatsApp */}
-            {puedeEnviar && (
+            {/* Preview + WhatsApp */}
+            {puedeEnviar && !enviado && (
               <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
-                {chacraSeleccionada && (
+                {seleccionada && (
                   <div className="flex items-center gap-2 text-sm">
                     <span>✅</span>
-                    <span className="font-semibold">{chacraSeleccionada.propietario}</span>
-                    <span className="text-ben-400">· Chacra #{chacraSeleccionada.numero}</span>
+                    <span className="font-semibold">{seleccionada.propietario}</span>
+                    <span className="text-ben-400">· Chacra #{seleccionada.numero}</span>
                   </div>
                 )}
-
-                {/* Preview del mensaje */}
                 <div className="rounded-lg bg-ben-900 border border-ben-700 p-3 text-xs text-ben-300 whitespace-pre-wrap">
                   {generarMensaje(
-                    chacraSeleccionada?.propietario ?? nombreManual.trim(),
-                    courier!.nombre,
+                    seleccionada?.propietario ?? nombreManual.trim(),
+                    courier.nombre,
                     tracking,
                   )}
                 </div>
-
                 <button
                   onClick={enviarWhatsApp}
                   className="w-full rounded-xl py-4 font-bold text-base flex items-center
-                             justify-center gap-3 transition-colors
-                             bg-[#25D366] hover:bg-[#20c05b] active:bg-[#1aad52] text-white"
+                             justify-center gap-3 bg-[#25D366] hover:bg-[#20c05b] text-white transition-colors"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -412,7 +431,20 @@ export default function PorteriaScanner() {
               </div>
             )}
 
-            {/* Nuevo escaneo */}
+            {/* Enviado: botón marcar retirado */}
+            {enviado && (
+              <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3 text-center">
+                <p className="text-sm text-ben-300">✅ Notificación enviada</p>
+                <button
+                  onClick={marcarRetirado}
+                  className="w-full rounded-xl border border-ben-700 bg-emerald-700/30
+                             hover:bg-emerald-700/50 transition-colors py-3 text-sm font-semibold text-emerald-300"
+                >
+                  ✔ Marcar como retirado y listo
+                </button>
+              </div>
+            )}
+
             <button
               onClick={reiniciar}
               className="w-full rounded-xl border border-ben-700 bg-ben-800
