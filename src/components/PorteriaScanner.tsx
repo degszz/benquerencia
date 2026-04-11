@@ -4,7 +4,7 @@ import { supabase, type ChacraDB } from '@/lib/supabase';
 
 // ── MercadoLibre via Edge Function (sin CORS) ────────────────────────────────
 
-const ML_PROXY = 'https://wjjomwkjphejtzixog.supabase.co/functions/v1/ml-proxy';
+const ML_PROXY = 'https://wjjomwjkjphejtzixxog.supabase.co/functions/v1/ml-proxy';
 const SUPABASE_ANON =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' +
   'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indqam9td2pranBoZWp0eml4eG9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDg1MTksImV4cCI6MjA5MTQyNDUxOX0.' +
