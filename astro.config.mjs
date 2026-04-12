@@ -5,8 +5,7 @@ import autoprefixer from 'autoprefixer';
 import { resolve } from 'path';
 
 export default defineConfig({
-  site: 'https://degszz.github.io',
-  base: '/benquerencia',
+  site: 'https://benquerencia.vercel.app',
   output: 'static',
   integrations: [react()],
   vite: {

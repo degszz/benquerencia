@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import Tesseract from 'tesseract.js';
 import { supabase, type ChacraDB } from '@/lib/supabase';
 
 // ── Fuzzy match nombre → chacra ───────────────────────────────────────────────
@@ -62,7 +63,7 @@ function generarMensaje(propietario: string, courier: string, tracking: string) 
 
 // ── Componente ───────────────────────────────────────────────────────────────
 
-type Vista = 'inicio' | 'escaneando' | 'resultado';
+type Vista = 'inicio' | 'escaneando' | 'foto' | 'resultado';
 
 export default function PorteriaScanner() {
   const [vista, setVista]                     = useState<Vista>('inicio');
@@ -80,7 +81,14 @@ export default function PorteriaScanner() {
   const [paqueteId, setPaqueteId]             = useState<string | null>(null);
   const [enviado, setEnviado]                 = useState(false);
 
+  // Estado para modo foto (captura + OCR + barcode)
+  const [procesandoFoto, setProcesandoFoto]   = useState(false);
+  const [fotoPreview, setFotoPreview]         = useState<string | null>(null);
+  const [ocrTexto, setOcrTexto]               = useState('');
+  const [ocrNombre, setOcrNombre]             = useState('');
+
   const videoRef     = useRef<HTMLVideoElement>(null);
+  const fotoInputRef = useRef<HTMLInputElement>(null);
   const controlsRef  = useRef<{ stop: () => void } | null>(null);
 
   // ── Cargar chacras desde Supabase al montar ──────────────────────────────
@@ -172,6 +180,8 @@ export default function PorteriaScanner() {
     setTracking(''); setCourier(null); setSeleccionada(null);
     setBusqueda(''); setInputManual(''); setNombreManual('');
     setTelefonoManual(''); setPaqueteId(null); setEnviado(false);
+    setFotoPreview(null); setOcrTexto(''); setOcrNombre('');
+    setProcesandoFoto(false);
     setVista('inicio');
   }
 
@@ -183,6 +193,130 @@ export default function PorteriaScanner() {
     setSeleccionada(null);
     setBusqueda('');
     setNombreManual('');
+    setVista('resultado');
+  }
+
+  // ── Procesar foto: barcode + OCR en paralelo ────────────────────────────
+  async function procesarFoto(file: File) {
+    setProcesandoFoto(true);
+    setError('');
+    setVista('foto');
+
+    // Preview de la foto
+    const url = URL.createObjectURL(file);
+    setFotoPreview(url);
+
+    // Crear imagen para zxing
+    const img = new Image();
+    img.src = url;
+    await new Promise<void>((res) => { img.onload = () => res(); });
+
+    // Dibujar en canvas para procesamiento
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(img, 0, 0);
+
+    let codigoDetectado = '';
+    let textoOCR = '';
+
+    // Ejecutar barcode + OCR en paralelo
+    const [barcodeResult, ocrResult] = await Promise.allSettled([
+      // Barcode detection
+      (async () => {
+        try {
+          const reader = new BrowserMultiFormatReader();
+          const result = await reader.decodeFromCanvas(canvas);
+          return result?.getText() ?? '';
+        } catch {
+          return '';
+        }
+      })(),
+      // OCR
+      (async () => {
+        try {
+          const { data } = await Tesseract.recognize(canvas, 'spa+eng', {});
+          return data.text;
+        } catch {
+          return '';
+        }
+      })(),
+    ]);
+
+    if (barcodeResult.status === 'fulfilled') codigoDetectado = barcodeResult.value;
+    if (ocrResult.status === 'fulfilled') textoOCR = ocrResult.value;
+
+    setOcrTexto(textoOCR);
+
+    // Extraer nombre del texto OCR
+    const nombreExtraido = extraerNombreDeOCR(textoOCR);
+    setOcrNombre(nombreExtraido);
+
+    if (codigoDetectado) {
+      setTracking(codigoDetectado);
+      setCourier(detectarCourier(codigoDetectado));
+    }
+
+    // Auto-match nombre contra chacras
+    if (nombreExtraido && chacras.length > 0) {
+      const match = buscarChacraParaNombre(nombreExtraido, chacras);
+      if (match) setSeleccionada(match);
+    }
+
+    setProcesandoFoto(false);
+
+    // Si encontró código → ir directo a resultado
+    if (codigoDetectado) {
+      setVista('resultado');
+    }
+  }
+
+  // Extraer nombre probable del texto OCR de una etiqueta de paquete
+  function extraerNombreDeOCR(texto: string): string {
+    if (!texto) return '';
+    const lineas = texto.split('\n').map(l => l.trim()).filter(Boolean);
+
+    // Buscar líneas que parezcan nombres (2+ palabras capitalizadas, sin números excesivos)
+    const candidatos: string[] = [];
+    const patronesIgnorar = /^\d{4,}|^(calle|av\.|avenida|piso|dto|depto|cp |c\.p\.|provincia|localidad|ciudad|tel|email|ref|n°|nro)/i;
+    const patronNombre = /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)+$/;
+
+    for (const linea of lineas) {
+      // Ignorar líneas con muchos números (tracking, CP, tel)
+      const digitCount = (linea.match(/\d/g) || []).length;
+      if (digitCount > linea.length * 0.4) continue;
+      if (patronesIgnorar.test(linea)) continue;
+
+      // Limpiar puntuación extrema
+      const limpia = linea.replace(/[^\w\sáéíóúñÁÉÍÓÚÑ]/g, '').trim();
+      if (limpia.length < 4 || limpia.split(/\s+/).length < 2) continue;
+
+      // Priorizar líneas que parecen nombres propios
+      if (patronNombre.test(limpia)) {
+        candidatos.unshift(limpia);
+      } else {
+        candidatos.push(limpia);
+      }
+    }
+
+    // Buscar "DESTINATARIO:", "PARA:", "A:" como hints
+    for (const linea of lineas) {
+      const match = linea.match(/(?:destinatario|para|nombre|a)\s*[:]\s*(.+)/i);
+      if (match) {
+        const nombre = match[1].trim();
+        if (nombre.length > 3) return nombre;
+      }
+    }
+
+    return candidatos[0] ?? '';
+  }
+
+  function confirmarFoto() {
+    // Si no se detectó barcode en la foto, permitir ir a resultado con lo que hay
+    if (!tracking && ocrNombre) {
+      setNombreManual(ocrNombre);
+    }
     setVista('resultado');
   }
 
@@ -265,15 +399,40 @@ export default function PorteriaScanner() {
               </div>
             )}
 
-            <button
-              onClick={iniciarScanner}
-              className="w-full rounded-2xl bg-ben-600 hover:bg-ben-500 active:bg-ben-700
-                         transition-colors p-6 flex flex-col items-center gap-3"
-            >
-              <span className="text-5xl">📷</span>
-              <span className="font-bold text-lg">Escanear código</span>
-              <span className="text-ben-300 text-sm">Abrí la cámara y apuntá al código de barras</span>
-            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={iniciarScanner}
+                className="rounded-2xl bg-ben-600 hover:bg-ben-500 active:bg-ben-700
+                           transition-colors p-5 flex flex-col items-center gap-2"
+              >
+                <span className="text-4xl">📷</span>
+                <span className="font-bold text-sm">Escanear código</span>
+                <span className="text-ben-300 text-xs">Cámara en vivo</span>
+              </button>
+
+              <button
+                onClick={() => fotoInputRef.current?.click()}
+                className="rounded-2xl bg-amber-700 hover:bg-amber-600 active:bg-amber-800
+                           transition-colors p-5 flex flex-col items-center gap-2"
+              >
+                <span className="text-4xl">🔍</span>
+                <span className="font-bold text-sm">Sacar foto</span>
+                <span className="text-amber-300 text-xs">Código + nombre</span>
+              </button>
+            </div>
+
+            <input
+              ref={fotoInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) procesarFoto(file);
+                e.target.value = '';
+              }}
+            />
 
             {/* Input manual */}
             <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
@@ -340,6 +499,121 @@ export default function PorteriaScanner() {
             >
               Cancelar
             </button>
+          </div>
+        )}
+
+        {/* ── FOTO (procesando / resultado parcial) ── */}
+        {vista === 'foto' && (
+          <div className="space-y-4">
+            {fotoPreview && (
+              <div className="rounded-2xl overflow-hidden border border-ben-700">
+                <img src={fotoPreview} alt="Foto del paquete" className="w-full" />
+              </div>
+            )}
+
+            {procesandoFoto ? (
+              <div className="rounded-xl bg-ben-800 border border-ben-700 p-6 text-center space-y-3">
+                <div className="w-8 h-8 mx-auto rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
+                <p className="text-sm text-ben-300">Analizando foto…</p>
+                <p className="text-xs text-ben-400">Buscando código de barras y nombre del destinatario</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* Resultado barcode */}
+                <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-2">
+                  <p className="text-xs text-ben-400 font-semibold uppercase tracking-wide">Código de barras</p>
+                  {tracking ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{courier?.emoji}</span>
+                      <span className="font-mono text-sm text-white truncate">{tracking}</span>
+                      <span className="text-xs text-ben-400">({courier?.nombre})</span>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-amber-400">No se detectó — podés ingresarlo abajo</p>
+                  )}
+                </div>
+
+                {/* Resultado OCR nombre */}
+                <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-2">
+                  <p className="text-xs text-ben-400 font-semibold uppercase tracking-wide">Nombre detectado</p>
+                  {ocrNombre ? (
+                    <div>
+                      <p className="text-sm text-white font-semibold">{ocrNombre}</p>
+                      {seleccionada && (
+                        <p className="text-xs text-emerald-400 mt-1">
+                          ✅ Coincide con Chacra #{seleccionada.numero} — {seleccionada.nombre1}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-amber-400">No se detectó nombre — podés buscarlo manualmente</p>
+                  )}
+                </div>
+
+                {/* Texto OCR completo (colapsable) */}
+                {ocrTexto && (
+                  <details className="rounded-xl bg-ben-800/50 border border-ben-700 p-3">
+                    <summary className="text-xs text-ben-400 cursor-pointer">Ver texto completo detectado</summary>
+                    <pre className="mt-2 text-xs text-ben-300 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                      {ocrTexto}
+                    </pre>
+                  </details>
+                )}
+
+                {/* Si no se detectó barcode, input manual */}
+                {!tracking && (
+                  <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-2">
+                    <p className="text-xs text-ben-400">Ingresá el código manualmente</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={inputManual}
+                        onChange={(e) => setInputManual(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            const cod = inputManual.trim();
+                            if (cod) { setTracking(cod); setCourier(detectarCourier(cod)); }
+                          }
+                        }}
+                        placeholder="Ej: MLA1234567890"
+                        className="flex-1 rounded-lg bg-ben-900 border border-ben-700 px-3 py-2.5
+                                   text-sm text-white placeholder-ben-400/60 outline-none
+                                   focus:border-ben-400 transition-colors"
+                      />
+                      <button
+                        onClick={() => {
+                          const cod = inputManual.trim();
+                          if (cod) { setTracking(cod); setCourier(detectarCourier(cod)); }
+                        }}
+                        disabled={!inputManual.trim()}
+                        className="rounded-lg bg-ben-600 hover:bg-ben-500 disabled:opacity-40
+                                   px-4 py-2.5 text-sm font-semibold transition-colors"
+                      >
+                        OK
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={reiniciar}
+                    className="flex-1 rounded-xl border border-ben-700 bg-ben-800
+                               hover:bg-ben-700 transition-colors py-3 text-sm font-semibold"
+                  >
+                    ↩ Cancelar
+                  </button>
+                  <button
+                    onClick={confirmarFoto}
+                    disabled={!tracking && !inputManual.trim()}
+                    className="flex-1 rounded-xl bg-ben-600 hover:bg-ben-500 disabled:opacity-40
+                               transition-colors py-3 text-sm font-semibold"
+                  >
+                    Continuar →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
