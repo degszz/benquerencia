@@ -1,59 +1,326 @@
 ---
-import Layout from '@/layouts/Layout.astro';
+import '../styles/globals.css';
 const base = import.meta.env.BASE_URL;
 ---
 
-<Layout title="Inicio">
-  <!-- Hero -->
-  <section class="max-w-6xl mx-auto px-4 py-24 flex flex-col items-center text-center gap-6">
-    <img
-      src={`${base}/logo.png`}
-      alt="Estancia Benquerencia"
-      class="w-28 h-28 rounded-full shadow-2xl ring-4 ring-ben-600/30"
-    />
-    <div class="space-y-3">
-      <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
-        Estancia Benquerencia
-      </h1>
-      <p class="text-lg text-ben-400 max-w-xl">
-        Sistema integral de gestión para el barrio privado.<br />
-        Paquetería, accesos, comunicados y más.
-      </p>
-    </div>
-    <div class="flex gap-3 flex-wrap justify-center">
-      <a
-        href={`${base}/porteria`}
-        class="inline-flex items-center gap-2 bg-ben-600 text-white hover:bg-ben-500 transition-colors px-6 py-3 rounded-lg font-semibold text-sm"
-      >
-        📦 Ir a Portería
-      </a>
-    </div>
-  </section>
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Estancia Benquerencia Farm Club — Exclusivo barrio de chacras en San Miguel del Monte, Buenos Aires" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/png" href={`${base}/logo.png`} />
+    <title>Estancia Benquerencia Farm Club</title>
+    <style>
+      /* Animations */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      @keyframes slideLeft {
+        from { opacity: 0; transform: translateX(60px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes slideRight {
+        from { opacity: 0; transform: translateX(-60px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+      .fade-up { opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
+      .fade-in { opacity: 0; animation: fadeIn 1s ease-out forwards; }
+      .scale-in { opacity: 0; animation: scaleIn 0.8s ease-out forwards; }
+      .slide-left { opacity: 0; animation: slideLeft 0.8s ease-out forwards; }
+      .slide-right { opacity: 0; animation: slideRight 0.8s ease-out forwards; }
+      .delay-1 { animation-delay: 0.15s; }
+      .delay-2 { animation-delay: 0.3s; }
+      .delay-3 { animation-delay: 0.45s; }
+      .delay-4 { animation-delay: 0.6s; }
+      .delay-5 { animation-delay: 0.75s; }
+      .delay-6 { animation-delay: 0.9s; }
+      .floating { animation: float 6s ease-in-out infinite; }
 
-  <!-- Features -->
-  <section class="max-w-6xl mx-auto px-4 pb-20">
-    <div class="grid md:grid-cols-3 gap-4">
-      <div class="rounded-xl border border-ben-700 bg-ben-800 p-6 space-y-3">
-        <div class="text-3xl">📦</div>
-        <h3 class="font-semibold">Gestión de Paquetes</h3>
-        <p class="text-sm text-ben-400">
-          Registrá y notificá los paquetes que llegan a portería al instante.
-        </p>
+      /* Scroll-triggered animations */
+      .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s ease-out; }
+      .reveal.visible { opacity: 1; transform: translateY(0); }
+
+      /* Fonts */
+      .font-display { font-family: 'Playfair Display', serif; }
+      .font-body { font-family: 'Inter', sans-serif; }
+
+      /* Hero gradient overlay */
+      .hero-gradient {
+        background: linear-gradient(
+          180deg,
+          rgba(15, 26, 15, 0.3) 0%,
+          rgba(15, 26, 15, 0.6) 40%,
+          rgba(15, 26, 15, 0.95) 85%,
+          #0f1a0f 100%
+        );
+      }
+
+      /* Image hover effect */
+      .img-hover { transition: transform 0.6s ease, filter 0.6s ease; }
+      .img-hover:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+      /* Gold accent */
+      .text-gold { color: #c4a265; }
+      .border-gold { border-color: #c4a26540; }
+      .bg-gold { background-color: #c4a265; }
+
+      /* Elegant divider */
+      .divider {
+        width: 60px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #c4a265, transparent);
+      }
+
+      /* Parallax-like fixed background */
+      .bg-fixed {
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* CTA pulse */
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(74, 122, 74, 0.4); }
+        50% { box-shadow: 0 0 20px 8px rgba(74, 122, 74, 0.2); }
+      }
+      .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+    </style>
+  </head>
+  <body class="bg-[#0f1a0f] text-white font-body overflow-x-hidden">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HERO — Full viewport with background image
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="relative min-h-screen flex items-center justify-center">
+      <!-- Background image -->
+      <div class="absolute inset-0">
+        <img
+          src={`${base}/img/polo-home.jpg`}
+          alt="Benquerencia Farm Club"
+          class="w-full h-full object-cover"
+        />
+        <div class="hero-gradient absolute inset-0"></div>
       </div>
-      <div class="rounded-xl border border-ben-700 bg-ben-800 p-6 space-y-3">
-        <div class="text-3xl">💬</div>
-        <h3 class="font-semibold">Notificaciones WhatsApp</h3>
-        <p class="text-sm text-ben-400">
-          Avisá a los propietarios con un mensaje pre-armado desde portería.
+
+      <!-- Content -->
+      <div class="relative z-10 text-center px-6 max-w-3xl mx-auto">
+        <img
+          src={`${base}/img/logo-benquerencia-verde.png`}
+          alt="Logo Benquerencia"
+          class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-8 fade-in floating"
+        />
+        <p class="text-gold uppercase tracking-[0.3em] text-xs md:text-sm font-medium fade-up delay-1">
+          San Miguel del Monte · Buenos Aires
         </p>
-      </div>
-      <div class="rounded-xl border border-ben-700 bg-ben-800 p-6 space-y-3">
-        <div class="text-3xl">🟡</div>
-        <h3 class="font-semibold">Integración MercadoLibre</h3>
-        <p class="text-sm text-ben-400">
-          Identificá destinatarios y códigos de seguridad automáticamente.
+        <h1 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold mt-4 mb-6 fade-up delay-2 leading-tight">
+          Estancia<br/>Benquerencia
+        </h1>
+        <p class="text-lg md:text-xl text-white/70 max-w-xl mx-auto fade-up delay-3">
+          Farm Club · Exclusivo barrio de chacras desde 1998
         </p>
+
+        <div class="divider mx-auto mt-8 mb-8 fade-in delay-4"></div>
+
+        <!-- Scroll indicator -->
+        <div class="fade-in delay-5">
+          <a href="#amenities" class="inline-flex flex-col items-center gap-2 text-white/40 hover:text-white/70 transition-colors">
+            <span class="text-xs tracking-widest uppercase">Descubrí</span>
+            <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
-</Layout>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         AMENITIES — 4 actividades principales
+         ═══════════════════════════════════════════════════════════════ -->
+    <section id="amenities" class="py-20 md:py-32 bg-[#0f1a0f]">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16 reveal">
+          <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Nuestras Amenities</p>
+          <h2 class="font-display text-3xl md:text-5xl font-bold">Un estilo de vida único</h2>
+          <div class="divider mx-auto mt-6"></div>
+        </div>
+
+        <!-- Grid 2x2 -->
+        <div class="grid md:grid-cols-2 gap-6 md:gap-8">
+          <!-- Polo -->
+          <div class="group relative rounded-2xl overflow-hidden aspect-[4/3] reveal">
+            <img src={`${base}/img/polo-home.jpg`} alt="Polo" class="w-full h-full object-cover img-hover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <h3 class="font-display text-2xl md:text-3xl font-bold mb-2">Polo</h3>
+              <p class="text-white/60 text-sm md:text-base">Canchas profesionales para la práctica del deporte rey</p>
+            </div>
+          </div>
+
+          <!-- Tenis -->
+          <div class="group relative rounded-2xl overflow-hidden aspect-[4/3] reveal">
+            <img src={`${base}/img/tenis-home.jpg`} alt="Tenis" class="w-full h-full object-cover img-hover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <h3 class="font-display text-2xl md:text-3xl font-bold mb-2">Tenis</h3>
+              <p class="text-white/60 text-sm md:text-base">Canchas iluminadas rodeadas de naturaleza</p>
+            </div>
+          </div>
+
+          <!-- Golf -->
+          <div class="group relative rounded-2xl overflow-hidden aspect-[4/3] reveal">
+            <img src={`${base}/img/golf-home-1.jpg`} alt="Golf" class="w-full h-full object-cover img-hover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <h3 class="font-display text-2xl md:text-3xl font-bold mb-2">Golf</h3>
+              <p class="text-white/60 text-sm md:text-base">Campo de golf con vistas a la pampa argentina</p>
+            </div>
+          </div>
+
+          <!-- Caballos -->
+          <div class="group relative rounded-2xl overflow-hidden aspect-[4/3] reveal">
+            <img src={`${base}/img/caballos-home.jpg`} alt="Caballos" class="w-full h-full object-cover img-hover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <h3 class="font-display text-2xl md:text-3xl font-bold mb-2">Equitación</h3>
+              <p class="text-white/60 text-sm md:text-base">Caballerizas y paseos por la estancia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SOBRE BENQUERENCIA — Quote / About
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="py-20 md:py-28 border-t border-white/5">
+      <div class="max-w-4xl mx-auto px-6 text-center reveal">
+        <div class="divider mx-auto mb-8"></div>
+        <blockquote class="font-display text-2xl md:text-4xl font-medium leading-relaxed text-white/90">
+          "Estancia Benquerencia Farm Club se desarrolló en 1998 como un exclusivo barrio de chacras"
+        </blockquote>
+        <p class="mt-6 text-white/50 text-base md:text-lg max-w-2xl mx-auto">
+          Ubicado en San Miguel del Monte, Provincia de Buenos Aires, ofrecemos un estilo de vida
+          donde la tranquilidad del campo se combina con las comodidades de un club premium.
+        </p>
+        <div class="divider mx-auto mt-8"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SERVICIOS — Features grid
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="py-20 md:py-28 bg-[#131f13]">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16 reveal">
+          <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Servicios</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold">Comodidades del barrio</h2>
+          <div class="divider mx-auto mt-6"></div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
+          <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+            <div class="text-4xl mb-4">🏇</div>
+            <h4 class="font-semibold mb-2">Polo & Equitación</h4>
+            <p class="text-sm text-white/40">Canchas y caballerizas</p>
+          </div>
+          <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+            <div class="text-4xl mb-4">🎾</div>
+            <h4 class="font-semibold mb-2">Tenis & Golf</h4>
+            <p class="text-sm text-white/40">Canchas iluminadas y campo</p>
+          </div>
+          <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+            <div class="text-4xl mb-4">🚴</div>
+            <h4 class="font-semibold mb-2">Senderos</h4>
+            <p class="text-sm text-white/40">Bicicleta, running y caminatas</p>
+          </div>
+          <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+            <div class="text-4xl mb-4">⚽</div>
+            <h4 class="font-semibold mb-2">Fútbol</h4>
+            <p class="text-sm text-white/40">Cancha de fútbol del barrio</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         CTA — Acceso a Portería (botón principal)
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="py-20 md:py-28">
+      <div class="max-w-3xl mx-auto px-6 text-center reveal">
+        <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Para el guardia</p>
+        <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Sistema de Portería</h2>
+        <p class="text-white/50 mb-10 max-w-lg mx-auto">
+          Escaneá los paquetes que llegan al barrio, identificá al propietario
+          y notificá por WhatsApp con un solo toque.
+        </p>
+        <a
+          href={`${base}/porteria`}
+          class="inline-flex items-center gap-3 bg-ben-600 hover:bg-ben-500 text-white
+                 px-8 py-4 rounded-xl font-semibold text-lg transition-all pulse-glow
+                 hover:scale-105 active:scale-95"
+        >
+          <span class="text-2xl">📦</span>
+          Ir a Portería
+        </a>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         FOOTER
+         ═══════════════════════════════════════════════════════════════ -->
+    <footer class="border-t border-white/5 py-10">
+      <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src={`${base}/img/logo-benquerencia-verde.png`} alt="Logo" class="w-8 h-8" />
+          <span class="text-sm text-white/60">Estancia Benquerencia Farm Club</span>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-white/40">
+          <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener" class="hover:text-white transition-colors">
+            Instagram
+          </a>
+          <a href="https://benquerencia.com.ar" target="_blank" rel="noopener" class="hover:text-white transition-colors">
+            Web oficial
+          </a>
+          <a href={`${base}/porteria`} class="hover:text-white transition-colors">
+            Portería
+          </a>
+        </div>
+        <p class="text-xs text-white/30">© {new Date().getFullYear()} Todos los derechos reservados</p>
+      </div>
+    </footer>
+
+    <!-- Scroll reveal script -->
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+      );
+
+      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    </script>
+
+  </body>
+</html>
