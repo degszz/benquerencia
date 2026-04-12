@@ -8,16 +8,24 @@ function normalizar(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
+// Obtener todos los nombres no vacíos de una chacra
+function nombresDeChacra(c: ChacraDB): string[] {
+  return [c.nombre1, c.nombre2, c.nombre3].filter(Boolean);
+}
+
 function buscarChacraParaNombre(nombre: string, chacras: ChacraDB[]): ChacraDB | null {
   if (!nombre || nombre.length < 3 || !chacras.length) return null;
   const palabras = normalizar(nombre).split(/\s+/).filter(Boolean);
   let mejor: ChacraDB | null = null;
   let mejorScore = 0;
   for (const c of chacras) {
-    const palabrasC = normalizar(c.propietario).split(/\s+/).filter(Boolean);
-    const coinciden = palabras.filter(p => palabrasC.some(pc => pc.includes(p) || p.includes(pc))).length;
-    const score = coinciden / Math.max(palabras.length, palabrasC.length);
-    if (score > mejorScore && score >= 0.4) { mejorScore = score; mejor = c; }
+    // Buscar en los 3 nombres y quedarse con el mejor score
+    for (const n of nombresDeChacra(c)) {
+      const palabrasC = normalizar(n).split(/\s+/).filter(Boolean);
+      const coinciden = palabras.filter(p => palabrasC.some(pc => pc.includes(p) || p.includes(pc))).length;
+      const score = coinciden / Math.max(palabras.length, palabrasC.length);
+      if (score > mejorScore && score >= 0.4) { mejorScore = score; mejor = c; }
+    }
   }
   return mejor;
 }
@@ -81,7 +89,7 @@ export default function PorteriaScanner() {
       setCargandoChacras(true);
       const { data } = await supabase
         .from('chacras')
-        .select('id,numero,propietario,telefono,telefono_alternativo')
+        .select('id,numero,nombre1,nombre2,nombre3,telefono,telefono_alternativo')
         .eq('activo', true)
         .order('numero', { ascending: true });
       setChacras((data as ChacraDB[]) ?? []);
@@ -94,7 +102,7 @@ export default function PorteriaScanner() {
     ? chacras.filter(
         (c) =>
           c.numero.includes(busqueda) ||
-          normalizar(c.propietario).includes(normalizar(busqueda)),
+          nombresDeChacra(c).some(n => normalizar(n).includes(normalizar(busqueda))),
       )
     : chacras;
 
@@ -181,7 +189,7 @@ export default function PorteriaScanner() {
   // ── Guardar paquete en Supabase y enviar WhatsApp ─────────────────────────
   async function enviarWhatsApp() {
     if (!courier) return;
-    const nombre = seleccionada?.propietario ?? nombreManual.trim();
+    const nombre = seleccionada?.nombre1 ?? nombreManual.trim();
     const tel    = (seleccionada?.telefono ?? telefonoManual).replace(/\D/g, '');
     const chacraId     = seleccionada?.id ?? null;
     const chacraNro    = seleccionada?.numero ?? null;
@@ -374,7 +382,7 @@ export default function PorteriaScanner() {
                     <div className="rounded-lg bg-emerald-950/40 border border-emerald-800/50 p-3 flex items-center gap-3">
                       <span className="text-emerald-400 text-lg">✅</span>
                       <div>
-                        <p className="font-bold text-white">{seleccionada.propietario}</p>
+                        <p className="font-bold text-white">{seleccionada.nombre1}</p>
                         <p className="text-xs text-ben-400">Chacra #{seleccionada.numero} · {seleccionada.telefono}</p>
                       </div>
                       <button
@@ -411,7 +419,14 @@ export default function PorteriaScanner() {
                               transition-colors flex items-center gap-3"
                           >
                             <span className="font-bold text-ben-300 w-8 shrink-0">#{c.numero}</span>
-                            <span className="text-white">{c.propietario}</span>
+                            <div>
+                              <span className="text-white">{c.nombre1}</span>
+                              {(c.nombre2 || c.nombre3) && (
+                                <span className="text-ben-400 text-xs ml-2">
+                                  {[c.nombre2, c.nombre3].filter(Boolean).join(' · ')}
+                                </span>
+                              )}
+                            </div>
                           </button>
                         ))}
                         {busqueda.trim() && charasFiltradas.length === 0 && (
@@ -463,7 +478,7 @@ export default function PorteriaScanner() {
               <div className="rounded-xl bg-ben-800 border border-ben-700 p-4 space-y-3">
                 <div className="rounded-lg bg-ben-900 border border-ben-700 p-3 text-xs text-ben-300 whitespace-pre-wrap">
                   {generarMensaje(
-                    seleccionada?.propietario ?? nombreManual.trim(),
+                    seleccionada?.nombre1 ?? nombreManual.trim(),
                     courier.nombre,
                     tracking,
                   )}

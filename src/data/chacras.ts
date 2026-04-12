@@ -1,18 +1,13 @@
-// ─────────────────────────────────────────────────────────────
-// LISTA DE CHACRAS — actualizar con los datos reales
-// Formato teléfono: código de país + área + número (sin + ni espacios)
-// Ejemplo Argentina: 5491112345678  (54 + 911 + 12345678)
-// ─────────────────────────────────────────────────────────────
+// Este archivo ya no se usa — las chacras se cargan desde Supabase.
+// Se mantiene solo como referencia del formato de datos.
 
 export interface Chacra {
   numero: string;
-  propietario: string;
+  nombre1: string;
+  nombre2?: string;
+  nombre3?: string;
   telefono: string;
   telefonoAlternativo?: string;
 }
 
-export const chacras: Chacra[] = [
-  // { numero: '1', propietario: 'Juan Pérez',     telefono: '5491112345678' },
-  // { numero: '2', propietario: 'María García',   telefono: '5491123456789' },
-  // Agregá acá todas las chacras con sus propietarios
-];
+export const chacras: Chacra[] = [];

@@ -11,7 +11,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export interface ChacraDB {
   id: string;
   numero: string;
-  propietario: string;
+  nombre1: string;
+  nombre2: string;
+  nombre3: string;
   telefono: string;
   telefono_alternativo?: string;
   activo: boolean;
