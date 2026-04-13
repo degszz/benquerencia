@@ -1,0 +1,124 @@
+---
+import '../styles/globals.css';
+---
+
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Equitación — Estancia Benquerencia Farm Club" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <title>Equitación — Estancia Benquerencia</title>
+    <style>
+      .font-display { font-family: 'Playfair Display', serif; }
+      .font-body { font-family: 'Inter', sans-serif; }
+      .text-gold { color: #c4a265; }
+      .divider {
+        width: 60px; height: 1px;
+        background: linear-gradient(90deg, transparent, #c4a265, transparent);
+      }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .fade-up { opacity: 0; animation: fadeUp 0.8s ease-out forwards; }
+      .fade-in { opacity: 0; animation: fadeIn 1s ease-out forwards; }
+      .delay-1 { animation-delay: 0.2s; }
+      .delay-2 { animation-delay: 0.4s; }
+      .delay-3 { animation-delay: 0.6s; }
+      .delay-4 { animation-delay: 0.8s; }
+    </style>
+  </head>
+  <body class="bg-[#0f1a0f] text-white font-body overflow-x-hidden">
+
+    <!-- Video hero fullscreen -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <div class="absolute inset-0">
+        <video class="w-full h-full object-cover" autoplay muted loop playsinline
+               poster="/img/caballos-home.jpg">
+          <source src="/video/polo.mp4" type="video/mp4" />
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-[#0f1a0f]"></div>
+      </div>
+
+      <div class="relative z-10 text-center px-6 max-w-3xl mx-auto">
+        <a href="/" class="inline-block mb-8 fade-in">
+          <img src="/img/logo-benquerencia-verde.png" alt="Logo" class="w-16 h-16 mx-auto opacity-70 hover:opacity-100 transition-opacity" />
+        </a>
+        <p class="text-gold uppercase tracking-[0.3em] text-xs font-medium fade-up delay-1">Actividades</p>
+        <h1 class="font-display text-5xl md:text-7xl lg:text-8xl font-bold mt-4 mb-6 fade-up delay-2 leading-tight">
+          Equitación
+        </h1>
+        <div class="divider mx-auto fade-in delay-3"></div>
+      </div>
+
+      <div class="absolute bottom-8 left-0 right-0 text-center fade-in delay-4">
+        <svg class="w-5 h-5 mx-auto text-white/40 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </div>
+    </section>
+
+    <!-- Contenido -->
+    <section class="py-20 md:py-28">
+      <div class="max-w-4xl mx-auto px-6">
+        <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center mb-20">
+          <div class="md:order-2">
+            <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Tradición ecuestre</p>
+            <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">Caballerizas & paseos</h2>
+            <p class="text-white/60 leading-relaxed mb-4">
+              Caballerizas equipadas y senderos para paseos ecuestres que recorren
+              los rincones más pintorescos de la estancia. La equitación es parte
+              esencial del estilo de vida en Benquerencia.
+            </p>
+            <p class="text-white/50 leading-relaxed">
+              Desde clases para principiantes hasta cabalgatas guiadas por los campos,
+              ofrecemos una conexión única con la tradición ecuestre argentina.
+            </p>
+          </div>
+          <div class="rounded-2xl overflow-hidden aspect-[4/3] md:order-1">
+            <img src="/img/caballos-home.jpg" alt="Equitación en Benquerencia" class="w-full h-full object-cover" />
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-3 gap-6 text-center">
+          <div class="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
+            <div class="text-3xl mb-3">🐴</div>
+            <h4 class="font-semibold mb-1">Caballerizas</h4>
+            <p class="text-sm text-white/40">Instalaciones completas y cuidado profesional</p>
+          </div>
+          <div class="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
+            <div class="text-3xl mb-3">🌿</div>
+            <h4 class="font-semibold mb-1">Cabalgatas</h4>
+            <p class="text-sm text-white/40">Paseos guiados por la estancia</p>
+          </div>
+          <div class="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
+            <div class="text-3xl mb-3">📚</div>
+            <h4 class="font-semibold mb-1">Clases</h4>
+            <p class="text-sm text-white/40">Para todas las edades y niveles</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Back link -->
+    <section class="pb-20">
+      <div class="max-w-4xl mx-auto px-6 text-center">
+        <div class="divider mx-auto mb-8"></div>
+        <a href="/" class="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm uppercase tracking-widest">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          Volver al inicio
+        </a>
+      </div>
+    </section>
+
+  </body>
+</html>
