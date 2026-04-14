@@ -242,60 +242,60 @@ const base = '';
           <div class="divider mx-auto mt-6"></div>
         </div>
 
-        <!-- Grid 2x2 — cada card linkea a su página con video -->
-        <div class="grid md:grid-cols-2 gap-6 md:gap-8">
+        <!-- Grid 2x2 siempre (incluso en mobile) -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-6 md:gap-8">
           <!-- Polo -->
-          <a href="/polo" class="group relative rounded-2xl overflow-hidden aspect-[4/3] reveal block">
-            <img src={`${base}/img/polo-home.jpg`} alt="Polo" class="w-full h-full object-cover img-hover" />
+          <a href="/polo" class="group relative rounded-xl sm:rounded-2xl overflow-hidden aspect-[4/3] reveal block">
+            <img src="/img/polo-home.jpg" alt="Polo" class="w-full h-full object-cover img-hover" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-              <h3 class="font-display text-2xl md:text-3xl font-bold mb-2">Polo</h3>
-              <p class="text-white/60 text-sm md:text-base">Canchas profesionales para la práctica del deporte rey</p>
-              <span class="inline-flex items-center gap-1.5 mt-3 text-gold text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
+              <h3 class="font-display text-lg sm:text-2xl md:text-3xl font-bold mb-0.5 sm:mb-2">Polo</h3>
+              <p class="text-white/60 text-[11px] sm:text-sm md:text-base hidden sm:block">Canchas profesionales para la práctica del deporte rey</p>
+              <span class="inline-flex items-center gap-1 sm:gap-1.5 mt-1.5 sm:mt-3 text-gold text-[10px] sm:text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                 Ver más
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
               </span>
             </div>
           </a>
 
           <!-- Tenis -->
-          <a href="/tenis" class="group relative rounded-2xl overflow-hidden aspect-[4/3] reveal block">
-            <img src={`${base}/img/tenis-home.jpg`} alt="Tenis" class="w-full h-full object-cover img-hover" />
+          <a href="/tenis" class="group relative rounded-xl sm:rounded-2xl overflow-hidden aspect-[4/3] reveal block">
+            <img src="/img/tenis-new.jpg" alt="Tenis" class="w-full h-full object-cover img-hover" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-              <h3 class="font-display text-2xl md:text-3xl font-bold mb-2">Tenis</h3>
-              <p class="text-white/60 text-sm md:text-base">Canchas iluminadas rodeadas de naturaleza</p>
-              <span class="inline-flex items-center gap-1.5 mt-3 text-gold text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
+              <h3 class="font-display text-lg sm:text-2xl md:text-3xl font-bold mb-0.5 sm:mb-2">Tenis</h3>
+              <p class="text-white/60 text-[11px] sm:text-sm md:text-base hidden sm:block">Canchas iluminadas rodeadas de naturaleza</p>
+              <span class="inline-flex items-center gap-1 sm:gap-1.5 mt-1.5 sm:mt-3 text-gold text-[10px] sm:text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                 Ver más
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
               </span>
             </div>
           </a>
 
           <!-- Golf -->
-          <a href="/golf" class="group relative rounded-2xl overflow-hidden aspect-[4/3] reveal block">
-            <img src={`${base}/img/golf-home-1.jpg`} alt="Golf" class="w-full h-full object-cover img-hover" />
+          <a href="/golf" class="group relative rounded-xl sm:rounded-2xl overflow-hidden aspect-[4/3] reveal block">
+            <img src="/img/golf-new.jpg" alt="Golf" class="w-full h-full object-cover img-hover" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-              <h3 class="font-display text-2xl md:text-3xl font-bold mb-2">Golf</h3>
-              <p class="text-white/60 text-sm md:text-base">Campo de golf con vistas a la pampa argentina</p>
-              <span class="inline-flex items-center gap-1.5 mt-3 text-gold text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
+              <h3 class="font-display text-lg sm:text-2xl md:text-3xl font-bold mb-0.5 sm:mb-2">Golf</h3>
+              <p class="text-white/60 text-[11px] sm:text-sm md:text-base hidden sm:block">Campo de golf con vistas a la pampa argentina</p>
+              <span class="inline-flex items-center gap-1 sm:gap-1.5 mt-1.5 sm:mt-3 text-gold text-[10px] sm:text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                 Ver más
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
               </span>
             </div>
           </a>
 
-          <!-- Caballos -->
-          <a href="/equitacion" class="group relative rounded-2xl overflow-hidden aspect-[4/3] reveal block">
-            <img src={`${base}/img/caballos-home.jpg`} alt="Caballos" class="w-full h-full object-cover img-hover" />
+          <!-- Equitación -->
+          <a href="/equitacion" class="group relative rounded-xl sm:rounded-2xl overflow-hidden aspect-[4/3] reveal block">
+            <img src="/img/equitacion-new.jpg" alt="Equitación" class="w-full h-full object-cover img-hover" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-              <h3 class="font-display text-2xl md:text-3xl font-bold mb-2">Equitación</h3>
-              <p class="text-white/60 text-sm md:text-base">Caballerizas y paseos por la estancia</p>
-              <span class="inline-flex items-center gap-1.5 mt-3 text-gold text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8">
+              <h3 class="font-display text-lg sm:text-2xl md:text-3xl font-bold mb-0.5 sm:mb-2">Equitación</h3>
+              <p class="text-white/60 text-[11px] sm:text-sm md:text-base hidden sm:block">Caballerizas y paseos por la estancia</p>
+              <span class="inline-flex items-center gap-1 sm:gap-1.5 mt-1.5 sm:mt-3 text-gold text-[10px] sm:text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                 Ver más
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
               </span>
             </div>
           </a>
