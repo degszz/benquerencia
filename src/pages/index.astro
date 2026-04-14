@@ -102,9 +102,89 @@ const base = '';
       }
       .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
 
+      /* Header */
+      .site-header {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 100;
+        padding: 1.25rem 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .site-header.scrolled {
+        padding: 0.75rem 0;
+        background: rgba(15, 26, 15, 0.85);
+        backdrop-filter: blur(16px) saturate(1.4);
+        -webkit-backdrop-filter: blur(16px) saturate(1.4);
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .header-logo {
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .site-header.scrolled .header-logo {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Mobile menu */
+      .mobile-menu {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, opacity 0.2s ease;
+      }
+      .mobile-menu.open {
+        max-height: 300px;
+        opacity: 1;
+      }
+
+      /* Numbers counter animation */
+      .stat-number {
+        font-variant-numeric: tabular-nums;
+      }
     </style>
   </head>
   <body class="bg-[#0f1a0f] text-white font-body overflow-x-hidden">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HEADER — Transparente, aparece con fondo al scrollear
+         ═══════════════════════════════════════════════════════════════ -->
+    <header class="site-header" id="site-header">
+      <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
+        <!-- Logo (aparece al scrollear) -->
+        <a href="/" class="header-logo flex items-center gap-3">
+          <img src="/img/logo-benquerencia-verde.png" alt="Logo" class="w-8 h-8 rounded-full" />
+          <span class="font-display text-sm font-semibold hidden sm:inline">Benquerencia</span>
+        </a>
+
+        <!-- Nav desktop -->
+        <nav class="hidden md:flex items-center gap-8 text-[13px] text-white/50 uppercase tracking-widest">
+          <a href="#amenities" class="hover:text-white transition-colors">Actividades</a>
+          <a href="#ubicacion" class="hover:text-white transition-colors">Ubicación</a>
+          <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
+        </nav>
+
+        <!-- Hamburger mobile -->
+        <button id="menu-toggle" class="md:hidden p-2 -mr-2 text-white/60 hover:text-white transition-colors" aria-label="Menu">
+          <svg class="w-5 h-5" id="menu-icon-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg class="w-5 h-5 hidden" id="menu-icon-close" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile menu -->
+      <div class="mobile-menu md:hidden" id="mobile-menu">
+        <nav class="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-4 text-[13px] text-white/60 uppercase tracking-widest">
+          <a href="#amenities" class="hover:text-white transition-colors py-1">Actividades</a>
+          <a href="#ubicacion" class="hover:text-white transition-colors py-1">Ubicación</a>
+          <a href="#contacto" class="hover:text-white transition-colors py-1">Contacto</a>
+        </nav>
+      </div>
+    </header>
 
     <!-- ═══════════════════════════════════════════════════════════════
          HERO — Full viewport with background image
@@ -224,15 +304,42 @@ const base = '';
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
+         NÚMEROS — Stats del barrio
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="py-16 md:py-20 border-t border-b border-white/5">
+      <div class="max-w-5xl mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 text-center reveal">
+          <div>
+            <p class="font-display text-4xl md:text-5xl font-bold text-gold stat-number">1998</p>
+            <p class="text-xs md:text-sm text-white/40 mt-2 uppercase tracking-wider">Fundación</p>
+          </div>
+          <div>
+            <p class="font-display text-4xl md:text-5xl font-bold text-white stat-number">120</p>
+            <p class="text-xs md:text-sm text-white/40 mt-2 uppercase tracking-wider">Hectáreas</p>
+          </div>
+          <div>
+            <p class="font-display text-4xl md:text-5xl font-bold text-white stat-number">6</p>
+            <p class="text-xs md:text-sm text-white/40 mt-2 uppercase tracking-wider">Deportes</p>
+          </div>
+          <div>
+            <p class="font-display text-4xl md:text-5xl font-bold text-white stat-number">110</p>
+            <p class="text-xs md:text-sm text-white/40 mt-2 uppercase tracking-wider">km de Buenos Aires</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
          SOBRE BENQUERENCIA — Quote / About
          ═══════════════════════════════════════════════════════════════ -->
-    <section class="py-20 md:py-28 border-t border-white/5">
+    <section class="py-20 md:py-28">
       <div class="max-w-4xl mx-auto px-6 text-center reveal">
         <div class="divider mx-auto mb-8"></div>
         <blockquote class="font-display text-2xl md:text-4xl font-medium leading-relaxed text-white/90">
-          "Estancia Benquerencia Farm Club se desarrolló en 1998 como un exclusivo barrio de chacras"
+          "Un lugar donde el tiempo se mide en atardeceres y la vida transcurre al ritmo del campo"
         </blockquote>
         <p class="mt-6 text-white/50 text-base md:text-lg max-w-2xl mx-auto">
+          Estancia Benquerencia Farm Club se desarrolló en 1998 como un exclusivo barrio de chacras.
           Ubicado en San Miguel del Monte, Provincia de Buenos Aires, ofrecemos un estilo de vida
           donde la tranquilidad del campo se combina con las comodidades de un club premium.
         </p>
@@ -246,56 +353,126 @@ const base = '';
     <section class="py-20 md:py-28 bg-[#131f13]">
       <div class="max-w-6xl mx-auto px-6">
         <div class="text-center mb-16 reveal">
-          <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Servicios</p>
-          <h2 class="font-display text-3xl md:text-4xl font-bold">Comodidades del barrio</h2>
+          <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Vida en el barrio</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold">Todo lo que necesitás</h2>
           <div class="divider mx-auto mt-6"></div>
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
           <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-            <div class="text-4xl mb-4">🏇</div>
-            <h4 class="font-semibold mb-2">Polo & Equitación</h4>
-            <p class="text-sm text-white/40">Canchas y caballerizas</p>
+            <div class="text-4xl mb-4">🛡️</div>
+            <h4 class="font-semibold mb-2">Seguridad 24hs</h4>
+            <p class="text-sm text-white/40">Portería con control de acceso permanente</p>
           </div>
           <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-            <div class="text-4xl mb-4">🎾</div>
-            <h4 class="font-semibold mb-2">Tenis & Golf</h4>
-            <p class="text-sm text-white/40">Canchas iluminadas y campo</p>
-          </div>
-          <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-            <div class="text-4xl mb-4">🚴</div>
-            <h4 class="font-semibold mb-2">Senderos</h4>
-            <p class="text-sm text-white/40">Bicicleta, running y caminatas</p>
+            <div class="text-4xl mb-4">🌳</div>
+            <h4 class="font-semibold mb-2">Senderos & Naturaleza</h4>
+            <p class="text-sm text-white/40">Bicicleta, running y caminatas por el campo</p>
           </div>
           <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
             <div class="text-4xl mb-4">⚽</div>
             <h4 class="font-semibold mb-2">Fútbol</h4>
-            <p class="text-sm text-white/40">Cancha de fútbol del barrio</p>
+            <p class="text-sm text-white/40">Cancha de fútbol para partidos del barrio</p>
+          </div>
+          <div class="text-center p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+            <div class="text-4xl mb-4">🏡</div>
+            <h4 class="font-semibold mb-2">Chacras</h4>
+            <p class="text-sm text-white/40">Lotes amplios con vista al campo</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════════
-         CTA — Acceso a Portería (botón principal)
+         UBICACIÓN — Mapa + info
          ═══════════════════════════════════════════════════════════════ -->
-    <section class="py-20 md:py-28">
+    <section id="ubicacion" class="py-20 md:py-28">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16 reveal">
+          <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Ubicación</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold">A un paso de Buenos Aires</h2>
+          <div class="divider mx-auto mt-6"></div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center reveal">
+          <!-- Mapa embed -->
+          <div class="rounded-2xl overflow-hidden aspect-[4/3] border border-white/10">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d52430.73!2d-58.85!3d-35.45!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bd3a4c9a1e0f4d%3A0xd07d14563f7e5a4d!2sSan%20Miguel%20del%20Monte!5e0!3m2!1ses!2sar!4v1"
+              class="w-full h-full border-0 grayscale contrast-125 opacity-80"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+
+          <!-- Info -->
+          <div class="space-y-6">
+            <div class="flex items-start gap-4">
+              <span class="text-2xl mt-0.5">📍</span>
+              <div>
+                <h4 class="font-semibold mb-1">San Miguel del Monte</h4>
+                <p class="text-sm text-white/50">Provincia de Buenos Aires, Argentina</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <span class="text-2xl mt-0.5">🚗</span>
+              <div>
+                <h4 class="font-semibold mb-1">110 km de CABA</h4>
+                <p class="text-sm text-white/50">Acceso rápido por Autopista Ezeiza-Cañuelas y Ruta 3</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <span class="text-2xl mt-0.5">🌾</span>
+              <div>
+                <h4 class="font-semibold mb-1">Pampa bonaerense</h4>
+                <p class="text-sm text-white/50">Rodeado de campo abierto, lagunas y tranquilidad</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <span class="text-2xl mt-0.5">🏘️</span>
+              <div>
+                <h4 class="font-semibold mb-1">Barrio cerrado</h4>
+                <p class="text-sm text-white/50">Seguridad las 24 horas con control de acceso</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         CONTACTO
+         ═══════════════════════════════════════════════════════════════ -->
+    <section id="contacto" class="py-20 md:py-28 bg-[#131f13]">
       <div class="max-w-3xl mx-auto px-6 text-center reveal">
-        <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Para el guardia</p>
-        <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Sistema de Portería</h2>
+        <p class="text-gold uppercase tracking-[0.25em] text-xs font-medium mb-3">Contacto</p>
+        <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">Conocé Benquerencia</h2>
         <p class="text-white/50 mb-10 max-w-lg mx-auto">
-          Escaneá los paquetes que llegan al barrio, identificá al propietario
-          y notificá por WhatsApp con un solo toque.
+          Estamos a disposición para mostrarte el barrio y responder todas tus consultas.
         </p>
-        <a
-          href={`${base}/porteria`}
-          class="inline-flex items-center gap-3 bg-ben-600 hover:bg-ben-500 text-white
-                 px-8 py-4 rounded-xl font-semibold text-lg transition-all pulse-glow
-                 hover:scale-105 active:scale-95"
-        >
-          <span class="text-2xl">📦</span>
-          Ir a Portería
-        </a>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="https://www.instagram.com/benquerencia_oficial/"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-3 bg-white/5 border border-white/10 hover:bg-white/10
+                   px-6 py-3.5 rounded-xl font-medium text-sm transition-all hover:scale-105"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Instagram
+          </a>
+          <a
+            href="https://benquerencia.com.ar"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-3 bg-white/5 border border-white/10 hover:bg-white/10
+                   px-6 py-3.5 rounded-xl font-medium text-sm transition-all hover:scale-105"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-4.247m0 0A8.966 8.966 0 013 12c0-1.528.38-2.97 1.05-4.228"/></svg>
+            Web oficial
+          </a>
+        </div>
       </div>
     </section>
 
@@ -323,7 +500,6 @@ const base = '';
       </div>
     </footer>
 
-    <!-- Scroll reveal + Amenity sections script -->
     <script>
       // Scroll reveal
       const observer = new IntersectionObserver(
@@ -338,6 +514,39 @@ const base = '';
       );
       document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 
+      // Header scroll effect
+      const header = document.getElementById('site-header');
+      let lastScroll = 0;
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        if (y > 80) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+        lastScroll = y;
+      }, { passive: true });
+
+      // Mobile menu toggle
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const iconOpen = document.getElementById('menu-icon-open');
+      const iconClose = document.getElementById('menu-icon-close');
+
+      menuToggle.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.toggle('open');
+        iconOpen.classList.toggle('hidden', isOpen);
+        iconClose.classList.toggle('hidden', !isOpen);
+      });
+
+      // Close mobile menu on link click
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.remove('open');
+          iconOpen.classList.remove('hidden');
+          iconClose.classList.add('hidden');
+        });
+      });
     </script>
 
   </body>
