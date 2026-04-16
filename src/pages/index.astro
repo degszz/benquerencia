@@ -95,6 +95,18 @@ const base = '';
         background-position: center;
       }
 
+      /* Hero slideshow */
+      .hero-slide {
+        position: absolute; inset: 0;
+        opacity: 0;
+        transition: opacity 1.5s ease-in-out;
+      }
+      .hero-slide.active { opacity: 1; }
+      .hero-slide img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+      }
+
       /* CTA pulse */
       @keyframes pulse-glow {
         0%, 100% { box-shadow: 0 0 0 0 rgba(74, 122, 74, 0.4); }
@@ -115,7 +127,7 @@ const base = '';
         background: rgba(15, 26, 15, 0.85);
         backdrop-filter: blur(16px) saturate(1.4);
         -webkit-backdrop-filter: blur(16px) saturate(1.4);
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-bottom: none;
       }
       .header-logo {
         opacity: 0;
@@ -190,13 +202,17 @@ const base = '';
          HERO — Full viewport with background image
          ═══════════════════════════════════════════════════════════════ -->
     <section class="relative min-h-screen flex items-center justify-center">
-      <!-- Background image -->
+      <!-- Background slideshow -->
       <div class="absolute inset-0">
-        <img
-          src={`${base}/img/polo-home.jpg`}
-          alt="Benquerencia Farm Club"
-          class="w-full h-full object-cover"
-        />
+        <div class="hero-slide active" data-slide="0">
+          <img src="/img/hero-1.jpg" alt="Estancia Benquerencia" />
+        </div>
+        <div class="hero-slide" data-slide="1">
+          <img src="/img/hero-2.jpg" alt="Laguna Benquerencia" />
+        </div>
+        <div class="hero-slide" data-slide="2">
+          <img src="/img/hero-3.jpg" alt="Paisaje Benquerencia" />
+        </div>
         <div class="hero-gradient absolute inset-0"></div>
       </div>
 
@@ -394,47 +410,64 @@ const base = '';
           <div class="divider mx-auto mt-6"></div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center reveal">
-          <!-- Mapa embed -->
-          <div class="rounded-2xl overflow-hidden aspect-[4/3] border border-white/10">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d52430.73!2d-58.85!3d-35.45!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bd3a4c9a1e0f4d%3A0xd07d14563f7e5a4d!2sSan%20Miguel%20del%20Monte!5e0!3m2!1ses!2sar!4v1"
-              class="w-full h-full border-0 grayscale contrast-125 opacity-80"
-              allowfullscreen=""
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+        <!-- Info ubicación -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10 reveal">
+          <div class="flex items-start gap-3">
+            <span class="text-xl mt-0.5">📍</span>
+            <div>
+              <h4 class="font-semibold text-sm mb-0.5">San Miguel del Monte</h4>
+              <p class="text-xs text-white/50">Buenos Aires, Argentina</p>
+            </div>
           </div>
+          <div class="flex items-start gap-3">
+            <span class="text-xl mt-0.5">🚗</span>
+            <div>
+              <h4 class="font-semibold text-sm mb-0.5">110 km de CABA</h4>
+              <p class="text-xs text-white/50">Autopista Ezeiza y Ruta 3</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-xl mt-0.5">🌾</span>
+            <div>
+              <h4 class="font-semibold text-sm mb-0.5">Pampa bonaerense</h4>
+              <p class="text-xs text-white/50">Campo, lagunas y tranquilidad</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-xl mt-0.5">🏘️</span>
+            <div>
+              <h4 class="font-semibold text-sm mb-0.5">Barrio cerrado</h4>
+              <p class="text-xs text-white/50">Seguridad 24 horas</p>
+            </div>
+          </div>
+        </div>
 
-          <!-- Info -->
-          <div class="space-y-6">
-            <div class="flex items-start gap-4">
-              <span class="text-2xl mt-0.5">📍</span>
-              <div>
-                <h4 class="font-semibold mb-1">San Miguel del Monte</h4>
-                <p class="text-sm text-white/50">Provincia de Buenos Aires, Argentina</p>
-              </div>
+        <!-- Mapas: Street View + Satélite lado a lado -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 reveal">
+          <!-- Street View (entrada) — arriba en mobile -->
+          <div class="order-1 md:order-1">
+            <p class="text-center text-white/40 uppercase tracking-[0.2em] text-xs mb-3">Entrada a la estancia</p>
+            <div class="rounded-2xl overflow-hidden aspect-[4/3] border border-white/10">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!4v1!6m8!1m7!1sstZAH2nLN35U3cpjZ1eYtQ!2m2!1d-35.5736982!2d-58.6401297!3f64.39!4f-0.5!5f1.5"
+                class="w-full h-full border-0"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
-            <div class="flex items-start gap-4">
-              <span class="text-2xl mt-0.5">🚗</span>
-              <div>
-                <h4 class="font-semibold mb-1">110 km de CABA</h4>
-                <p class="text-sm text-white/50">Acceso rápido por Autopista Ezeiza-Cañuelas y Ruta 3</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <span class="text-2xl mt-0.5">🌾</span>
-              <div>
-                <h4 class="font-semibold mb-1">Pampa bonaerense</h4>
-                <p class="text-sm text-white/50">Rodeado de campo abierto, lagunas y tranquilidad</p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <span class="text-2xl mt-0.5">🏘️</span>
-              <div>
-                <h4 class="font-semibold mb-1">Barrio cerrado</h4>
-                <p class="text-sm text-white/50">Seguridad las 24 horas con control de acceso</p>
-              </div>
+          </div>
+          <!-- Mapa satélite — abajo en mobile -->
+          <div class="order-2 md:order-2">
+            <p class="text-center text-white/40 uppercase tracking-[0.2em] text-xs mb-3">Vista satelital</p>
+            <div class="rounded-2xl overflow-hidden aspect-[4/3] border border-white/10">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3262.5!2d-58.6401297!3d-35.5736982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bd58d1f28c9cbd%3A0x5825df19988d190a!2sEstancia%20Benquerencia%20Farm%20Club!5e1!3m2!1ses-419!2sar!4v1"
+                class="w-full h-full border-0"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
           </div>
         </div>
@@ -547,6 +580,15 @@ const base = '';
           iconClose.classList.add('hidden');
         });
       });
+
+      // Hero slideshow
+      const slides = document.querySelectorAll('.hero-slide');
+      let current = 0;
+      setInterval(() => {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+      }, 5000);
     </script>
 
   </body>

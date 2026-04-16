@@ -35,6 +35,15 @@ import '../styles/globals.css';
       .delay-2 { animation-delay: 0.4s; }
       .delay-3 { animation-delay: 0.6s; }
       .delay-4 { animation-delay: 0.8s; }
+      .delay-5 { animation-delay: 1s; }
+      .delay-6 { animation-delay: 1.4s; }
+      .delay-7 { animation-delay: 1.8s; }
+      .hero-video { opacity: 1; }
+      .loading-overlay {
+        position: absolute; inset: 0; z-index: 50;
+        background: #0f1a0f;
+      }
+      .loading-overlay.hidden { display: none; }
     </style>
   </head>
   <body class="bg-[#0f1a0f] text-white font-body overflow-x-hidden">
@@ -42,12 +51,15 @@ import '../styles/globals.css';
     <!-- Video hero fullscreen -->
     <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div class="absolute inset-0">
-        <video class="w-full h-full object-cover" autoplay muted loop playsinline
-               poster="/img/tenis-home.jpg">
+        <video class="hero-video absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline preload="auto"
+               oncanplaythrough="this.classList.add('loaded'); document.getElementById('loadingOverlay')?.classList.add('hidden')"
+               onplaying="this.classList.add('loaded'); document.getElementById('loadingOverlay')?.classList.add('hidden')">
           <source src="/video/tenis.mp4" type="video/mp4" />
         </video>
         <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-[#0f1a0f]"></div>
       </div>
+
+      <div class="loading-overlay" id="loadingOverlay"></div>
 
       <div class="relative z-10 text-center px-6 max-w-3xl mx-auto">
         <a href="/" class="inline-block mb-8 fade-in">
@@ -58,9 +70,15 @@ import '../styles/globals.css';
           Tenis
         </h1>
         <div class="divider mx-auto fade-in delay-3"></div>
+        <p class="text-white/60 text-sm md:text-lg max-w-xl mx-auto mt-6 fade-up delay-6">
+          Canchas iluminadas para jugar a cualquier hora, rodeadas de naturaleza
+        </p>
+        <p class="text-white/40 text-xs md:text-sm max-w-md mx-auto mt-3 fade-up delay-7">
+          Clases, torneos y juego libre en un entorno único
+        </p>
       </div>
 
-      <div class="absolute bottom-8 left-0 right-0 text-center fade-in delay-4">
+      <div class="absolute bottom-8 left-0 right-0 text-center fade-in delay-5">
         <svg class="w-5 h-5 mx-auto text-white/40 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
         </svg>
