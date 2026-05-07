@@ -89,6 +89,34 @@ import '../styles/globals.css';
   /* Service icon */
   .svc-icon { color: #C7A54E; }
 
+  /* Header scroll state */
+  .header-scrolled {
+    background: rgba(58, 74, 50, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Hero text timed visibility */
+  .hero-content {
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  .hero-content.show {
+    opacity: 1;
+  }
+  .hero-content.hide {
+    opacity: 0;
+  }
+
+  /* Scroll arrow bounce */
+  @keyframes arrowBounce {
+    0%, 100% { transform: translate(-50%, 0); }
+    50%       { transform: translate(-50%, 10px); }
+  }
+  .scroll-arrow {
+    animation: arrowBounce 2s ease-in-out infinite;
+  }
+
   /* Mobile menu */
   .mobile-menu {
     max-height: 0; overflow: hidden;
@@ -103,73 +131,111 @@ import '../styles/globals.css';
 <!-- ═══════════════════════════════════════════════════════════════
      HEADER
      ═══════════════════════════════════════════════════════════════ -->
-<header class="fixed top-0 inset-x-0 z-50 bg-forest/95 backdrop-blur-sm" id="site-header">
-  <nav class="max-w-[1400px] mx-auto px-6 md:px-8 h-[72px] flex items-center justify-between text-white">
+<header class="fixed top-0 inset-x-0 z-50 transition-all duration-500" id="site-header">
+
+  <!-- Barra superior: Propietario (solo desktop) -->
+  <div class="hidden lg:flex justify-end items-center px-8 py-1.5 text-[11px] tracking-mid text-white/60 border-b border-white/10 transition-all duration-500" id="owner-bar">
+    <a href="https://supply.benquerencia.com.ar" target="_blank" rel="noopener"
+       class="flex items-center gap-1.5 hover:text-roti transition-colors">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Propietario
+    </a>
+  </div>
+
+  <nav class="max-w-[1400px] mx-auto px-6 md:px-8 h-[68px] flex items-center justify-between text-white relative">
 
     <!-- Links izquierda (desktop) -->
-    <ul class="hidden lg:flex items-center gap-8 text-[13px] tracking-mid font-light">
+    <ul class="hidden lg:flex items-center gap-7 text-[12px] tracking-mid font-light">
       <li><a href="#inicio" class="nav-link active text-roti">Inicio</a></li>
       <li><a href="#benquerencia" class="nav-link">Benquerencia</a></li>
       <li><a href="#actividades" class="nav-link">Actividades</a></li>
       <li><a href="#servicios" class="nav-link">Servicios</a></li>
+      <li><a href="#ubicacion" class="nav-link">Ubicación</a></li>
     </ul>
 
-    <!-- Logo central -->
-    <a href="#inicio" class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
-      <div class="w-14 h-14 rounded-full ring-1 ring-white/40 bg-forestDeep flex items-center justify-center overflow-hidden">
-        <img src="/img/logo-benquerencia-verde.png" alt="Estancia Benquerencia" class="w-12 h-12 object-contain" />
+    <!-- Logo central — SIEMPRE fijo, nunca se mueve -->
+    <a href="#inicio" class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
+      <div class="w-13 h-13 w-[52px] h-[52px] rounded-full ring-1 ring-white/40 bg-forestDeep flex items-center justify-center overflow-hidden">
+        <img src="/img/logo-benquerencia-verde.png" alt="Estancia Benquerencia" class="w-11 h-11 object-contain" />
       </div>
     </a>
 
     <!-- Links derecha (desktop) -->
-    <ul class="hidden lg:flex items-center gap-8 text-[13px] tracking-mid font-light">
-      <li><a href="#senderos" class="nav-link">Senderos</a></li>
-      <li><a href="#ubicacion" class="nav-link">Ubicación</a></li>
-      <li class="pl-6 ml-2 border-l border-white/20">
-        <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener" class="flex items-center gap-2 text-roti">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
-          <span class="font-medium">Instagram</span>
+    <ul class="hidden lg:flex items-center gap-5 text-[12px] tracking-mid font-light">
+      <!-- Instagram -->
+      <li>
+        <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener"
+           class="flex items-center gap-1.5 hover:text-roti transition-colors">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+          <span>Instagram</span>
+        </a>
+      </li>
+      <!-- Facebook -->
+      <li>
+        <a href="https://www.facebook.com/benquerenciafc" target="_blank" rel="noopener"
+           class="flex items-center gap-1.5 hover:text-roti transition-colors">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          <span>Facebook</span>
+        </a>
+      </li>
+      <!-- Supply CTA -->
+      <li class="pl-4 ml-1 border-l border-white/20">
+        <a href="https://supply.benquerencia.com.ar" target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 px-4 py-1.5 text-[11px] uppercase tracking-luxe font-medium rounded-sm border border-roti/60 text-roti hover:bg-roti hover:text-forestDeep transition-all duration-300">
+          Supply
         </a>
       </li>
     </ul>
 
-    <!-- Hamburger (mobile) -->
-    <button class="lg:hidden ml-auto text-white" id="menu-toggle" aria-label="Menú">
+    <!-- Hamburger (mobile) — a la derecha del logo -->
+    <button class="lg:hidden ml-auto text-white z-10" id="menu-toggle" aria-label="Menú">
       <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
       <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.5" d="M6 6l12 12M6 18L18 6"/></svg>
     </button>
   </nav>
 
   <!-- Mobile menu -->
-  <div class="mobile-menu lg:hidden bg-forestDeep/95 backdrop-blur-sm border-t border-white/10" id="mobile-menu">
-    <div class="px-6 py-6 space-y-4 text-[14px] font-light text-white/90">
-      <a href="#inicio" class="block py-1 text-roti">Inicio</a>
-      <a href="#benquerencia" class="block py-1">Benquerencia</a>
-      <a href="#actividades" class="block py-1">Actividades</a>
-      <a href="#servicios" class="block py-1">Servicios</a>
-      <a href="#senderos" class="block py-1">Senderos</a>
-      <a href="#ubicacion" class="block py-1">Ubicación</a>
-      <div class="pt-3 border-t border-white/10">
-        <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" class="text-roti">Instagram</a>
+  <div class="mobile-menu lg:hidden bg-forestDeep/97 backdrop-blur-md border-t border-white/10" id="mobile-menu">
+    <div class="px-6 py-5 space-y-1 text-[14px] font-light text-white/90">
+      <a href="#inicio" class="block py-2 text-roti border-b border-white/5">Inicio</a>
+      <a href="#benquerencia" class="block py-2 border-b border-white/5">Benquerencia</a>
+      <a href="#actividades" class="block py-2 border-b border-white/5">Actividades</a>
+      <a href="#servicios" class="block py-2 border-b border-white/5">Servicios</a>
+      <a href="#ubicacion" class="block py-2 border-b border-white/5">Ubicación</a>
+      <!-- Social + Supply -->
+      <div class="pt-4 flex items-center gap-5 text-white/70">
+        <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-roti transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+          Instagram
+        </a>
+        <a href="https://www.facebook.com/benquerenciafc" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-roti transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          Facebook
+        </a>
+      </div>
+      <div class="pt-3 flex items-center justify-between gap-3">
+        <a href="https://supply.benquerencia.com.ar" target="_blank" rel="noopener"
+           class="flex-1 text-center py-2.5 text-[12px] uppercase tracking-luxe font-medium border border-roti/60 text-roti rounded-sm hover:bg-roti hover:text-forestDeep transition-all duration-300">
+          Supply — Propietario
+        </a>
       </div>
     </div>
   </div>
 </header>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     1) HERO — Video YouTube de fondo
+     1) HERO — Video local de fondo
      ═══════════════════════════════════════════════════════════════ -->
 <section id="inicio" class="relative min-h-screen w-full overflow-hidden bg-forestDeep">
 
-  <!-- Video YouTube -->
+  <!-- Video local -->
   <div class="absolute inset-0 z-0">
-    <iframe
+    <video
       class="yt-cover"
-      src="https://www.youtube.com/embed/PbsmpqcyToI?autoplay=1&mute=1&loop=1&controls=0&showinfo=0&playsinline=1&playlist=PbsmpqcyToI&disablekb=1&modestbranding=1&rel=0&iv_load_policy=3"
-      title="Estancia Benquerencia"
-      frameborder="0"
-      allow="autoplay; encrypted-media"
-      allowfullscreen></iframe>
+      autoplay muted loop playsinline preload="auto"
+      style="object-fit:cover; width:100%; height:100%; position:absolute; top:0; left:0; transform:none; min-width:0; min-height:0;">
+      <source src="/video/benquerencia.mp4" type="video/mp4" />
+    </video>
   </div>
 
   <!-- Overlay oscuro -->
@@ -178,41 +244,34 @@ import '../styles/globals.css';
   <!-- Gradiente top -->
   <div class="absolute inset-x-0 top-0 h-32 z-10 bg-gradient-to-b from-forest/60 to-transparent"></div>
 
-  <!-- Contenido -->
+  <!-- Contenido (aparece a 0:07, desaparece a 2:07) -->
   <div class="relative z-20 min-h-screen flex flex-col items-center justify-center px-6 md:px-8 text-center text-white">
 
-    <div class="anim-fade-in delay-1 uppercase text-[11px] tracking-luxe font-light text-roti">
-      Estancia · San Miguel del Monte · Buenos Aires
+    <div class="hero-content" id="hero-text">
+      <div class="uppercase text-[11px] tracking-luxe font-light text-roti">
+        Estancia · San Miguel del Monte · Buenos Aires
+      </div>
+
+      <div class="mt-7 mb-9 h-px bg-roti anim-rule"></div>
+
+      <h1 class="font-serif font-light text-white leading-[1.05] tracking-wide
+                 text-5xl md:text-7xl lg:text-[7.5rem] max-w-[18ch]">
+        Benquerencia<br/>
+        <span class="italic font-light text-white/95">Farm Club</span>
+      </h1>
+
+      <p class="mt-10 max-w-2xl mx-auto text-[14px] md:text-base font-light leading-relaxed text-white/85">
+        Donde el silencio de la pampa, el peso de doscientos cuarenta años de historia
+        y la rigurosa privacidad de un club de campo se encuentran a 130 km de Buenos Aires.
+      </p>
     </div>
 
-    <div class="mt-7 mb-9 h-px bg-roti anim-rule delay-2"></div>
-
-    <h1 class="font-serif font-light text-white leading-[1.05] tracking-wide
-               text-5xl md:text-7xl lg:text-[7.5rem] anim-fade-up delay-3 max-w-[18ch]">
-      Benquerencia<br/>
-      <span class="italic font-light text-white/95">Farm Club</span>
-    </h1>
-
-    <p class="mt-10 max-w-2xl text-[14px] md:text-base font-light leading-relaxed text-white/85 anim-fade-up delay-4">
-      Donde el silencio de la pampa, el peso de doscientos cuarenta años de historia
-      y la rigurosa privacidad de un club de campo se encuentran a 130 km de Buenos Aires.
-    </p>
-
-    <div class="mt-12 flex flex-col sm:flex-row items-center gap-6 anim-fade-up delay-5">
-      <a href="#benquerencia" class="btn-coriander inline-flex items-center gap-3 px-9 py-4 text-[12px] uppercase font-medium rounded-sm">
-        Explorar la Estancia
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </a>
-      <a href="#actividades" class="text-[12px] uppercase tracking-luxe text-white/80 hover:text-roti transition-colors">
-        Actividades
-      </a>
-    </div>
-
-    <!-- Scroll indicator -->
-    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 anim-fade-in delay-6 flex flex-col items-center gap-3 text-white/60">
-      <span class="text-[10px] tracking-luxe uppercase">Desplazar</span>
-      <div class="w-px h-12 bg-gradient-to-b from-white/60 to-transparent"></div>
-    </div>
+    <!-- Flecha scroll (siempre visible, bien abajo) -->
+    <a href="#benquerencia" class="absolute bottom-6 left-1/2 -translate-x-1/2 scroll-arrow text-white/70 hover:text-white transition-colors">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="8,13 18,24 28,13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
 
   </div>
 </section>
@@ -740,7 +799,60 @@ import '../styles/globals.css';
 </footer>
 
 <script>
-  // Reveal on scroll
+  // ── Referencias DOM ──
+  const siteHeader = document.getElementById('site-header');
+  const ownerBar   = document.getElementById('owner-bar');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuToggle = document.getElementById('menu-toggle');
+  const iconOpen   = document.getElementById('menu-icon-open');
+  const iconClose  = document.getElementById('menu-icon-close');
+
+  // ── Cerrar menú mobile ──
+  function closeMenu() {
+    mobileMenu?.classList.remove('open');
+    iconOpen?.classList.remove('hidden');
+    iconClose?.classList.add('hidden');
+  }
+
+  // ── Header: transparente en hero, con fondo al scrollear ──
+  // Al volver al top también se cierra el menú (evita menú abierto con bg transparente)
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY > 80;
+    siteHeader?.classList.toggle('header-scrolled', scrolled);
+    ownerBar?.classList.toggle('hidden', scrolled);
+    if (!scrolled) closeMenu();
+  }, { passive: true });
+
+  // ── Mobile menu toggle ──
+  menuToggle?.addEventListener('click', () => {
+    const isOpen = mobileMenu?.classList.toggle('open');
+    iconOpen?.classList.toggle('hidden', !!isOpen);
+    iconClose?.classList.toggle('hidden', !isOpen);
+  });
+
+  // Cerrar al hacer clic en un link del menú
+  mobileMenu?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // ── Hero text timing: aparece a 0:09, desaparece a 2:07, loop ──
+  const heroText     = document.getElementById('hero-text');
+  const VID_DURATION = 152; // duración del video en segundos
+  const SHOW_AT      = 9;   // aparece en el segundo 9
+  const HIDE_AT      = 127; // desaparece en 2:07
+
+  const pageLoadTime = Date.now();
+  function tickHeroText() {
+    const elapsed = (Date.now() - pageLoadTime) / 1000;
+    const pos = elapsed % VID_DURATION; // posición en el ciclo
+    const visible = pos >= SHOW_AT && pos < HIDE_AT;
+    heroText?.classList.toggle('show', visible);
+    heroText?.classList.toggle('hide', !visible);
+    requestAnimationFrame(tickHeroText);
+  }
+  tickHeroText();
+
+  // ── Reveal on scroll ──
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -750,27 +862,6 @@ import '../styles/globals.css';
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-  // Mobile menu toggle
-  const menuToggle = document.getElementById('menu-toggle');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const iconOpen = document.getElementById('menu-icon-open');
-  const iconClose = document.getElementById('menu-icon-close');
-
-  menuToggle?.addEventListener('click', () => {
-    const isOpen = mobileMenu?.classList.toggle('open');
-    iconOpen?.classList.toggle('hidden', isOpen);
-    iconClose?.classList.toggle('hidden', !isOpen);
-  });
-
-  // Close on link click
-  mobileMenu?.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      iconOpen?.classList.remove('hidden');
-      iconClose?.classList.add('hidden');
-    });
-  });
 </script>
 
 </body>
