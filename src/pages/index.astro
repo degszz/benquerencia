@@ -7,7 +7,7 @@ import '../styles/globals.css';
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Estancia Benquerencia Farm Club — El club de chacras más grande de Argentina, a 130 km de Buenos Aires" />
+<meta name="description" content="Benquerencia Farm Club — El club de chacras mas grande de Argentina con 2150 Ha totales, a 130 km de Capital Federal" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -47,7 +47,7 @@ import '../styles/globals.css';
   .reveal { opacity: 0; transform: translateY(24px); transition: opacity .9s ease-out, transform .9s cubic-bezier(.2,.7,.2,1); }
   .reveal.visible { opacity: 1; transform: translateY(0); }
 
-  /* YouTube cover */
+  /* Video cover */
   .yt-cover {
     position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
@@ -86,8 +86,9 @@ import '../styles/globals.css';
   }
   .nav-link:hover::after, .nav-link.active::after { width: 24px; }
 
-  /* Service icon */
-  .svc-icon { color: #C7A54E; }
+  /* Service icon hover */
+  .svc-card { transition: transform 400ms ease, box-shadow 400ms ease; }
+  .svc-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px -8px rgba(0,0,0,0.1); }
 
   /* Header scroll state */
   .header-scrolled {
@@ -101,12 +102,8 @@ import '../styles/globals.css';
     opacity: 0;
     transition: opacity 1.2s ease;
   }
-  .hero-content.show {
-    opacity: 1;
-  }
-  .hero-content.hide {
-    opacity: 0;
-  }
+  .hero-content.show { opacity: 1; }
+  .hero-content.hide { opacity: 0; }
 
   /* Scroll arrow bounce */
   @keyframes arrowBounce {
@@ -124,6 +121,12 @@ import '../styles/globals.css';
     opacity: 0;
   }
   .mobile-menu.open { max-height: 500px; opacity: 1; }
+
+  /* Reglamento cards */
+  .reglamento-card {
+    transition: transform 400ms ease;
+  }
+  .reglamento-card:hover { transform: translateY(-2px); }
 </style>
 </head>
 <body class="bg-white text-slate-700 font-sans antialiased">
@@ -133,7 +136,7 @@ import '../styles/globals.css';
      ═══════════════════════════════════════════════════════════════ -->
 <header class="fixed top-0 inset-x-0 z-50 transition-all duration-500" id="site-header">
 
-<nav class="max-w-[1400px] mx-auto px-6 md:px-8 h-[68px] flex items-center justify-between text-white relative">
+  <nav class="max-w-[1400px] mx-auto px-6 md:px-8 h-[68px] flex items-center justify-between text-white relative">
 
     <!-- Links izquierda (desktop) -->
     <ul class="hidden lg:flex items-center gap-7 text-[12px] tracking-mid font-light">
@@ -141,24 +144,25 @@ import '../styles/globals.css';
       <li><a href="#benquerencia" class="nav-link">Benquerencia</a></li>
       <li><a href="#actividades" class="nav-link">Actividades</a></li>
       <li><a href="#servicios" class="nav-link">Servicios</a></li>
-      <li><a href="#ubicacion" class="nav-link">Ubicación</a></li>
+      <li><a href="#senderos" class="nav-link">Senderos</a></li>
     </ul>
 
-    <!-- Logo central — SIEMPRE fijo, nunca se mueve -->
+    <!-- Logo central -->
     <a href="#inicio" class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
-      <div class="w-13 h-13 w-[52px] h-[52px] rounded-full ring-1 ring-white/40 bg-forestDeep flex items-center justify-center overflow-hidden">
+      <div class="w-[52px] h-[52px] rounded-full ring-1 ring-white/40 bg-forestDeep flex items-center justify-center overflow-hidden">
         <img src="/img/logo-benquerencia-verde.png" alt="Estancia Benquerencia" class="w-11 h-11 object-contain" />
       </div>
     </a>
 
     <!-- Links derecha (desktop) -->
     <ul class="hidden lg:flex items-center gap-5 text-[12px] tracking-mid font-light">
+      <li><a href="#ubicacion" class="nav-link">Ubicacion</a></li>
+      <li><a href="#contacto" class="nav-link">Contacto</a></li>
       <!-- Instagram -->
       <li>
         <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener"
            class="flex items-center gap-1.5 hover:text-roti transition-colors">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
-          <span>Instagram</span>
         </a>
       </li>
       <!-- Facebook -->
@@ -166,20 +170,19 @@ import '../styles/globals.css';
         <a href="https://www.facebook.com/benquerenciafc" target="_blank" rel="noopener"
            class="flex items-center gap-1.5 hover:text-roti transition-colors">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-          <span>Facebook</span>
         </a>
       </li>
       <!-- Supply CTA -->
       <li class="pl-4 ml-1 border-l border-white/20">
         <a href="https://www.simplesolutions.com.ar/benque/" target="_blank" rel="noopener"
            class="inline-flex items-center gap-2 px-4 py-1.5 text-[11px] uppercase tracking-luxe font-medium rounded-sm border border-roti/60 text-roti hover:bg-roti hover:text-forestDeep transition-all duration-300">
-          Supply
+          Propietarios
         </a>
       </li>
     </ul>
 
-    <!-- Hamburger (mobile) — a la derecha del logo -->
-    <button class="lg:hidden ml-auto text-white z-10" id="menu-toggle" aria-label="Menú">
+    <!-- Hamburger (mobile) -->
+    <button class="lg:hidden ml-auto text-white z-10" id="menu-toggle" aria-label="Menu">
       <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
       <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.5" d="M6 6l12 12M6 18L18 6"/></svg>
     </button>
@@ -192,7 +195,9 @@ import '../styles/globals.css';
       <a href="#benquerencia" class="block py-2 border-b border-white/5">Benquerencia</a>
       <a href="#actividades" class="block py-2 border-b border-white/5">Actividades</a>
       <a href="#servicios" class="block py-2 border-b border-white/5">Servicios</a>
-      <a href="#ubicacion" class="block py-2 border-b border-white/5">Ubicación</a>
+      <a href="#senderos" class="block py-2 border-b border-white/5">Senderos</a>
+      <a href="#ubicacion" class="block py-2 border-b border-white/5">Ubicacion</a>
+      <a href="#contacto" class="block py-2 border-b border-white/5">Contacto</a>
       <!-- Social + Supply -->
       <div class="pt-4 flex items-center gap-5 text-white/70">
         <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-roti transition-colors">
@@ -207,7 +212,7 @@ import '../styles/globals.css';
       <div class="pt-3 flex items-center justify-between gap-3">
         <a href="https://www.simplesolutions.com.ar/benque/" target="_blank" rel="noopener"
            class="flex-1 text-center py-2.5 text-[12px] uppercase tracking-luxe font-medium border border-roti/60 text-roti rounded-sm hover:bg-roti hover:text-forestDeep transition-all duration-300">
-          Supply — Propietario
+          Propietarios
         </a>
       </div>
     </div>
@@ -235,12 +240,12 @@ import '../styles/globals.css';
   <!-- Gradiente top -->
   <div class="absolute inset-x-0 top-0 h-32 z-10 bg-gradient-to-b from-forest/60 to-transparent"></div>
 
-  <!-- Contenido (aparece a 0:07, desaparece a 2:07) -->
+  <!-- Contenido hero -->
   <div class="relative z-20 min-h-screen flex flex-col items-center justify-center px-6 md:px-8 text-center text-white">
 
     <div class="hero-content" id="hero-text">
       <div class="uppercase text-[11px] tracking-luxe font-light text-roti">
-        Estancia · San Miguel del Monte · Buenos Aires
+        Estancia &middot; San Miguel del Monte &middot; Buenos Aires
       </div>
 
       <div class="mt-7 mb-9 h-px bg-roti anim-rule"></div>
@@ -252,12 +257,13 @@ import '../styles/globals.css';
       </h1>
 
       <p class="mt-10 max-w-2xl mx-auto text-[14px] md:text-base font-light leading-relaxed text-white/85">
-        Donde el silencio de la pampa, el peso de doscientos cuarenta años de historia
-        y la rigurosa privacidad de un club de campo se encuentran a 130 km de Buenos Aires.
+        El club de chacras mas grande de Argentina con 2150 Ha totales,
+        450 Ha de espacios comunes y 25 km de senderos.
+        Un verdadero paraiso a 130 km de Capital Federal.
       </p>
     </div>
 
-    <!-- Flecha scroll (siempre visible, bien abajo) -->
+    <!-- Flecha scroll -->
     <a href="#benquerencia" class="absolute bottom-6 left-1/2 -translate-x-1/2 scroll-arrow text-white/70 hover:text-white transition-colors">
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <polyline points="8,13 18,24 28,13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -268,23 +274,28 @@ import '../styles/globals.css';
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     2) INTRO — Quiénes somos
+     2) BENQUERENCIA — Quienes somos
      ═══════════════════════════════════════════════════════════════ -->
 <section id="benquerencia" class="relative bg-white py-24 md:py-36 overflow-hidden">
   <div class="max-w-3xl mx-auto px-6 md:px-8 text-center reveal">
     <div class="flex justify-center mb-12">
-      <div class="w-24 h-24 rounded-full bg-forest flex items-center justify-center ring-1 ring-roti/40">
-        <img src="/img/logo-benquerencia-verde.png" alt="Logo" class="w-20 h-20 object-contain" />
-      </div>
+      <img src="/img/logo-barrio.png" alt="Benquerencia Farm Club" class="w-28 h-28 object-contain" />
     </div>
 
+    <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl lg:text-6xl tracking-wide mb-10">
+      Benquerencia Farm Club
+    </h2>
+
     <p class="text-[16px] md:text-[19px] font-light leading-[1.85] text-slate-700 max-w-2xl mx-auto">
-      Benquerencia Farm Club es el club de chacras más grande de Argentina con
-      <span class="text-coriander font-medium">2.150 hectáreas totales</span>,
-      450 ha de espacios comunes, 20 ha de parques del Casco Principal diseñados
-      por el legendario paisajista <span class="italic">Carlos Thays</span>,
-      y 25 km de senderos para recorrer a caballo, en bicicleta o a pie.
-      Un verdadero paraíso a 130 km de Capital Federal.
+      Es el club de chacras mas grande de Argentina con
+      <span class="text-coriander font-medium">2150 Ha totales</span>,
+      <span class="text-coriander font-medium">450 Ha</span> de espacios comunes,
+      <span class="text-coriander font-medium">20 Ha</span> de parques del Casco Principal
+      diseñado por el legendario paisajista
+      <span class="italic">Carlos Thays</span> y
+      <span class="text-coriander font-medium">25 km</span> de senderos para recorrer
+      a caballo, en bicicleta o a pie.
+      Un verdadero paraiso a 130 km de Capital Federal.
     </p>
 
     <div class="mt-16 mx-auto w-16 h-px bg-roti"></div>
@@ -292,15 +303,20 @@ import '../styles/globals.css';
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     2b) HISTORIA — Timeline
+     2b) HISTORIA
      ═══════════════════════════════════════════════════════════════ -->
-<section id="historia" class="relative bg-white py-20 md:py-28 overflow-hidden">
+<section id="historia" class="relative bg-cream/40 py-20 md:py-28 overflow-hidden">
   <div class="max-w-[1280px] mx-auto px-6 md:px-8">
 
+    <!-- Header image -->
+    <div class="reveal mb-16 rounded-sm overflow-hidden">
+      <img src="/img/historia/header.jpg" alt="Estancia Benquerencia" class="w-full h-[300px] md:h-[440px] object-cover" />
+    </div>
+
     <div class="text-center mb-16 md:mb-20 reveal">
-      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Arqueología & Historia</p>
+      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Una Estancia con mucha historia</p>
       <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl lg:text-6xl tracking-wide">
-        Doscientos cuarenta años<br class="hidden md:block"/>de tradición pampeana
+        Doscientos cuarenta años<br class="hidden md:block"/>de tradicion pampeana
       </h2>
       <div class="mt-8 mx-auto w-12 h-px bg-roti"></div>
     </div>
@@ -314,41 +330,46 @@ import '../styles/globals.css';
         <div class="reveal grid md:grid-cols-2 gap-8 md:gap-20 items-center">
           <div class="md:text-right md:pr-12">
             <div class="font-serif text-coriander text-6xl md:text-8xl font-light leading-none">1780</div>
-            <div class="mt-2 uppercase text-[11px] tracking-luxe text-slate-500">Orígenes coloniales</div>
+            <div class="mt-2 uppercase text-[11px] tracking-luxe text-slate-500">Origenes coloniales</div>
           </div>
           <div class="md:pl-12 relative">
             <div class="hidden md:block absolute -left-[7px] top-3 w-3 h-3 rounded-full bg-coriander ring-4 ring-white"></div>
             <p class="text-[15px] leading-[1.85] text-slate-600 font-light max-w-md">
-              Los orígenes de la estancia se remontan al periodo colonial, vinculados al
-              partido de <span class="text-slate-800 font-medium">San Miguel del Monte</span>,
-              uno de los enclaves rurales más antiguos de la pampa bonaerense.
+              Ocho familias fundadoras llegaron en carreta en mayo de 1780 a las cercanias
+              del Fortin Guardia del Monte, fundando San Miguel del Monte. Los origenes de
+              la estancia se remontan a este periodo colonial.
             </p>
           </div>
         </div>
 
-        <!-- 1835 -->
+        <!-- Videla -->
         <div class="reveal grid md:grid-cols-2 gap-8 md:gap-20 items-center">
           <div class="md:order-2 md:pl-12">
             <div class="font-serif text-coriander text-6xl md:text-8xl font-light leading-none">1835</div>
-            <div class="mt-2 uppercase text-[11px] tracking-luxe text-slate-500">José Zenón Videla</div>
+            <div class="mt-2 uppercase text-[11px] tracking-luxe text-slate-500">Jose Zenon Videla</div>
           </div>
           <div class="md:order-1 md:text-right md:pr-12 relative">
             <div class="hidden md:block absolute -right-[7px] top-3 w-3 h-3 rounded-full bg-coriander ring-4 ring-white"></div>
             <p class="text-[15px] leading-[1.85] text-slate-600 font-light max-w-md md:ml-auto">
-              Bajo la administración de <span class="text-slate-800 font-medium">José Zenón Videla</span>,
-              la propiedad alcanzó su máxima extensión histórica:
-              <span class="text-coriander font-medium">250.000 hectáreas</span>
-              de pampa virgen.
+              Jose Zenon Videla, descendiente de colonos fronterizos, heredo aproximadamente
+              <span class="text-coriander font-medium">250.000 hectareas</span> que conformaban
+              la Estancia El Rosario. Su oposicion a Juan Manuel de Rosas resulto en la
+              expropiacion de sus tierras en 1835.
             </p>
           </div>
         </div>
 
-        <!-- THAYS -->
+        <!-- Historia image -->
+        <div class="reveal">
+          <img src="/img/historia/historia2.jpg" alt="Historia de Benquerencia" class="w-full h-[260px] md:h-[380px] object-cover rounded-sm" />
+        </div>
+
+        <!-- Thays -->
         <div class="reveal">
           <div class="bg-cream rounded-sm px-6 md:px-20 py-12 md:py-20 relative">
             <div class="grid md:grid-cols-12 gap-8 items-start">
               <div class="md:col-span-4">
-                <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Diseño paisajístico</p>
+                <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Diseño paisajistico</p>
                 <h3 class="font-serif text-4xl md:text-5xl font-light text-slate-800 leading-[1.1]">
                   Charles<br/>Thays
                 </h3>
@@ -357,9 +378,10 @@ import '../styles/globals.css';
               </div>
               <div class="md:col-span-8 md:pl-8 md:border-l md:border-roti/30">
                 <p class="text-[15px] md:text-[16px] leading-[1.9] text-slate-700 font-light">
-                  El paisajista francés Charles Thays — autor del Jardín Botánico de Buenos Aires
-                  y del Parque San Martín de Mendoza — concibió y ejecutó el diseño monumental de
-                  los parques del Casco Principal.
+                  Ramon Videla Dorna fundo la Estancia San Pascual, encargando a Charles Thays
+                  — director de Parques y Paseos Publicos de Buenos Aires — el diseño paisajistico.
+                  Thays, autor del Jardin Botanico de Buenos Aires y del Parque San Martin de Mendoza,
+                  concibio y ejecuto el diseño monumental de los parques del Casco Principal.
                 </p>
                 <div class="mt-8 flex items-center gap-6">
                   <div>
@@ -377,7 +399,7 @@ import '../styles/globals.css';
           </div>
         </div>
 
-        <!-- 1938 -->
+        <!-- 1938 Staudt -->
         <div class="reveal grid md:grid-cols-2 gap-8 md:gap-20 items-center">
           <div class="md:text-right md:pr-12">
             <div class="font-serif text-coriander text-6xl md:text-8xl font-light leading-none">1938</div>
@@ -386,12 +408,18 @@ import '../styles/globals.css';
           <div class="md:pl-12 relative">
             <div class="hidden md:block absolute -left-[7px] top-3 w-3 h-3 rounded-full bg-coriander ring-4 ring-white"></div>
             <p class="text-[15px] leading-[1.85] text-slate-600 font-light max-w-md">
-              Ricardo Staudt acometió la transformación arquitectónica definitiva: la adopción del
-              <span class="text-slate-800 font-medium">estilo colonial inmaculado</span>
-              que define hoy al Casco, y la incorporación de los célebres
-              <span class="text-slate-800 font-medium">azulejos europeos Pas de Calais</span>.
+              Ricardo Staudt adquirio la propiedad, renombrandola Benquerencia.
+              Acomtio la renovacion arquitectonica con especialistas en estilo colonial,
+              incorporo los celebres azulejos europeos y planto 20 km de avenidas con
+              casuarinas, alamos y robles. Establecio la Cabaña Benquerencia para la cria
+              de ganado Hereford, inscripta en la Sociedad Rural Argentina en 1940.
             </p>
           </div>
+        </div>
+
+        <!-- Historia image 2 -->
+        <div class="reveal">
+          <img src="/img/historia/historia3.jpg" alt="Casco de Benquerencia" class="w-full h-[260px] md:h-[400px] object-cover rounded-sm" />
         </div>
 
       </div>
@@ -400,58 +428,63 @@ import '../styles/globals.css';
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     3) ACTIVIDADES — Grid con imágenes reales
+     3) ACTIVIDADES
      ═══════════════════════════════════════════════════════════════ -->
-<section id="actividades" class="relative bg-white py-20 md:py-24">
+<section id="actividades" class="relative bg-white py-20 md:py-28">
   <div class="max-w-[1400px] mx-auto px-6 md:px-8">
 
     <div class="text-center mb-14 reveal">
       <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Actividades</p>
       <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl lg:text-6xl tracking-wide">
-        Infraestructura deportiva
+        Naturaleza, desafios deportivos<br class="hidden md:block"/> y buenos momentos
       </h2>
       <div class="mt-8 mx-auto w-12 h-px bg-roti"></div>
+      <p class="mt-8 max-w-2xl mx-auto text-[15px] font-light leading-relaxed text-slate-600">
+        Benquerencia Farm Club es un lugar ideal para el relax y el descanso,
+        y tambien es un lugar ideal para la practica de actividades deportivas
+        y recreativas en pleno contacto con la naturaleza.
+      </p>
     </div>
 
-    <!-- Grid de actividades con imágenes reales -->
+    <!-- Grid de actividades con imagenes del sitio WP -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 reveal">
 
       <!-- POLO -->
-      <a href="/polo" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm">
-        <img src="/img/polo-home.jpg" alt="Polo" class="activity-img absolute inset-0 w-full h-full object-cover" />
+      <a href="#polo" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm">
+        <img src="/img/actividades/polo.jpg" alt="Polo" class="activity-img absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 group-hover:to-black/70 transition-all duration-500"></div>
         <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
           <div class="w-10 h-px bg-white/80 mb-6"></div>
           <h3 class="font-serif font-light text-2xl md:text-3xl lg:text-4xl tracking-wide">Polo</h3>
-          <span class="mt-3 text-[10px] uppercase tracking-luxe text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">8 canchas reglamentarias</span>
+          <span class="mt-3 text-[10px] uppercase tracking-luxe text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">8 canchas</span>
         </div>
       </a>
 
       <!-- TENIS -->
-      <a href="/tenis" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm">
-        <img src="/img/tenis-new.jpg" alt="Tenis" class="activity-img absolute inset-0 w-full h-full object-cover" />
+      <a href="#tenis" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm">
+        <img src="/img/actividades/tenis.jpg" alt="Tenis" class="activity-img absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 group-hover:to-black/70 transition-all duration-500"></div>
         <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
           <div class="w-10 h-px bg-white/80 mb-6"></div>
           <h3 class="font-serif font-light text-2xl md:text-3xl lg:text-4xl tracking-wide">Tenis</h3>
-          <span class="mt-3 text-[10px] uppercase tracking-luxe text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">2 canchas sintéticas</span>
+          <span class="mt-3 text-[10px] uppercase tracking-luxe text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">2 canchas sinteticas</span>
         </div>
       </a>
 
       <!-- GOLF -->
-      <a href="/golf" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm">
-        <img src="/img/golf-new.jpg" alt="Golf" class="activity-img absolute inset-0 w-full h-full object-cover" />
+      <a href="#golf" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm">
+        <img src="/img/actividades/golf.jpg" alt="Golf" class="activity-img absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 group-hover:to-black/70 transition-all duration-500"></div>
         <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
           <div class="w-10 h-px bg-white/80 mb-6"></div>
           <h3 class="font-serif font-light text-2xl md:text-3xl lg:text-4xl tracking-wide">Golf</h3>
-          <span class="mt-3 text-[10px] uppercase tracking-luxe text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">9 hoyos · Par 74</span>
+          <span class="mt-3 text-[10px] uppercase tracking-luxe text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">9 hoyos &middot; Par 74</span>
         </div>
       </a>
 
       <!-- CABALLOS -->
-      <a href="/equitacion" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm">
-        <img src="/img/caballos-home.jpg" alt="Caballos" class="activity-img absolute inset-0 w-full h-full object-cover" />
+      <a href="#caballos" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm">
+        <img src="/img/actividades/caballos.jpg" alt="Caballos" class="activity-img absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 group-hover:to-black/70 transition-all duration-500"></div>
         <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
           <div class="w-10 h-px bg-white/80 mb-6"></div>
@@ -460,231 +493,447 @@ import '../styles/globals.css';
         </div>
       </a>
 
-      <!-- FÚTBOL -->
-      <a href="#" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm col-span-2 md:col-span-1">
-        <img src="/img/hero-2.jpg" alt="Fútbol" class="activity-img absolute inset-0 w-full h-full object-cover" />
+      <!-- FUTBOL -->
+      <a href="#futbol" class="activity-card group relative aspect-[3/4] md:aspect-[3/5] block rounded-sm col-span-2 md:col-span-1">
+        <img src="/img/actividades/futbol.jpg" alt="Futbol" class="activity-img absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 group-hover:to-black/70 transition-all duration-500"></div>
         <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
           <div class="w-10 h-px bg-white/80 mb-6"></div>
-          <h3 class="font-serif font-light text-2xl md:text-3xl lg:text-4xl tracking-wide">Fútbol</h3>
-          <span class="mt-3 text-[10px] uppercase tracking-luxe text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">Cancha reglamentaria</span>
+          <h3 class="font-serif font-light text-2xl md:text-3xl lg:text-4xl tracking-wide">Futbol</h3>
+          <span class="mt-3 text-[10px] uppercase tracking-luxe text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">Cancha en el casco</span>
         </div>
       </a>
 
     </div>
 
-    <!-- Detalles disciplinas -->
-    <div class="mt-20 grid md:grid-cols-3 gap-10 reveal">
-      <div>
-        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Golf</p>
-        <p class="text-[14px] leading-relaxed text-slate-600 font-light">
-          Diseñado por el <span class="text-slate-800 font-medium">Gary Player Group</span>
-          (Caprile & Capdepont), con 9 hoyos originales expandibles a 18 — Par 74.
-        </p>
-      </div>
-      <div>
-        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Polo</p>
-        <p class="text-[14px] leading-relaxed text-slate-600 font-light">
-          Ocho canchas reglamentarias y un epicentro social que cobra protagonismo
-          durante certámenes como la <span class="italic">Copa de la Revolución de Mayo</span>.
-        </p>
-      </div>
-      <div>
-        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Tenis</p>
-        <p class="text-[14px] leading-relaxed text-slate-600 font-light">
-          Dos canchas sintéticas en el sector del Casco, enmarcadas por barreras
-          arboladas que garantizan privacidad.
-        </p>
-      </div>
-    </div>
+    <!-- Detalles por disciplina -->
+    <div class="mt-20 space-y-16">
 
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     3b) CABALLOS Y SENDEROS — Barra full width
-     ═══════════════════════════════════════════════════════════════ -->
-<section class="relative w-full py-20 md:py-28 text-white overflow-hidden">
-  <div class="absolute inset-0">
-    <img src="/img/caballos-home.jpg" alt="" class="w-full h-full object-cover" />
-    <div class="absolute inset-0 bg-forestDeep/85"></div>
-  </div>
-
-  <div class="relative max-w-[1280px] mx-auto px-6 md:px-8 grid md:grid-cols-12 gap-10 items-center">
-    <div class="md:col-span-5">
-      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Vocación fundacional</p>
-      <h2 class="font-serif font-light text-4xl md:text-5xl lg:text-6xl tracking-wide leading-[1.05]">
-        Caballos<br/>y senderos
-      </h2>
-      <div class="mt-6 w-12 h-px bg-roti"></div>
-    </div>
-    <div class="md:col-span-7 md:pl-10 md:border-l md:border-white/15">
-      <p class="text-[15px] md:text-[16px] leading-[1.9] text-white/85 font-light max-w-xl">
-        Veinticinco kilómetros ininterrumpidos de senderos arbolados configuran un
-        complejo hípico integral que honra la vocación ecuestre fundacional del club.
-        Equitación, paseos guiados, doma y un programa formativo para socios.
-      </p>
-      <div class="mt-10 grid grid-cols-3 gap-6 md:gap-8">
-        <div>
-          <div class="font-serif font-light text-roti text-3xl md:text-4xl">25 km</div>
-          <div class="mt-1 text-[10px] uppercase tracking-luxe text-white/60">Senderos</div>
+      <!-- GOLF detail -->
+      <div id="golf" class="reveal grid md:grid-cols-2 gap-10 items-center">
+        <div class="rounded-sm overflow-hidden">
+          <img src="/img/actividades/golf-full.jpg" alt="Golf en Benquerencia" class="w-full h-[300px] md:h-[400px] object-cover" />
         </div>
         <div>
-          <div class="font-serif font-light text-roti text-3xl md:text-4xl">8</div>
-          <div class="mt-1 text-[10px] uppercase tracking-luxe text-white/60">Canchas polo</div>
+          <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Golf</p>
+          <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+            Naturaleza, desafios y buenos momentos
+          </h3>
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-4">
+            La cancha de golf de Benquerencia combina naturaleza, desafios deportivos y buenos momentos
+            en paisajes abiertos con sus caracteristicos ñandues.
+          </p>
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-6">
+            9 hoyos diseñados por Caprile & Capdepont (Gary Player Group) con 9 opciones de tee
+            alternativas para rondas de 18 hoyos. Par 74 total. Inscripta en la AAG.
+          </p>
+          <div class="flex items-center gap-6">
+            <div>
+              <div class="font-serif text-3xl text-coriander font-light">9</div>
+              <div class="text-[11px] uppercase tracking-mid text-slate-500 mt-1">Hoyos</div>
+            </div>
+            <div class="w-px h-10 bg-roti/30"></div>
+            <div>
+              <div class="font-serif text-3xl text-coriander font-light">Par 74</div>
+              <div class="text-[11px] uppercase tracking-mid text-slate-500 mt-1">Total</div>
+            </div>
+          </div>
         </div>
-        <div>
-          <div class="font-serif font-light text-roti text-3xl md:text-4xl">2.150</div>
-          <div class="mt-1 text-[10px] uppercase tracking-luxe text-white/60">Hectáreas</div>
+      </div>
+
+      <!-- CABALLOS detail -->
+      <div id="caballos" class="reveal grid md:grid-cols-2 gap-10 items-center">
+        <div class="md:order-2 rounded-sm overflow-hidden">
+          <img src="/img/actividades/caballos-full.jpg" alt="Caballos en Benquerencia" class="w-full h-[300px] md:h-[400px] object-cover" />
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     4) SERVICIOS — Grid iconos
-     ═══════════════════════════════════════════════════════════════ -->
-<section id="servicios" class="relative bg-white py-24 md:py-32">
-  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
-
-    <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl lg:text-6xl tracking-wide reveal">
-      Servicios
-    </h2>
-    <div class="mt-6 w-12 h-px bg-roti reveal"></div>
-
-    <div class="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-3 gap-y-14 md:gap-y-20 gap-x-8 md:gap-x-12 reveal">
-
-      <div class="group flex flex-col items-center text-center px-4">
-        <svg class="svc-icon mb-6 md:mb-8 transition-transform duration-500 group-hover:-translate-y-1" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 40 Q32 18 56 40"/><path d="M4 44 H60"/><circle cx="32" cy="22" r="2"/><path d="M32 18 V14"/>
-        </svg>
-        <h3 class="text-[15px] md:text-[17px] font-light tracking-wide text-slate-700">Gastronomía</h3>
-      </div>
-
-      <div class="group flex flex-col items-center text-center px-4">
-        <svg class="svc-icon mb-6 md:mb-8 transition-transform duration-500 group-hover:-translate-y-1" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 44 V52 M56 44 V52"/><path d="M8 44 H56 V36 Q56 30 50 30 H14 Q8 30 8 36 Z"/><path d="M14 30 V20 H50 V30"/>
-        </svg>
-        <h3 class="text-[15px] md:text-[17px] font-light tracking-wide text-slate-700">Alojamiento</h3>
-      </div>
-
-      <div class="group flex flex-col items-center text-center px-4">
-        <svg class="svc-icon mb-6 md:mb-8 transition-transform duration-500 group-hover:-translate-y-1" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10 48 Q32 38 54 48"/><ellipse cx="32" cy="36" rx="9" ry="4"/><ellipse cx="32" cy="28" rx="7" ry="3"/><ellipse cx="32" cy="22" rx="5" ry="2.5"/>
-        </svg>
-        <h3 class="text-[15px] md:text-[17px] font-light tracking-wide text-slate-700">Spa</h3>
-      </div>
-
-      <div class="group flex flex-col items-center text-center px-4">
-        <svg class="svc-icon mb-6 md:mb-8 transition-transform duration-500 group-hover:-translate-y-1" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M32 8 V18"/><path d="M28 12 H36"/><path d="M14 52 V30 L32 18 L50 30 V52 Z"/><path d="M26 52 V40 H38 V52"/>
-        </svg>
-        <h3 class="text-[15px] md:text-[17px] font-light tracking-wide text-slate-700">Capilla</h3>
-      </div>
-
-      <div class="group flex flex-col items-center text-center px-4">
-        <svg class="svc-icon mb-6 md:mb-8 transition-transform duration-500 group-hover:-translate-y-1" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 54 L28 22 L48 42 Z"/><circle cx="40" cy="14" r="1.5"/><circle cx="50" cy="20" r="1.5"/><path d="M34 12 L36 8 M44 8 L42 12"/>
-        </svg>
-        <h3 class="text-[15px] md:text-[17px] font-light tracking-wide text-slate-700">Eventos</h3>
-      </div>
-
-      <div class="group flex flex-col items-center text-center px-4">
-        <svg class="svc-icon mb-6 md:mb-8 transition-transform duration-500 group-hover:-translate-y-1" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 14 L32 10 L50 14"/><path d="M14 14 V50"/><path d="M50 14 V50"/><path d="M28 28 V46 Q28 50 32 50 Q36 50 36 46 V28"/><path d="M22 28 H42"/>
-        </svg>
-        <h3 class="text-[15px] md:text-[17px] font-light tracking-wide text-slate-700">Plaza de Juegos</h3>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     5) SENDEROS — Layout asimétrico
-     ═══════════════════════════════════════════════════════════════ -->
-<section id="senderos" class="relative bg-white py-16 md:py-20">
-  <div class="max-w-[1400px] mx-auto px-6 md:px-8">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
-
-      <!-- Texto izquierdo -->
-      <div class="md:col-span-4 relative rounded-sm overflow-hidden min-h-[320px] md:min-h-[480px] flex items-center reveal">
-        <img src="/img/hero-3.jpg" alt="Senderos" class="absolute inset-0 w-full h-full object-cover" />
-        <div class="absolute inset-0 bg-forestDeep/70"></div>
-        <div class="relative px-8 md:px-12 py-10 md:py-14 text-white">
-          <h2 class="font-serif font-light text-3xl md:text-4xl lg:text-5xl leading-[1.1] tracking-wide">
-            Recorrí nuestros<br/>senderos
-          </h2>
-          <div class="mt-6 w-10 h-px bg-roti"></div>
-          <p class="mt-6 md:mt-8 text-[14px] font-light leading-relaxed text-white/85 max-w-sm">
-            Seleccioná el sendero que te gustaría recorrer en función del tiempo,
-            la distancia y la forma en que quieras hacerlo.
+        <div class="md:order-1">
+          <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Caballos</p>
+          <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+            Un tema central en Benquerencia
+          </h3>
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-4">
+            El caballo es un tema central en el diseño de Benquerencia Farm Club.
+            Las cabalgatas van desde salidas breves hasta tardes completas por los
+            25 km de senderos arbolados de uso exclusivo ecuestre.
+          </p>
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light">
+            Cuenta con dos pistas de equitacion totalmente alambradas, boxes, corrales,
+            paddocks, palenques y servicio de ensillada por personal especializado.
           </p>
         </div>
       </div>
 
-      <!-- Grid 2x2 -->
-      <div class="md:col-span-8 grid grid-cols-2 gap-3">
-        <a href="#" class="activity-card relative aspect-[4/3] block rounded-sm reveal">
-          <img src="/img/hero-2.jpg" alt="Corriendo" class="activity-img absolute inset-0 w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="absolute bottom-5 left-5 text-white">
-            <h3 class="font-serif text-2xl md:text-3xl font-light">Corriendo</h3>
-          </div>
-        </a>
-        <a href="#" class="activity-card relative aspect-[4/3] block rounded-sm reveal">
-          <img src="/img/caballos-home.jpg" alt="A caballo" class="activity-img absolute inset-0 w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="absolute bottom-5 left-5 text-white">
-            <h3 class="font-serif text-2xl md:text-3xl font-light">A caballo</h3>
-          </div>
-        </a>
-        <a href="#" class="activity-card relative aspect-[4/3] block rounded-sm reveal">
-          <img src="/img/hero-1.jpg" alt="En Bici" class="activity-img absolute inset-0 w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="absolute bottom-5 left-5 text-white">
-            <h3 class="font-serif text-2xl md:text-3xl font-light">En Bici</h3>
-          </div>
-        </a>
-        <a href="#" class="activity-card relative aspect-[4/3] block rounded-sm reveal">
-          <img src="/img/golf-home-1.jpg" alt="Caminando" class="activity-img absolute inset-0 w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          <div class="absolute bottom-5 left-5 text-white">
-            <h3 class="font-serif text-2xl md:text-3xl font-light">Caminando</h3>
-          </div>
-        </a>
+      <!-- POLO detail -->
+      <div id="polo" class="reveal grid md:grid-cols-2 gap-10 items-center">
+        <div class="rounded-sm overflow-hidden">
+          <img src="/img/actividades/polo-full.jpg" alt="Polo en Benquerencia" class="w-full h-[300px] md:h-[400px] object-cover" />
+        </div>
+        <div>
+          <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Polo</p>
+          <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+            Una de las perlas de Benquerencia
+          </h3>
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-4">
+            Diseñado originalmente con 8 canchas (actualmente 2 en uso intensivo),
+            el polo es un punto de encuentro para jugadores, acompañantes y espectadores.
+            Cuenta con tablas, ramas de sauce, marcadores, paddocks con sombra,
+            lavadero de caballos, quincho con parrilla y baños.
+          </p>
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-6">
+            Torneos tradicionales: Copa de la Revolucion de Mayo (mayo) y Copa Tres Cardos (diciembre).
+          </p>
+        </div>
       </div>
+
+      <!-- TENIS detail -->
+      <div id="tenis" class="reveal grid md:grid-cols-2 gap-10 items-center">
+        <div class="md:order-2 rounded-sm overflow-hidden">
+          <img src="/img/actividades/tenis-full.jpg" alt="Tenis en Benquerencia" class="w-full h-[300px] md:h-[400px] object-cover" />
+        </div>
+        <div class="md:order-1">
+          <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Tenis</p>
+          <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+            Una experiencia unica
+          </h3>
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light">
+            2 canchas de superficie sintetica en el casco, rodeadas de cercos de ligustro
+            y arboles que brindan privacidad y proteccion contra el viento.
+            Su proximidad a La Matera permite disfrutar de un refrigerio post-partido.
+          </p>
+        </div>
+      </div>
+
+      <!-- FUTBOL detail -->
+      <div id="futbol" class="reveal grid md:grid-cols-2 gap-10 items-center">
+        <div class="rounded-sm overflow-hidden">
+          <img src="/img/actividades/futbol-full.jpg" alt="Futbol en Benquerencia" class="w-full h-[300px] md:h-[400px] object-cover" />
+        </div>
+        <div>
+          <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Futbol</p>
+          <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+            Una experiencia distintiva
+          </h3>
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light">
+            Ubicada en el casco, la cancha de futbol ofrece una experiencia de juego claramente
+            distintiva, inserta en un paisaje natural y distendido. Equipos de 8-9 jugadores
+            por lado. Cerca de La Matera para compartir despues del partido.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     4) SERVICIOS — Grid con iconos del sitio WP
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="servicios" class="relative bg-cream/30 py-24 md:py-32">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+
+    <div class="text-center mb-16 reveal">
+      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Servicios</p>
+      <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl lg:text-6xl tracking-wide">
+        Servicios
+      </h2>
+      <div class="mt-6 w-12 h-px bg-roti mx-auto"></div>
+      <p class="mt-8 max-w-2xl mx-auto text-[15px] font-light leading-relaxed text-slate-600">
+        Las instalaciones originales de Benquerencia fueron especialmente restauradas
+        y acondicionadas para brindar servicio de alojamiento y gastronomia
+        tanto a propietarios como a invitados.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 reveal">
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/gastronomia.png" alt="Gastronomia" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Gastronomia</h3>
+      </div>
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/capilla.png" alt="Capilla" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Capilla</h3>
+      </div>
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/spa.png" alt="Spa" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Spa</h3>
+      </div>
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/alojamiento.png" alt="Alojamiento" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Alojamiento</h3>
+      </div>
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/eventos.png" alt="Eventos" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Eventos</h3>
+      </div>
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/plaza.png" alt="Plaza de Juegos" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Plaza de Juegos</h3>
+      </div>
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/proveedores.png" alt="Proveedores" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Proveedores</h3>
+      </div>
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/delivery.png" alt="Delivery" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Delivery</h3>
+      </div>
+
+      <div class="svc-card flex flex-col items-center text-center p-6 rounded-sm bg-white">
+        <img src="/img/icons/inmobiliarias.png" alt="Inmobiliarias" class="w-14 h-14 object-contain mb-5" />
+        <h3 class="text-[14px] md:text-[16px] font-light tracking-wide text-slate-700">Inmobiliarias</h3>
+      </div>
+
+    </div>
+
+    <!-- Service detail: Gastronomia -->
+    <div class="mt-20 grid md:grid-cols-2 gap-10 items-center reveal">
+      <div class="rounded-sm overflow-hidden">
+        <img src="/img/servicios/gastronomia1.jpg" alt="La Matera - Gastronomia" class="w-full h-[300px] md:h-[380px] object-cover" />
+      </div>
+      <div>
+        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Gastronomia</p>
+        <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+          La Matera
+        </h3>
+        <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-4">
+          Historicamente lugar de reunion para los peones del campo, con su gran fogon,
+          hoy La Matera ofrece carnes a la parrilla, pastas y platos caseros tradicionales.
+          Los fines de semana, asados bajo los arboles.
+        </p>
+        <h4 class="font-serif font-light text-slate-800 text-xl mt-6 mb-3">La Casa Principal</h4>
+        <p class="text-[15px] leading-[1.85] text-slate-600 font-light">
+          Para eventos especiales, cenas y almuerzos. Cuenta con el winter garden original
+          y el salon principal con vistas al parque de arboles y bosque.
+        </p>
+      </div>
+    </div>
+
+    <!-- Service detail: Alojamiento -->
+    <div class="mt-16 grid md:grid-cols-2 gap-10 items-center reveal">
+      <div class="md:order-2 rounded-sm overflow-hidden">
+        <img src="/img/servicios/alojamiento.jpg" alt="Alojamiento" class="w-full h-[300px] md:h-[380px] object-cover" />
+      </div>
+      <div class="md:order-1">
+        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Alojamiento</p>
+        <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+          Descanso en el casco historico
+        </h3>
+        <div class="space-y-4 text-[15px] leading-[1.85] text-slate-600 font-light">
+          <p><span class="text-slate-800 font-medium">Casa Principal:</span> 3 habitaciones con baño privado, calefaccion, wifi. Espacios de esparcimiento, juegos y pileta.</p>
+          <p><span class="text-slate-800 font-medium">Posada:</span> 5 habitaciones con baño privado y living comun con TV.</p>
+          <p><span class="text-slate-800 font-medium">Matera:</span> 3 habitaciones en planta baja + 2 departamentos en planta alta, estilo rustico, cerca de canchas de tenis y caballerizas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Service detail: Spa -->
+    <div class="mt-16 grid md:grid-cols-2 gap-10 items-center reveal">
+      <div class="rounded-sm overflow-hidden">
+        <img src="/img/servicios/spa1.png" alt="Spa" class="w-full h-[300px] md:h-[380px] object-cover" />
+      </div>
+      <div>
+        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Spa</p>
+        <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+          Casa de la Torre
+        </h3>
+        <p class="text-[15px] leading-[1.85] text-slate-600 font-light">
+          El Spa funciona en la Casa de la Torre, un edificio de servicio historico restaurado.
+          Ofrece masajes, manicuria y estetica general en la comodidad del casco de Benquerencia,
+          con turnos flexibles para sesiones individuales segun disponibilidad.
+        </p>
+      </div>
+    </div>
+
+    <!-- Service detail: Capilla -->
+    <div class="mt-16 grid md:grid-cols-2 gap-10 items-center reveal">
+      <div class="md:order-2 rounded-sm overflow-hidden">
+        <img src="/img/servicios/capilla.png" alt="Capilla" class="w-full h-[300px] md:h-[380px] object-cover" />
+      </div>
+      <div class="md:order-1">
+        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Capilla</p>
+        <h3 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">
+          La Capilla
+        </h3>
+        <p class="text-[15px] leading-[1.85] text-slate-600 font-light">
+          Antiguamente un edificio utilizado como padrillera, hoy La Capilla de Benquerencia
+          es un edificio sencillo pero calido que sirve como punto de reunion para la activa
+          comunidad catolica del barrio.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     5) SENDEROS
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="senderos" class="relative bg-white py-20 md:py-28">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8">
+
+    <div class="text-center mb-14 reveal">
+      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Senderos</p>
+      <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl lg:text-6xl tracking-wide">
+        Recorre nuestros senderos
+      </h2>
+      <div class="mt-6 w-12 h-px bg-roti mx-auto"></div>
+      <p class="mt-8 max-w-2xl mx-auto text-[15px] font-light leading-relaxed text-slate-600">
+        Benquerencia Farm Club cuenta con 25 km de senderos para recorridos a pie,
+        a caballo o en bicicleta. La vegetacion es variada — algunos senderos tienen
+        sombra todo el año gracias a perennes, mientras que otros permiten el sol invernal
+        con arboles caducos.
+      </p>
+    </div>
+
+    <!-- Trail types grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 reveal">
+      <div class="activity-card relative aspect-[4/3] block rounded-sm overflow-hidden group cursor-pointer">
+        <img src="/img/actividades/caballos.jpg" alt="A caballo" class="activity-img absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="absolute bottom-5 left-5 text-white">
+          <h3 class="font-serif text-2xl md:text-3xl font-light">A caballo</h3>
+        </div>
+      </div>
+      <div class="activity-card relative aspect-[4/3] block rounded-sm overflow-hidden group cursor-pointer">
+        <img src="/img/actividades/golf.jpg" alt="Corriendo" class="activity-img absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="absolute bottom-5 left-5 text-white">
+          <h3 class="font-serif text-2xl md:text-3xl font-light">Corriendo</h3>
+        </div>
+      </div>
+      <div class="activity-card relative aspect-[4/3] block rounded-sm overflow-hidden group cursor-pointer">
+        <img src="/img/actividades/tenis.jpg" alt="En Bici" class="activity-img absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="absolute bottom-5 left-5 text-white">
+          <h3 class="font-serif text-2xl md:text-3xl font-light">En Bici</h3>
+        </div>
+      </div>
+      <div class="activity-card relative aspect-[4/3] block rounded-sm overflow-hidden group cursor-pointer">
+        <img src="/img/actividades/polo.jpg" alt="Caminando" class="activity-img absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="absolute bottom-5 left-5 text-white">
+          <h3 class="font-serif text-2xl md:text-3xl font-light">Caminando</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trail maps -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 reveal">
+      <div class="bg-cream/50 rounded-sm p-6">
+        <img src="/img/senderos/recorrido-corto.jpg" alt="Recorrido Corto" class="w-full rounded-sm mb-4" />
+        <h3 class="font-serif text-xl text-slate-800 font-light">Recorrido Corto</h3>
+        <p class="text-[14px] text-coriander font-medium mt-1">4.09 km</p>
+      </div>
+      <div class="bg-cream/50 rounded-sm p-6">
+        <img src="/img/senderos/recorrido-intermedio.jpg" alt="Recorrido Intermedio" class="w-full rounded-sm mb-4" />
+        <h3 class="font-serif text-xl text-slate-800 font-light">Recorrido Intermedio</h3>
+        <p class="text-[14px] text-coriander font-medium mt-1">7.91 km</p>
+      </div>
+      <div class="bg-cream/50 rounded-sm p-6">
+        <img src="/img/senderos/recorrido-largo.jpg" alt="Recorrido Largo Combinado" class="w-full rounded-sm mb-4" />
+        <h3 class="font-serif text-xl text-slate-800 font-light">Recorrido Largo Combinado</h3>
+        <p class="text-[14px] text-coriander font-medium mt-1">13.14 km</p>
+      </div>
+      <div class="bg-cream/50 rounded-sm p-6">
+        <img src="/img/senderos/recorrido-alternativo.jpg" alt="Recorrido Alternativo" class="w-full rounded-sm mb-4" />
+        <h3 class="font-serif text-xl text-slate-800 font-light">Recorrido Alternativo</h3>
+        <p class="text-[14px] text-coriander font-medium mt-1">6.26 km</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     6) REGLAMENTO DE CONVIVENCIA
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="relative bg-forestDeep py-20 md:py-28 text-white">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+
+    <div class="text-center mb-14 reveal">
+      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Convivencia</p>
+      <h2 class="font-serif font-light text-white text-4xl md:text-5xl lg:text-6xl tracking-wide">
+        Reglamento de Convivencia
+      </h2>
+      <div class="mt-6 w-12 h-px bg-roti mx-auto"></div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 reveal">
+
+      <div class="reglamento-card flex flex-col items-center text-center p-6 rounded-sm bg-white/5 border border-white/10">
+        <img src="/img/reglamento/40kmh.png" alt="40 km/h" class="w-16 h-16 object-contain mb-5" />
+        <p class="text-[14px] font-light text-white/85 leading-relaxed">
+          Velocidad maxima en caminos <span class="text-roti font-medium">40 km/hora</span>
+        </p>
+      </div>
+
+      <div class="reglamento-card flex flex-col items-center text-center p-6 rounded-sm bg-white/5 border border-white/10">
+        <img src="/img/reglamento/10kmh.png" alt="10 km/h" class="w-16 h-16 object-contain mb-5" />
+        <p class="text-[14px] font-light text-white/85 leading-relaxed">
+          Velocidad en espacios comunes <span class="text-roti font-medium">10 km/hora</span>
+        </p>
+      </div>
+
+      <div class="reglamento-card flex flex-col items-center text-center p-6 rounded-sm bg-white/5 border border-white/10">
+        <img src="/img/reglamento/traccion.png" alt="Traccion a sangre" class="w-16 h-16 object-contain mb-5" />
+        <p class="text-[14px] font-light text-white/85 leading-relaxed">
+          Circulacion exclusiva <span class="text-roti font-medium">traccion a sangre</span> en senderos
+        </p>
+      </div>
+
+      <div class="reglamento-card flex flex-col items-center text-center p-6 rounded-sm bg-white/5 border border-white/10">
+        <img src="/img/reglamento/mascotas.png" alt="Mascotas" class="w-16 h-16 object-contain mb-5" />
+        <p class="text-[14px] font-light text-white/85 leading-relaxed">
+          Mascotas en areas comunes siempre con <span class="text-roti font-medium">correa y chapa</span> identificatoria
+        </p>
+      </div>
+
     </div>
   </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     6) UBICACIÓN + CÓMO LLEGAR
+     7) UBICACION + COMO LLEGAR
      ═══════════════════════════════════════════════════════════════ -->
-<section id="ubicacion" class="relative bg-white py-20 md:py-24 overflow-hidden">
+<section id="ubicacion" class="relative bg-white py-20 md:py-28 overflow-hidden">
   <div class="max-w-[1400px] mx-auto px-6 md:px-8">
 
+    <div class="text-center mb-14 reveal">
+      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Ubicacion</p>
+      <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl lg:text-6xl tracking-wide">
+        Como llegar
+      </h2>
+      <div class="mt-6 w-12 h-px bg-roti mx-auto"></div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center mb-16 reveal">
-      <!-- Imagen del Street View -->
+      <!-- Mapa imagen -->
       <div class="md:col-span-5">
-        <div class="relative aspect-[4/3] rounded-sm overflow-hidden border border-slate-200">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!4v1!6m8!1m7!1sstZAH2nLN35U3cpjZ1eYtQ!2m2!1d-35.5736982!2d-58.6401297!3f64.39!4f-0.5!5f1.5"
-            class="w-full h-full border-0"
-            allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div class="relative rounded-sm overflow-hidden">
+          <img src="/img/ubicacion/mapa.jpg" alt="Ubicacion de Benquerencia" class="w-full object-cover" />
         </div>
       </div>
 
       <!-- Texto -->
       <div class="md:col-span-4">
-        <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl tracking-wide">Ubicación</h2>
-        <div class="mt-6 w-12 h-px bg-roti"></div>
-        <p class="mt-6 text-[14px] leading-[1.85] text-slate-600 font-light">
+        <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-4">
           Desde Capital Federal, salir por <span class="text-slate-800 font-medium">AU 25 de Mayo</span>
-          y continuar por Autopista Dellepiane / Ricchieri en dirección al aeropuerto de Ezeiza.
+          y continuar por Autopista Dellepiane / Ricchieri en direccion al aeropuerto de Ezeiza.
         </p>
-        <p class="mt-4 text-[14px] leading-[1.85] text-slate-600 font-light">
+        <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-4">
+          Desde zona Norte, tomar Av. General Paz direccion Riachuelo, salir en Autopista Ricchieri,
+          direccion al aeropuerto de Ezeiza.
+        </p>
+        <p class="text-[15px] leading-[1.85] text-slate-600 font-light">
           Continuar por <span class="text-slate-800 font-medium">Ruta 3</span> hacia Cañuelas,
           luego tomar <span class="text-slate-800 font-medium">Ruta 41</span> hasta San Miguel del Monte.
         </p>
@@ -699,25 +948,25 @@ import '../styles/globals.css';
           </div>
           <div class="space-y-3 text-[13px] font-light">
             <div>
-              <div class="text-white/50 text-[11px] uppercase tracking-luxe mb-1">Dirección</div>
-              <div>Ruta 41 km, B7220</div>
-              <div class="text-white/70">San Miguel del Monte</div>
+              <div class="text-white/50 text-[11px] uppercase tracking-luxe mb-1">Direccion postal</div>
+              <div>Ruta 41 - Km 26 S/N</div>
+              <div class="text-white/70">San Miguel del Monte (7220)</div>
+            </div>
+            <div>
+              <div class="text-white/50 text-[11px] uppercase tracking-luxe mb-1">Coordenadas GPS</div>
+              <div class="text-white/70 text-[12px]">-35.571710, -58.640587</div>
             </div>
             <div>
               <div class="text-white/50 text-[11px] uppercase tracking-luxe mb-1">Distancia</div>
               <div class="font-serif text-2xl text-roti font-light">130 <span class="text-base">km</span></div>
               <div class="text-white/70">desde Capital Federal</div>
             </div>
-            <div class="flex items-center gap-1 text-[12px]">
-              <span class="text-roti">★</span> 4,8
-              <span class="text-white/50">(207 reseñas)</span>
-            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Mapa satelital grande -->
+    <!-- Google Maps embed -->
     <div class="reveal">
       <div class="relative rounded-sm overflow-hidden border border-slate-200">
         <iframe
@@ -727,6 +976,58 @@ import '../styles/globals.css';
       </div>
     </div>
 
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     8) CONTACTO
+     ═══════════════════════════════════════════════════════════════ -->
+<section id="contacto" class="relative bg-cream/30 py-20 md:py-28">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+
+    <div class="text-center mb-14 reveal">
+      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Contacto</p>
+      <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl lg:text-6xl tracking-wide">
+        Pongase en contacto con nosotros
+      </h2>
+      <div class="mt-6 w-12 h-px bg-roti mx-auto"></div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 reveal">
+
+      <div class="bg-white rounded-sm p-6 text-center svc-card">
+        <img src="/img/contacto/admin.png" alt="Administracion" class="w-14 h-14 object-contain mx-auto mb-5" />
+        <h3 class="text-[15px] font-medium text-slate-800 mb-2">Administracion Comba</h3>
+        <a href="mailto:benquerenciafarmclub@administracioncomba.com.ar" class="text-[13px] text-coriander hover:underline break-all">
+          benquerenciafarmclub@administracioncomba.com.ar
+        </a>
+      </div>
+
+      <div class="bg-white rounded-sm p-6 text-center svc-card">
+        <img src="/img/contacto/propietarios.png" alt="Atencion a Propietarios" class="w-14 h-14 object-contain mx-auto mb-5" />
+        <h3 class="text-[15px] font-medium text-slate-800 mb-2">Atencion a Propietarios</h3>
+        <a href="mailto:diego.natale@benquerencia.com.ar" class="text-[13px] text-coriander hover:underline break-all">
+          diego.natale@benquerencia.com.ar
+        </a>
+      </div>
+
+      <div class="bg-white rounded-sm p-6 text-center svc-card">
+        <img src="/img/contacto/porteria.png" alt="Porteria" class="w-14 h-14 object-contain mx-auto mb-5" />
+        <h3 class="text-[15px] font-medium text-slate-800 mb-2">Porteria</h3>
+        <a href="mailto:porteria@benquerencia.com.ar" class="text-[13px] text-coriander hover:underline break-all">
+          porteria@benquerencia.com.ar
+        </a>
+      </div>
+
+      <div class="bg-white rounded-sm p-6 text-center svc-card">
+        <img src="/img/contacto/gerencia.png" alt="Gerencia" class="w-14 h-14 object-contain mx-auto mb-5" />
+        <h3 class="text-[15px] font-medium text-slate-800 mb-2">Gerencia</h3>
+        <a href="mailto:juan.becerra@benquerencia.com.ar" class="text-[13px] text-coriander hover:underline break-all">
+          juan.becerra@benquerencia.com.ar
+        </a>
+      </div>
+
+    </div>
   </div>
 </section>
 
@@ -744,30 +1045,32 @@ import '../styles/globals.css';
         </div>
       </div>
       <p class="mt-6 text-[13px] leading-relaxed text-white/65 font-light max-w-sm">
-        Ruta 41 km, B7220 — San Miguel del Monte, Provincia de Buenos Aires.
-        A 130 km de Capital Federal.
+        Ruta 41 - Km 26 S/N — San Miguel del Monte (7220),
+        Provincia de Buenos Aires. A 130 km de Capital Federal.
       </p>
     </div>
 
     <div class="md:col-span-2">
-      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Navegación</div>
+      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Navegacion</div>
       <ul class="space-y-2 text-[13px] font-light">
         <li><a href="#inicio" class="hover:text-roti transition-colors">Inicio</a></li>
+        <li><a href="#benquerencia" class="hover:text-roti transition-colors">Benquerencia</a></li>
         <li><a href="#actividades" class="hover:text-roti transition-colors">Actividades</a></li>
         <li><a href="#servicios" class="hover:text-roti transition-colors">Servicios</a></li>
         <li><a href="#senderos" class="hover:text-roti transition-colors">Senderos</a></li>
       </ul>
     </div>
     <div class="md:col-span-2">
-      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Información</div>
+      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Informacion</div>
       <ul class="space-y-2 text-[13px] font-light">
-        <li><a href="#ubicacion" class="hover:text-roti transition-colors">Ubicación</a></li>
-        <li><a href="#benquerencia" class="hover:text-roti transition-colors">Historia</a></li>
-        <li><a href="https://benquerencia.com.ar" target="_blank" class="hover:text-roti transition-colors">Web oficial</a></li>
+        <li><a href="#ubicacion" class="hover:text-roti transition-colors">Ubicacion</a></li>
+        <li><a href="#historia" class="hover:text-roti transition-colors">Historia</a></li>
+        <li><a href="#contacto" class="hover:text-roti transition-colors">Contacto</a></li>
+        <li><a href="https://www.simplesolutions.com.ar/benque/" target="_blank" class="hover:text-roti transition-colors">Propietarios</a></li>
       </ul>
     </div>
     <div class="md:col-span-4">
-      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Contacto</div>
+      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Redes Sociales</div>
       <ul class="space-y-2 text-[13px] font-light">
         <li>
           <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-roti transition-colors">
@@ -776,14 +1079,23 @@ import '../styles/globals.css';
           </a>
         </li>
         <li>
-          <a href="https://benquerencia.com.ar" target="_blank" class="hover:text-roti transition-colors">benquerencia.com.ar</a>
+          <a href="https://www.instagram.com/Benquerencia_propietarios/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-roti transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+            @benquerencia_propietarios
+          </a>
+        </li>
+        <li>
+          <a href="https://www.facebook.com/benquerenciafc" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-roti transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            Facebook
+          </a>
         </li>
       </ul>
     </div>
   </div>
   <div class="border-t border-white/10">
     <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-white/50">
-      <div>© 2026 Benquerencia Farm Club. Todos los derechos reservados.</div>
+      <div>&copy; 2026 Benquerencia Farm Club. Todos los derechos reservados.</div>
       <div class="uppercase tracking-luxe">Desde 1780</div>
     </div>
   </div>
@@ -792,13 +1104,12 @@ import '../styles/globals.css';
 <script>
   // ── Referencias DOM ──
   const siteHeader = document.getElementById('site-header');
-  const ownerBar   = document.getElementById('owner-bar');
   const mobileMenu = document.getElementById('mobile-menu');
   const menuToggle = document.getElementById('menu-toggle');
   const iconOpen   = document.getElementById('menu-icon-open');
   const iconClose  = document.getElementById('menu-icon-close');
 
-  // ── Cerrar menú mobile ──
+  // ── Cerrar menu mobile ──
   function closeMenu() {
     mobileMenu?.classList.remove('open');
     iconOpen?.classList.remove('hidden');
@@ -806,11 +1117,9 @@ import '../styles/globals.css';
   }
 
   // ── Header: transparente en hero, con fondo al scrollear ──
-  // Al volver al top también se cierra el menú (evita menú abierto con bg transparente)
   window.addEventListener('scroll', () => {
     const scrolled = window.scrollY > 80;
     siteHeader?.classList.toggle('header-scrolled', scrolled);
-    ownerBar?.classList.toggle('hidden', scrolled);
     if (!scrolled) closeMenu();
   }, { passive: true });
 
@@ -821,7 +1130,7 @@ import '../styles/globals.css';
     iconClose?.classList.toggle('hidden', !isOpen);
   });
 
-  // Cerrar al hacer clic en un link del menú
+  // Cerrar al hacer clic en un link del menu
   mobileMenu?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', closeMenu);
   });
