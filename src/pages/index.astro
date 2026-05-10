@@ -133,11 +133,11 @@ import '../styles/globals.css';
      ═══════════════════════════════════════════════════════════════ -->
 <header class="fixed top-0 inset-x-0 z-50 transition-all duration-500" id="site-header">
 
-  <nav class="max-w-[1400px] mx-auto px-6 md:px-8 h-[68px] flex items-center justify-between text-white relative">
+<nav class="max-w-[1400px] mx-auto px-6 md:px-8 h-[68px] flex items-center justify-between text-white relative">
 
     <!-- Links izquierda (desktop) -->
     <ul class="hidden lg:flex items-center gap-7 text-[12px] tracking-mid font-light">
-      <li><a href="#inicio" class="nav-link active text-roti">Inicio</a></li>\\\
+      <li><a href="#inicio" class="nav-link active text-roti">Inicio</a></li>
       <li><a href="#benquerencia" class="nav-link">Benquerencia</a></li>
       <li><a href="#actividades" class="nav-link">Actividades</a></li>
       <li><a href="#servicios" class="nav-link">Servicios</a></li>
@@ -205,7 +205,7 @@ import '../styles/globals.css';
         </a>
       </div>
       <div class="pt-3 flex items-center justify-between gap-3">
-        <a href="https://supply.benquerencia.com.ar" target="_blank" rel="noopener"
+        <a href="https://www.simplesolutions.com.ar/benque/" target="_blank" rel="noopener"
            class="flex-1 text-center py-2.5 text-[12px] uppercase tracking-luxe font-medium border border-roti/60 text-roti rounded-sm hover:bg-roti hover:text-forestDeep transition-all duration-300">
           Supply — Propietario
         </a>
@@ -832,8 +832,14 @@ import '../styles/globals.css';
   const SHOW_AT   = 9;   // aparece en el segundo 9
   const HIDE_AT   = 127; // desaparece en 2:07
 
+  const pageStart = Date.now();
   function tickHeroText() {
-    const t = heroVideo?.currentTime ?? 0;
+    let t;
+    if (heroVideo && heroVideo.readyState >= 2 && !heroVideo.paused) {
+      t = heroVideo.currentTime;
+    } else {
+      t = (Date.now() - pageStart) / 1000;
+    }
     const visible = t >= SHOW_AT && t < HIDE_AT;
     heroText?.classList.toggle('show', visible);
     heroText?.classList.toggle('hide', !visible);
