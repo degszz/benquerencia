@@ -5,5 +5,6 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   site: 'https://benquerencia.vercel.app',
   output: 'static',
-  integrations: [react(), tailwind()],
+  devToolbar: { enabled: false },
+  integrations: [react(), tailwind({ applyBaseStyles: false })],
 });

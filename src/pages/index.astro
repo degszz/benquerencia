@@ -12,9 +12,17 @@ import '../styles/globals.css';
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="icon" type="image/png" href="/logo.png" />
+<link rel="stylesheet" href="/tailwind.css" />
 <title>Benquerencia Farm Club</title>
 <style>
   html { scroll-behavior: smooth; }
+
+  /* Hide Opera GX / webkit video player controls */
+  video::-webkit-media-controls { display: none !important; }
+  video::-webkit-media-controls-enclosure { display: none !important; }
+  video::-webkit-media-controls-panel { display: none !important; }
+  video::-webkit-media-controls-overlay-play-button { display: none !important; }
+  video::-webkit-media-controls-start-playback-button { display: none !important; }
 
   /* Kerning */
   .tracking-luxe { letter-spacing: 0.18em; }
@@ -91,7 +99,8 @@ import '../styles/globals.css';
   .svc-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px -8px rgba(0,0,0,0.1); }
 
   /* Header scroll state */
-  .header-scrolled {
+  .header-scrolled,
+  .header-menu-open {
     background: rgba(58, 74, 50, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -1114,6 +1123,7 @@ import '../styles/globals.css';
     mobileMenu?.classList.remove('open');
     iconOpen?.classList.remove('hidden');
     iconClose?.classList.add('hidden');
+    siteHeader?.classList.remove('header-menu-open');
   }
 
   // ── Header: transparente en hero, con fondo al scrollear ──
@@ -1128,6 +1138,7 @@ import '../styles/globals.css';
     const isOpen = mobileMenu?.classList.toggle('open');
     iconOpen?.classList.toggle('hidden', !!isOpen);
     iconClose?.classList.toggle('hidden', !isOpen);
+    siteHeader?.classList.toggle('header-menu-open', !!isOpen);
   });
 
   // Cerrar al hacer clic en un link del menu

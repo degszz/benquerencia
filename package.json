@@ -3,9 +3,10 @@
   "type": "module",
   "version": "0.1.0",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview"
+    "dev": "npm run css && astro dev",
+    "build": "npm run css && astro build",
+    "preview": "astro preview",
+    "css": "tailwindcss -i ./src/styles/globals.css -o ./public/tailwind.css --minify"
   },
   "dependencies": {
     "@astrojs/react": "^3.6.0",
