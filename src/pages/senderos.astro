@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
   description="25 km de senderos arbolados para recorrer a caballo, en bicicleta o a pie en Benquerencia Farm Club.">
 
 <section class="relative min-h-[50vh] w-full overflow-hidden bg-forestDeep">
-  <img src="/img/actividades/caballos.jpg" alt="Senderos Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-40" />
+  <img src="/img/actividades/caballos.avif" alt="Senderos Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-40" />
   <div class="absolute inset-0 bg-gradient-to-b from-forestDeep/40 to-forestDeep/70"></div>
   <div class="relative z-10 min-h-[50vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20">
     <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">25 km de recorridos</p>
@@ -52,7 +52,7 @@ import Layout from '../layouts/Layout.astro';
         { img: 'recorrido-alternativo', title: 'Recorrido Alternativo', km: '6.26 km', desc: 'Un trayecto diferente que explora zonas menos transitadas con mayor diversidad de flora y fauna.' },
       ].map(r => (
         <div class="reveal bg-white rounded-sm overflow-hidden shadow-sm">
-          <img src={`/img/senderos/${r.img}.jpg`} alt={r.title} class="w-full h-[260px] md:h-[320px] object-cover" />
+          <img src={`/img/senderos/${r.img}.avif`} alt={r.title} class="w-full h-[260px] md:h-[320px] object-cover" />
           <div class="p-6">
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-serif text-2xl text-slate-800 font-light">{r.title}</h3>

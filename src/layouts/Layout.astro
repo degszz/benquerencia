@@ -1,6 +1,7 @@
 ---
 import '../styles/globals.css';
-const { title = 'Benquerencia Farm Club', description = 'El club de chacras mas grande de Argentina, a 130 km de Capital Federal.', activePage = '' } = Astro.props;
+const { title = 'Benquerencia Farm Club', description = 'El club de chacras mas grande de Argentina, a 130 km de Capital Federal.', activePage = '', ogImage = '/img/og-benquerencia.jpg' } = Astro.props;
+const siteUrl = 'https://benquerencia.vercel.app';
 ---
 <!doctype html>
 <html lang="es">
@@ -8,6 +9,21 @@ const { title = 'Benquerencia Farm Club', description = 'El club de chacras mas 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content={description} />
+<!-- Open Graph / WhatsApp / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={siteUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={`${siteUrl}${ogImage}`} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content="Benquerencia Farm Club" />
+<meta property="og:locale" content="es_AR" />
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
