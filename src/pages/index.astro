@@ -67,7 +67,26 @@ import Layout from "../layouts/Layout.astro";
           de Capital Federal.
         </p>
       </div>
-      <a
+      <!-- Mini weather widget -->
+    <a href="/clima" id="hero-weather" class="absolute bottom-20 md:bottom-8 right-6 md:right-8 flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.12] text-white hover:bg-white/[0.14] hover:border-white/[0.2] transition-all duration-400 opacity-0 translate-y-3" style="transition:opacity 0.6s ease,transform 0.6s ease,background 0.3s ease,border-color 0.3s ease;">
+      <div id="hw-icon" class="flex-shrink-0"></div>
+      <div class="flex flex-col items-start leading-none">
+        <span id="hw-temp" class="font-serif text-[22px] font-light tracking-wide">--°</span>
+        <span id="hw-desc" class="text-[9px] uppercase tracking-luxe text-white/60 mt-0.5">Cargando</span>
+      </div>
+      <div class="hidden md:flex items-center gap-3 ml-1 pl-3 border-l border-white/[0.12]">
+        <div class="flex flex-col items-start leading-none">
+          <span id="hw-feels" class="text-[13px] font-light text-white/80">--°</span>
+          <span class="text-[8px] uppercase tracking-luxe text-white/40">Sens.</span>
+        </div>
+        <div class="flex flex-col items-start leading-none">
+          <span id="hw-wind" class="text-[13px] font-light text-white/80">-- km/h</span>
+          <span class="text-[8px] uppercase tracking-luxe text-white/40">Viento</span>
+        </div>
+      </div>
+    </a>
+
+    <a
         href="#benquerencia"
         class="absolute bottom-6 left-1/2 -translate-x-1/2 scroll-arrow text-white/70 hover:text-white transition-colors"
       >
@@ -915,5 +934,46 @@ import Layout from "../layouts/Layout.astro";
       }
       tick();
     })();
+  </script>
+
+  <!-- Hero weather widget script -->
+  <script is:inline>
+  (function(){
+    function miniIcon(code,night){
+      var sun='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="4" fill="#C7A54E" stroke="none"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>';
+      var moon='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#C7A54E" stroke="none"/></svg>';
+      var partCloud='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="8" r="3" fill="#C7A54E" stroke="none"/><path d="M10 2v2M10 12v2M4.22 3.22l1.42 1.42M14.36 13.36l1.42 1.42M2 8h2M16 8h2M4.22 12.78l1.42-1.42"/><path d="M6 18h10a4 4 0 0 0 0-8h-.5A5.5 5.5 0 0 0 5 12.5V13a3 3 0 0 0-2 5.24" fill="none" stroke="#C7A54E"/></svg>';
+      var cloud='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>';
+      var rain='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M16 13V21M8 13V21M12 15V23M20 9.35A5.5 5.5 0 0 0 18 0h-.5A7.5 7.5 0 0 0 3 6.5V7a4 4 0 0 0 .8 8" transform="translate(0,2) scale(0.9)"/></svg>';
+      var storm='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"/><polyline points="13 11 9 17 15 17 11 23" fill="none"/></svg>';
+      var fog='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h16M4 16h12M4 20h16M4 8h8"/></svg>';
+      var snow='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><path d="M8 16h.01M8 20h.01M12 18h.01M12 22h.01M16 16h.01M16 20h.01"/></svg>';
+      if(code<=1) return night?moon:sun;
+      if(code<=2) return partCloud;
+      if(code===3) return cloud;
+      if(code>=45&&code<=48) return fog;
+      if(code>=71&&code<=75) return snow;
+      if(code>=95) return storm;
+      if((code>=51&&code<=65)||(code>=80&&code<=82)) return rain;
+      return night?moon:sun;
+    }
+    var DESC={0:'Despejado',1:'Mayormente despejado',2:'Parcialmente nublado',3:'Nublado',45:'Niebla',48:'Niebla',51:'Llovizna',53:'Llovizna',55:'Llovizna',61:'Lluvia',63:'Lluvia moderada',65:'Lluvia fuerte',71:'Nieve',73:'Nieve moderada',75:'Nieve fuerte',80:'Chaparrones',81:'Chaparrones',82:'Chaparrones fuertes',95:'Tormenta',96:'Tormenta con granizo',99:'Tormenta fuerte'};
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=-35.4397&longitude=-58.7062&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day')
+      .then(function(r){return r.json()})
+      .then(function(d){
+        var c=d.current;
+        var el=document.getElementById('hero-weather');
+        document.getElementById('hw-icon').innerHTML=miniIcon(c.weather_code,!c.is_day);
+        document.getElementById('hw-temp').textContent=Math.round(c.temperature_2m)+'°';
+        document.getElementById('hw-desc').textContent=DESC[c.weather_code]||'--';
+        var feels=document.getElementById('hw-feels');
+        if(feels) feels.textContent=Math.round(c.apparent_temperature)+'°';
+        var wind=document.getElementById('hw-wind');
+        if(wind) wind.textContent=Math.round(c.wind_speed_10m)+' km/h';
+        el.style.opacity='1';
+        el.style.transform='translateY(0)';
+      })
+      .catch(function(){});
+  })();
   </script>
 </Layout>

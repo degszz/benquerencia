@@ -1,6 +1,7 @@
 ---
 import '../styles/globals.css';
-const { title = 'Benquerencia Farm Club', description = 'El club de chacras mas grande de Argentina, a 130 km de Capital Federal.', activePage = '' } = Astro.props;
+const { title = 'Benquerencia Farm Club', description = 'El club de chacras mas grande de Argentina, a 130 km de Capital Federal.', activePage = '', ogImage = '/img/og-benquerencia.jpg' } = Astro.props;
+const siteUrl = 'https://benquerencia.vercel.app';
 ---
 <!doctype html>
 <html lang="es">
@@ -14,6 +15,19 @@ const { title = 'Benquerencia Farm Club', description = 'El club de chacras mas 
 <link rel="icon" type="image/png" href="/logo.png" />
 <link rel="stylesheet" href="/tailwind.css" />
 <title>{title}</title>
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={siteUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={`${siteUrl}${ogImage}`} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
 <style is:inline>
   html { scroll-behavior: smooth; scrollbar-width: none; }
   body { -ms-overflow-style: none; }
