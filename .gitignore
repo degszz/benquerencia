@@ -6,6 +6,3 @@ node_modules/
 .DS_Store
 .astro/
 .claude/
-
-# Videos — demasiado grandes para GitHub (>100MB), servir desde CDN o carpeta local
-public/video/
