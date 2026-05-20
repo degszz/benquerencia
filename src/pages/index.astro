@@ -49,9 +49,9 @@ import Layout from "../layouts/Layout.astro";
       class="relative z-20 min-h-screen flex flex-col items-center justify-center px-6 md:px-8 text-center text-white"
     >
       <div class="hero-content" id="hero-text">
-        <div class="uppercase text-[11px] tracking-luxe font-light text-roti">
+        <p class="uppercase text-[10px] md:text-[11px] tracking-luxe font-light text-roti/90 mb-4">
           Estancia &middot; San Miguel del Monte &middot; Buenos Aires
-        </div>
+        </p>
         <h1
           class="font-serif font-light text-white text-center leading-[1.05] tracking-wide text-5xl md:text-7xl lg:text-[7.5rem] md:max-w-[18ch]"
         >
@@ -59,13 +59,27 @@ import Layout from "../layouts/Layout.astro";
             class="italic text-center font-light text-white/95">Farm Club</span
           >
         </h1>
+        <div class="mt-5 mx-auto w-12 h-px bg-roti/60"></div>
         <p
-          class="mt-6 max-w-lg mx-auto text-[14px] md:text-base font-light leading-relaxed text-white/85"
+          class="mt-5 max-w-xl mx-auto text-[13px] md:text-[16px] font-light leading-relaxed text-white/75"
         >
-          El club de chacras mas grande de Argentina con 2150 Ha totales, 450 Ha
-          de espacios comunes y 25 km de senderos. Un verdadero paraiso a 130 km
-          de Capital Federal.
+          El club de chacras mas grande de Argentina.
+          <span class="hidden md:inline">2150 hectareas, 450 Ha de espacios comunes,
+          25 km de senderos y un casco historico diseñado por Carlos Thays.</span>
+          <span class="md:hidden">2150 Ha, deportes, naturaleza y tradicion a 130 km de Buenos Aires.</span>
         </p>
+        <p class="mt-3 uppercase text-[10px] md:text-[11px] tracking-luxe text-roti/70 font-light">
+          Polo &middot; Golf &middot; Tenis &middot; Caballos &middot; Futbol
+        </p>
+        <!-- Mobile-only CTA buttons -->
+        <div class="flex md:hidden flex-col gap-3 mt-8 w-full max-w-[280px] mx-auto">
+          <a href="#actividades" class="flex items-center justify-center gap-2 px-6 py-3 text-[11px] uppercase tracking-luxe font-medium bg-roti/90 text-forestDeep rounded-sm hover:bg-roti transition-all">
+            Explorar actividades
+          </a>
+          <a href="/contacto" class="flex items-center justify-center gap-2 px-6 py-3 text-[11px] uppercase tracking-luxe font-medium border border-white/25 text-white/90 rounded-sm hover:bg-white/10 transition-all">
+            Contacto
+          </a>
+        </div>
       </div>
       <!-- Mini weather widget -->
     <a href="/clima" id="hero-weather" class="absolute bottom-20 md:bottom-8 right-6 md:right-8 flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.12] text-white hover:bg-white/[0.14] hover:border-white/[0.2] transition-all duration-400 opacity-0 translate-y-3" style="transition:opacity 0.6s ease,transform 0.6s ease,background 0.3s ease,border-color 0.3s ease;">
