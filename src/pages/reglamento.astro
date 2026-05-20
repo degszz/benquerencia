@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
   description="Reglamento de convivencia de Benquerencia Farm Club. Normas de seguridad y convivencia.">
 
 <section class="relative min-h-[45vh] w-full overflow-hidden bg-forestDeep">
-  <img src="/img/reglamento/reglamento.avif" alt="Reglamento Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-30" />
+  <img src="/img/reglamento/reglamento.png" alt="Reglamento Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-30" />
   <div class="absolute inset-0 bg-forestDeep/60"></div>
   <div class="relative z-10 min-h-[45vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20">
     <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Convivencia</p>
@@ -25,7 +25,7 @@ import Layout from '../layouts/Layout.astro';
         { img: 'mascotas', title: 'Mascotas', highlight: 'Correa y chapa', desc: 'Las mascotas en areas comunes deben ir siempre con correa y chapa identificatoria.' },
       ].map(r => (
         <div class="reglamento-card flex flex-col items-center text-center p-6 rounded-sm bg-cream/50 border border-roti/10">
-          <img src={`/img/reglamento/${r.img}.avif`} alt={r.title} class="w-20 h-20 object-contain mb-5" />
+          <img src={`/img/reglamento/${r.img}.png`} alt={r.title} class="w-20 h-20 object-contain mb-5" />
           <h3 class="font-medium text-slate-800 text-[15px] mb-2">{r.title}</h3>
           <p class="text-coriander font-medium text-[14px] mb-3">{r.highlight}</p>
           <p class="text-[13px] text-slate-600 font-light leading-relaxed">{r.desc}</p>
