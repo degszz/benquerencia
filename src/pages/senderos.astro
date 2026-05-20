@@ -1,0 +1,103 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Senderos — Benquerencia Farm Club" activePage="senderos"
+  description="25 km de senderos arbolados para recorrer a caballo, en bicicleta o a pie en Benquerencia Farm Club.">
+
+<section class="relative min-h-[50vh] w-full overflow-hidden bg-forestDeep">
+  <img src="/img/actividades/caballos.jpg" alt="Senderos Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-40" />
+  <div class="absolute inset-0 bg-gradient-to-b from-forestDeep/40 to-forestDeep/70"></div>
+  <div class="relative z-10 min-h-[50vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20">
+    <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">25 km de recorridos</p>
+    <h1 class="font-serif font-light text-white text-5xl md:text-7xl tracking-wide">Senderos</h1>
+    <div class="mt-6 mx-auto w-12 h-px bg-roti"></div>
+    <p class="mt-6 max-w-xl text-white/80 font-light text-[15px] leading-relaxed">
+      Recorre nuestros senderos a pie, a caballo o en bicicleta. Cuatro recorridos, una naturaleza unica.
+    </p>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="bg-white py-20 md:py-24">
+  <div class="max-w-3xl mx-auto px-6 text-center reveal">
+    <p class="text-[16px] md:text-[18px] font-light leading-[1.9] text-slate-700">
+      Benquerencia Farm Club cuenta con <span class="text-coriander font-medium">25 km</span> de senderos para
+      recorridos a pie, a caballo o en bicicleta. La vegetacion es variada — algunos senderos tienen sombra todo
+      el año gracias a perennes, mientras que otros permiten el sol invernal con arboles caducos.
+    </p>
+    <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
+      {[
+        { km: '4.09', label: 'Corto' },
+        { km: '6.26', label: 'Alternativo' },
+        { km: '7.91', label: 'Intermedio' },
+        { km: '13.14', label: 'Largo Combinado' },
+      ].map(r => (
+        <div class="bg-cream/50 rounded-sm px-4 py-5 text-center">
+          <div class="font-serif text-coriander text-2xl font-light">{r.km} <span class="text-base">km</span></div>
+          <div class="text-[11px] uppercase tracking-luxe text-slate-500 mt-2">{r.label}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- MAPS -->
+<section class="bg-cream/30 py-20 md:py-28">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {[
+        { img: 'recorrido-corto', title: 'Recorrido Corto', km: '4.09 km', desc: 'Ideal para una salida rapida. Atraviesa los parques del casco y los senderos principales de la estancia.' },
+        { img: 'recorrido-intermedio', title: 'Recorrido Intermedio', km: '7.91 km', desc: 'Un recorrido equilibrado que combina zonas de sol y sombra, con vistas a las lagunas y pastizales.' },
+        { img: 'recorrido-largo', title: 'Recorrido Largo Combinado', km: '13.14 km', desc: 'La opcion completa. Recorre todos los sectores del barrio incluyendo los senderos mas alejados del casco.' },
+        { img: 'recorrido-alternativo', title: 'Recorrido Alternativo', km: '6.26 km', desc: 'Un trayecto diferente que explora zonas menos transitadas con mayor diversidad de flora y fauna.' },
+      ].map(r => (
+        <div class="reveal bg-white rounded-sm overflow-hidden shadow-sm">
+          <img src={`/img/senderos/${r.img}.jpg`} alt={r.title} class="w-full h-[260px] md:h-[320px] object-cover" />
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-serif text-2xl text-slate-800 font-light">{r.title}</h3>
+              <span class="text-coriander font-medium text-[14px]">{r.km}</span>
+            </div>
+            <p class="text-[14px] text-slate-600 font-light leading-relaxed">{r.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- TIPOS -->
+<section class="bg-white py-20 md:py-24">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+    <div class="text-center mb-14 reveal">
+      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Tipos de sendero</p>
+      <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide">Tres formas de recorrer</h2>
+      <div class="mt-6 w-12 h-px bg-roti mx-auto"></div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8 reveal">
+      {[
+        { icon: '🐴', title: 'A caballo', desc: 'Los senderos de uso exclusivo ecuestre se extienden por toda la estancia. Servicio de ensillada disponible para propietarios.' },
+        { icon: '🚴', title: 'En bicicleta', desc: 'Recorridos aptos para ciclismo recreativo, sin desniveles pronunciados y con naturaleza en todo el trayecto.' },
+        { icon: '🚶', title: 'A pie', desc: 'Caminatas en un entorno natural con vegetacion variada, avifauna local y vistas a lagunas y pastizales.' },
+      ].map(t => (
+        <div class="text-center p-8 bg-cream/40 rounded-sm">
+          <div class="text-5xl mb-5">{t.icon}</div>
+          <h3 class="font-serif font-light text-slate-800 text-xl mb-3">{t.title}</h3>
+          <p class="text-[14px] text-slate-600 font-light leading-relaxed">{t.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="py-16 bg-cream/20">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="h-px w-16 bg-roti mx-auto mb-10"></div>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/actividades/caballos" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium bg-coriander text-white hover:bg-forestDeep transition-all duration-300 rounded-sm">Ver caballos</a>
+      <a href="/" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium border border-coriander text-coriander hover:bg-coriander hover:text-white transition-all duration-300 rounded-sm">Volver al inicio</a>
+    </div>
+  </div>
+</section>
+
+</Layout>

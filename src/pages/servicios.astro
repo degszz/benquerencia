@@ -1,0 +1,262 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Servicios — Benquerencia Farm Club" activePage="servicios"
+  description="Gastronomia, alojamiento, spa, capilla y mas servicios en Benquerencia Farm Club.">
+
+<style is:inline>
+  .svc-btn { cursor: pointer; transition: all 300ms ease; border: 2px solid transparent; background: #f5f1e8; }
+  .svc-btn:hover { border-color: #C7A54E; background: rgba(199,165,78,0.08); }
+  .svc-btn.active { border-color: #488A0F; background: rgba(72,138,15,0.06); box-shadow: 0 4px 20px -6px rgba(72,138,15,0.25); }
+  .svc-btn.active .svc-dot { opacity: 1; transform: scale(1); }
+  .svc-dot { width: 6px; height: 6px; border-radius: 50%; background: #488A0F; opacity: 0; transform: scale(0); transition: all 300ms ease; margin: 6px auto 0; }
+  #svc-panel { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease; }
+  #svc-panel.open { max-height: 1200px; opacity: 1; }
+</style>
+
+<!-- PAGE HERO -->
+<section class="relative min-h-[50vh] w-full overflow-hidden bg-forestDeep">
+  <img src="/img/servicios/gastronomia1.jpg" alt="Servicios Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-50" loading="eager" />
+  <div class="absolute inset-0 bg-gradient-to-b from-forestDeep/50 to-forestDeep/70"></div>
+  <div class="relative z-10 min-h-[50vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20">
+    <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Benquerencia Farm Club</p>
+    <h1 class="font-serif font-light text-white text-5xl md:text-7xl tracking-wide">Servicios</h1>
+    <div class="mt-6 mx-auto w-12 h-px bg-roti"></div>
+    <p class="mt-6 max-w-xl text-white/80 font-light text-[15px] leading-relaxed">
+      Las instalaciones originales fueron especialmente restauradas para brindar servicio de alojamiento y gastronomia.
+    </p>
+  </div>
+</section>
+
+<!-- INTERACTIVE SERVICES GRID -->
+<section class="bg-white py-20 md:py-28">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+
+    <div class="text-center mb-12 reveal">
+      <p class="uppercase text-[11px] tracking-luxe text-slate-400 mb-2">Seleccione un servicio</p>
+      <p class="text-[13px] font-light text-slate-500">Haga click en cualquier tarjeta para ver los detalles</p>
+    </div>
+
+    <div id="svc-grid" class="grid grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 reveal">
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="gastronomia">
+        <img src="/img/icons/gastronomia.png" alt="Gastronomia" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Gastronomia</span>
+        <div class="svc-dot"></div>
+      </button>
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="capilla">
+        <img src="/img/icons/capilla.png" alt="Capilla" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Capilla</span>
+        <div class="svc-dot"></div>
+      </button>
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="spa">
+        <img src="/img/icons/spa.png" alt="Spa" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Spa</span>
+        <div class="svc-dot"></div>
+      </button>
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="alojamiento">
+        <img src="/img/icons/alojamiento.png" alt="Alojamiento" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Alojamiento</span>
+        <div class="svc-dot"></div>
+      </button>
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="eventos">
+        <img src="/img/icons/eventos.png" alt="Eventos" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Eventos</span>
+        <div class="svc-dot"></div>
+      </button>
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="plaza">
+        <img src="/img/icons/plaza.png" alt="Plaza de Juegos" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Plaza de Juegos</span>
+        <div class="svc-dot"></div>
+      </button>
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="proveedores">
+        <img src="/img/icons/proveedores.png" alt="Proveedores" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Proveedores</span>
+        <div class="svc-dot"></div>
+      </button>
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="delivery">
+        <img src="/img/icons/delivery.png" alt="Delivery" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Delivery</span>
+        <div class="svc-dot"></div>
+      </button>
+      <button class="svc-btn flex flex-col items-center text-center p-5 md:p-6 rounded-sm" data-id="inmobiliarias">
+        <img src="/img/icons/inmobiliarias.png" alt="Inmobiliarias" class="w-12 h-12 md:w-14 md:h-14 object-contain mb-4" />
+        <span class="text-[13px] md:text-[14px] font-light tracking-wide text-slate-700">Inmobiliarias</span>
+        <div class="svc-dot"></div>
+      </button>
+    </div>
+
+    <!-- Expandable detail panel -->
+    <div id="svc-panel" class="mt-8">
+      <div class="bg-cream/30 rounded-xl border border-roti/10">
+        <!-- close bar -->
+        <div class="flex items-center justify-between px-6 md:px-10 pt-6 pb-4 border-b border-roti/10">
+          <span id="svc-panel-label" class="uppercase text-[11px] tracking-luxe text-coriander font-medium"></span>
+          <button id="svc-close" class="flex items-center gap-1.5 text-[11px] uppercase tracking-luxe text-slate-400 hover:text-slate-700 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            Cerrar
+          </button>
+        </div>
+        <div id="svc-panel-inner" class="p-6 md:p-10"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-16 bg-cream/20">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="h-px w-16 bg-roti mx-auto mb-10"></div>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/contacto" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium bg-coriander text-white hover:bg-forestDeep transition-all duration-300 rounded-sm">Contactar</a>
+      <a href="/" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium border border-coriander text-coriander hover:bg-coriander hover:text-white transition-all duration-300 rounded-sm">Volver al inicio</a>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+(function() {
+  var SVC = {
+    gastronomia: {
+      label: 'Gastronomia',
+      html: '<div class="grid md:grid-cols-2 gap-8 md:gap-12 items-start">' +
+        '<div class="space-y-3">' +
+          '<img src="/img/servicios/gastronomia1.jpg" alt="La Matera" class="w-full h-[260px] md:h-[340px] object-cover rounded-sm" loading="lazy"/>' +
+          '<img src="/img/servicios/gastronomia2.jpg" alt="La Matera interior" class="w-full h-[150px] object-cover rounded-sm" loading="lazy"/>' +
+        '</div>' +
+        '<div>' +
+          '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">La Matera</h2>' +
+          '<p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-6">Historicamente lugar de reunion para los peones del campo, con su gran fogon, hoy La Matera ofrece carnes a la parrilla, pastas y platos caseros tradicionales. Los fines de semana, asados bajo los arboles.</p>' +
+          '<div class="h-px w-10 bg-roti mb-6"></div>' +
+          '<h3 class="font-serif font-light text-slate-800 text-xl md:text-2xl tracking-wide mb-3">La Casa Principal</h3>' +
+          '<p class="text-[15px] leading-[1.85] text-slate-600 font-light">Para eventos especiales, cenas y almuerzos. Cuenta con el winter garden original y el salon principal con vistas al parque de arboles y bosque.</p>' +
+        '</div>' +
+      '</div>'
+    },
+    alojamiento: {
+      label: 'Alojamiento',
+      html: '<div class="grid md:grid-cols-2 gap-8 md:gap-12 items-start">' +
+        '<div>' +
+          '<img src="/img/servicios/alojamiento.jpg" alt="Alojamiento" class="w-full h-[300px] md:h-[400px] object-cover rounded-sm" loading="lazy"/>' +
+        '</div>' +
+        '<div>' +
+          '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">Descanso en el casco historico</h2>' +
+          '<div class="space-y-5 text-[15px] leading-[1.85] text-slate-600 font-light">' +
+            '<div class="border-l-2 border-roti/40 pl-4"><span class="text-slate-800 font-medium block mb-1">Casa Principal</span>3 habitaciones con bano privado, calefaccion, wifi. Espacios de esparcimiento, juegos y pileta.</div>' +
+            '<div class="border-l-2 border-roti/40 pl-4"><span class="text-slate-800 font-medium block mb-1">Posada</span>5 habitaciones con bano privado y living comun con TV.</div>' +
+            '<div class="border-l-2 border-roti/40 pl-4"><span class="text-slate-800 font-medium block mb-1">La Matera</span>3 habitaciones en planta baja + 2 departamentos en planta alta, estilo rustico, cerca de canchas de tenis y caballerizas.</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    },
+    spa: {
+      label: 'Spa',
+      html: '<div class="grid md:grid-cols-2 gap-8 md:gap-12 items-start">' +
+        '<div class="space-y-3">' +
+          '<img src="/img/servicios/spa1.png" alt="Spa" class="w-full h-[260px] md:h-[320px] object-cover rounded-sm" loading="lazy"/>' +
+          '<img src="/img/servicios/spa2.png" alt="Spa interior" class="w-full h-[160px] object-cover rounded-sm" loading="lazy"/>' +
+        '</div>' +
+        '<div>' +
+          '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">Casa de la Torre</h2>' +
+          '<p class="text-[15px] leading-[1.85] text-slate-600 font-light">El Spa funciona en la Casa de la Torre, un edificio de servicio historico restaurado. Ofrece masajes, manicuria y estetica general en la comodidad del casco de Benquerencia, con turnos flexibles para sesiones individuales segun disponibilidad.</p>' +
+        '</div>' +
+      '</div>'
+    },
+    capilla: {
+      label: 'Capilla',
+      html: '<div class="grid md:grid-cols-2 gap-8 md:gap-12 items-start">' +
+        '<div>' +
+          '<img src="/img/servicios/capilla.png" alt="Capilla" class="w-full h-[300px] md:h-[380px] object-cover rounded-sm" loading="lazy"/>' +
+        '</div>' +
+        '<div>' +
+          '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">La Capilla</h2>' +
+          '<p class="text-[15px] leading-[1.85] text-slate-600 font-light">Antiguamente un edificio utilizado como padrillera, hoy La Capilla de Benquerencia es un edificio sencillo pero calido que sirve como punto de reunion para la activa comunidad catolica del barrio.</p>' +
+        '</div>' +
+      '</div>'
+    },
+    eventos: {
+      label: 'Eventos',
+      html: '<div class="max-w-2xl">' +
+        '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">Eventos especiales</h2>' +
+        '<p class="text-[15px] leading-[1.85] text-slate-600 font-light">Benquerencia cuenta con espacios unicos para celebraciones privadas, reuniones corporativas y eventos al aire libre. La Casa Principal, los jardines historicos y los parques diseñados por Carlos Thays ofrecen un marco incomparable para cualquier occasion.</p>' +
+        '<p class="text-[15px] leading-[1.85] text-slate-600 font-light mt-4">Para consultas y reservas, contacte a la administracion del club.</p>' +
+      '</div>'
+    },
+    plaza: {
+      label: 'Plaza de Juegos',
+      html: '<div class="max-w-2xl">' +
+        '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">Plaza de Juegos</h2>' +
+        '<p class="text-[15px] leading-[1.85] text-slate-600 font-light">Espacios recreativos para los mas chicos, ubicados dentro de los parques del casco principal. Un lugar seguro y natural para que los ninos disfruten al aire libre en contacto con la naturaleza.</p>' +
+      '</div>'
+    },
+    proveedores: {
+      label: 'Proveedores',
+      html: '<div class="max-w-2xl">' +
+        '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">Proveedores</h2>' +
+        '<p class="text-[15px] leading-[1.85] text-slate-600 font-light">Red de proveedores locales y servicios de mantenimiento especializados para los propietarios del club. Incluye jardineria, construccion, electricidad, plomeria y otros servicios de infraestructura para las chacras del barrio.</p>' +
+      '</div>'
+    },
+    delivery: {
+      label: 'Delivery',
+      html: '<div class="max-w-2xl">' +
+        '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">Delivery</h2>' +
+        '<p class="text-[15px] leading-[1.85] text-slate-600 font-light">Servicio de delivery interno para propietarios e invitados dentro del predio. Productos de la despensa, pedidos al restaurante y entregas de insumos directamente a su chacra.</p>' +
+      '</div>'
+    },
+    inmobiliarias: {
+      label: 'Inmobiliarias',
+      html: '<div class="max-w-2xl">' +
+        '<h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-5">Inmobiliarias</h2>' +
+        '<p class="text-[15px] leading-[1.85] text-slate-600 font-light">Asesores inmobiliarios especializados en la compra y venta de chacras en Benquerencia Farm Club. Asesoramiento personalizado para propietarios e interesados en incorporarse al club de chacras mas grande de Argentina.</p>' +
+      '</div>'
+    }
+  };
+
+  var activeId = null;
+  var panel = document.getElementById('svc-panel');
+  var panelInner = document.getElementById('svc-panel-inner');
+  var panelLabel = document.getElementById('svc-panel-label');
+
+  document.getElementById('svc-close').addEventListener('click', function() {
+    closePanel();
+  });
+
+  document.querySelectorAll('.svc-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = this.getAttribute('data-id');
+      if (activeId === id) {
+        closePanel();
+      } else {
+        openPanel(id, this);
+      }
+    });
+  });
+
+  function openPanel(id, btn) {
+    var data = SVC[id];
+    if (!data) return;
+    activeId = id;
+    // Update active card
+    document.querySelectorAll('.svc-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    // Inject content
+    panelLabel.textContent = data.label;
+    panelInner.innerHTML = data.html;
+    // Open panel
+    panel.classList.add('open');
+    // Scroll to panel smoothly
+    setTimeout(function() {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 80);
+  }
+
+  function closePanel() {
+    activeId = null;
+    panel.classList.remove('open');
+    document.querySelectorAll('.svc-btn').forEach(function(b) { b.classList.remove('active'); });
+    setTimeout(function() { panelInner.innerHTML = ''; }, 500);
+  }
+})();
+</script>
+
+</Layout>

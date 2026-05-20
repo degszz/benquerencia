@@ -1,0 +1,447 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Clima — Benquerencia Farm Club" activePage="clima"
+  description="Pronostico del tiempo en Benquerencia Farm Club, San Miguel del Monte. Temperatura, humedad, viento y lluvia.">
+
+<style is:inline>
+  .weather-svg { width: 64px; height: 64px; }
+  .weather-svg-sm { width: 36px; height: 36px; }
+  .weather-svg-lg { width: 96px; height: 96px; }
+  .tab-btn { transition: all 300ms ease; cursor: pointer; }
+  .tab-btn.active { background: #488A0F; color: white; }
+  .tab-btn:not(.active):hover { background: rgba(72,138,15,0.1); }
+  .weather-card { transition: transform 400ms ease, box-shadow 400ms ease; }
+  .weather-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px -10px rgba(0,0,0,0.12); }
+  .day-card { cursor: pointer; transition: all 300ms ease; border: 2px solid transparent; }
+  .day-card:hover, .day-card.active { border-color: #488A0F; background: rgba(72,138,15,0.05); }
+  .day-card.active { box-shadow: 0 4px 20px -6px rgba(72,138,15,0.3); }
+  .month-btn { cursor: pointer; transition: all 300ms ease; border: 1.5px solid #e2e8f0; }
+  .month-btn:hover:not(.active) { border-color: #C7A54E; background: rgba(199,165,78,0.06); color: #92782a; }
+  .month-btn.active { background: #488A0F; color: white; border-color: #488A0F; box-shadow: 0 4px 14px -4px rgba(72,138,15,0.4); }
+  .progress-bar { height: 6px; border-radius: 3px; background: #EBE8D2; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 800ms ease; }
+  .fade-in { animation: fadeIn 0.5s ease both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+</style>
+
+<!-- PAGE HERO -->
+<section class="relative min-h-[40vh] w-full overflow-hidden bg-forestDeep">
+  <div class="absolute inset-0 bg-gradient-to-b from-forestDeep via-forestDeep/90 to-forestDeep/70"></div>
+  <div class="relative z-10 min-h-[40vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20">
+    <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">San Miguel del Monte, Buenos Aires</p>
+    <h1 class="font-serif font-light text-white text-5xl md:text-7xl tracking-wide leading-tight">Clima</h1>
+    <div class="mt-6 mx-auto w-12 h-px bg-roti"></div>
+  </div>
+</section>
+
+<!-- TAB NAVIGATION -->
+<section class="relative bg-cream/30 py-12 md:py-16">
+  <div class="max-w-[1100px] mx-auto px-6 md:px-8">
+    <div class="flex flex-wrap justify-center gap-2 mb-10 reveal">
+      <button class="tab-btn active px-4 md:px-5 py-2 md:py-2.5 rounded-full text-[11px] md:text-[12px] uppercase tracking-luxe font-medium" data-tab="actual">
+        Actual / 7 dias
+      </button>
+      <button class="tab-btn px-4 md:px-5 py-2 md:py-2.5 rounded-full text-[11px] md:text-[12px] uppercase tracking-luxe font-medium text-slate-600 bg-white border border-slate-200" data-tab="mensual">
+        Resumen mensual
+      </button>
+      <button class="tab-btn px-4 md:px-5 py-2 md:py-2.5 rounded-full text-[11px] md:text-[12px] uppercase tracking-luxe font-medium text-slate-600 bg-white border border-slate-200" data-tab="anual">
+        Resumen anual
+      </button>
+    </div>
+
+    <!-- TAB: ACTUAL / 7 DIAS -->
+    <div id="tab-actual" class="tab-content">
+      <div class="text-center mb-8">
+        <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide">Proximos 7 dias</h2>
+        <p class="mt-3 text-[13px] text-slate-500 font-light">Seleccione un dia para ver el detalle por hora</p>
+      </div>
+      <!-- Day cards -->
+      <div id="day-cards" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 mb-10">
+        <!-- JS fills -->
+      </div>
+      <!-- Hourly detail -->
+      <div id="hourly-section" class="bg-white rounded-xl p-4 md:p-8 shadow-sm">
+        <h3 class="font-serif font-light text-slate-800 text-2xl tracking-wide mb-1" id="hourly-title">Hoy</h3>
+        <p class="text-[12px] text-slate-500 mb-4 md:mb-6">Detalle hora por hora</p>
+        <table class="w-full" id="hourly-table">
+          <thead>
+            <tr class="border-b-2 border-coriander/20">
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-left">Hora</th>
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Cond.</th>
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Temp</th>
+              <th class="hidden md:table-cell py-2 px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Sens.</th>
+              <th class="hidden md:table-cell py-2 px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Humedad</th>
+              <th class="hidden md:table-cell py-2 px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Lluvia</th>
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Prob.</th>
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Viento</th>
+            </tr>
+          </thead>
+          <tbody id="hourly-body"><tr><td colspan="8" class="py-12 text-center text-slate-400 font-light">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: MENSUAL -->
+    <div id="tab-mensual" class="tab-content hidden">
+      <div class="text-center mb-8">
+        <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide">Resumen mensual</h2>
+        <p class="mt-3 text-[13px] text-slate-500 font-light">Selecciona un mes para ver su resumen climatico</p>
+      </div>
+      <!-- Month selector -->
+      <div id="month-selector" class="flex flex-wrap justify-center gap-2 mb-8">
+        <!-- JS fills month buttons -->
+      </div>
+      <div id="monthly-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- JS fills -->
+      </div>
+    </div>
+
+    <!-- TAB: ANUAL -->
+    <div id="tab-anual" class="tab-content hidden">
+      <div class="text-center mb-8">
+        <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide">Resumen anual</h2>
+        <p class="mt-3 text-[13px] text-slate-500 font-light">Temperatura y precipitacion promedio por mes</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 md:p-8 shadow-sm">
+        <table class="w-full" id="annual-table">
+          <thead>
+            <tr class="border-b-2 border-coriander/20">
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-left">Mes</th>
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Max</th>
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Min</th>
+              <th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Lluvia</th>
+              <th class="hidden md:table-cell py-2 px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Dias lluvia</th>
+              <th class="hidden md:table-cell py-2 px-2 text-[10px] uppercase tracking-luxe text-slate-400 font-medium text-center">Horas sol</th>
+            </tr>
+          </thead>
+          <tbody id="annual-body"><tr><td colspan="6" class="py-12 text-center text-slate-400 font-light">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Back -->
+<section class="py-12 bg-white">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="h-px w-16 bg-roti mx-auto mb-8"></div>
+    <a href="/" class="inline-flex items-center gap-2 text-slate-500 hover:text-coriander transition-colors text-[13px] uppercase tracking-luxe">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"/></svg>
+      Volver al inicio
+    </a>
+  </div>
+</section>
+
+<script is:inline>
+(function() {
+  var LAT = -35.4397, LON = -58.7062;
+  var WMO = {0:'Despejado',1:'Mayormente despejado',2:'Parcialmente nublado',3:'Nublado',
+    45:'Neblina',48:'Neblina helada',51:'Llovizna leve',53:'Llovizna',55:'Llovizna intensa',
+    61:'Lluvia leve',63:'Lluvia moderada',65:'Lluvia intensa',71:'Nieve leve',73:'Nieve',75:'Nieve intensa',
+    80:'Chubascos leves',81:'Chubascos',82:'Chubascos intensos',95:'Tormenta',96:'Tormenta con granizo',99:'Tormenta fuerte'};
+  var DAYS_SHORT = ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'];
+  var MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  var MONTHS_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+  // Light-theme SVG icons for tab content (day cards, hourly table, monthly)
+  // night parameter: if true, shows moon instead of sun for clear/partly cloudy
+  function weatherSVG(code, size, night) {
+    var s = size || 36;
+    var sun = '<circle cx="'+s/2+'" cy="'+s/2+'" r="'+(s*0.22)+'" fill="#C7A54E"/>';
+    var rays = '';
+    for(var i=0;i<8;i++){var a=i*45*Math.PI/180;var x1=s/2+Math.cos(a)*s*0.35;var y1=s/2+Math.sin(a)*s*0.35;var x2=s/2+Math.cos(a)*s*0.45;var y2=s/2+Math.sin(a)*s*0.45;rays+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#C7A54E" stroke-width="'+(s*0.05)+'" stroke-linecap="round"/>';}
+    // Moon crescent for nighttime
+    var moon = '<path d="M'+(s*0.55)+' '+(s*0.2)+' A'+(s*0.28)+' '+(s*0.28)+' 0 1 0 '+(s*0.55)+' '+(s*0.75)+' A'+(s*0.2)+' '+(s*0.2)+' 0 1 1 '+(s*0.55)+' '+(s*0.2)+' Z" fill="#C7A54E"/>';
+    var stars = '<circle cx="'+(s*0.25)+'" cy="'+(s*0.3)+'" r="'+(s*0.025)+'" fill="#C7A54E" opacity="0.7"/><circle cx="'+(s*0.18)+'" cy="'+(s*0.55)+'" r="'+(s*0.02)+'" fill="#C7A54E" opacity="0.5"/><circle cx="'+(s*0.35)+'" cy="'+(s*0.18)+'" r="'+(s*0.02)+'" fill="#C7A54E" opacity="0.6"/>';
+    var cloud = '<path d="M'+(s*0.25)+' '+(s*0.6)+' a'+(s*0.15)+' '+(s*0.15)+' 0 0 1 '+(s*0.12)+' '+(s*-0.28)+' a'+(s*0.18)+' '+(s*0.18)+' 0 0 1 '+(s*0.3)+' '+(s*-0.04)+' a'+(s*0.12)+' '+(s*0.12)+' 0 0 1 '+(s*0.12)+' '+(s*0.14)+' z" fill="#94a3b8" opacity="0.7"/>';
+    var darkCloud = '<path d="M'+(s*0.2)+' '+(s*0.65)+' a'+(s*0.17)+' '+(s*0.17)+' 0 0 1 '+(s*0.14)+' '+(s*-0.32)+' a'+(s*0.2)+' '+(s*0.2)+' 0 0 1 '+(s*0.35)+' '+(s*-0.04)+' a'+(s*0.14)+' '+(s*0.14)+' 0 0 1 '+(s*0.14)+' '+(s*0.16)+' z" fill="#64748b" opacity="0.8"/>';
+    var rain = '<line x1="'+(s*0.35)+'" y1="'+(s*0.72)+'" x2="'+(s*0.3)+'" y2="'+(s*0.85)+'" stroke="#488A0F" stroke-width="'+(s*0.04)+'" stroke-linecap="round"/><line x1="'+(s*0.5)+'" y1="'+(s*0.72)+'" x2="'+(s*0.45)+'" y2="'+(s*0.88)+'" stroke="#488A0F" stroke-width="'+(s*0.04)+'" stroke-linecap="round"/><line x1="'+(s*0.65)+'" y1="'+(s*0.72)+'" x2="'+(s*0.6)+'" y2="'+(s*0.82)+'" stroke="#488A0F" stroke-width="'+(s*0.04)+'" stroke-linecap="round"/>';
+    var bolt = '<path d="M'+(s*0.48)+' '+(s*0.6)+' l'+(s*-0.06)+' '+(s*0.15)+' h'+(s*0.1)+' l'+(s*-0.08)+' '+(s*0.18)+'" stroke="#C7A54E" stroke-width="'+(s*0.04)+'" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+    var snow = '<text x="'+(s*0.3)+'" y="'+(s*0.88)+'" font-size="'+(s*0.2)+'" fill="#488A0F">&#10052;</text>';
+    var fog = '<line x1="'+(s*0.2)+'" y1="'+(s*0.55)+'" x2="'+(s*0.8)+'" y2="'+(s*0.55)+'" stroke="#94a3b8" stroke-width="'+(s*0.04)+'" stroke-linecap="round"/><line x1="'+(s*0.25)+'" y1="'+(s*0.65)+'" x2="'+(s*0.75)+'" y2="'+(s*0.65)+'" stroke="#94a3b8" stroke-width="'+(s*0.04)+'" stroke-linecap="round"/><line x1="'+(s*0.3)+'" y1="'+(s*0.75)+'" x2="'+(s*0.7)+'" y2="'+(s*0.75)+'" stroke="#94a3b8" stroke-width="'+(s*0.04)+'" stroke-linecap="round"/>';
+    var inner = '';
+    if(code===0) inner = night ? moon+stars : sun+rays;
+    else if(code===1) inner = night ? moon+stars+cloud : sun+rays+cloud;
+    else if(code===2) inner = night ? '<g transform="translate('+(s*0.05)+','+(s*-0.08)+')">'+moon+'</g>'+darkCloud : '<g transform="translate('+(s*-0.1)+','+(s*-0.12)+')">'+sun+rays+'</g>'+darkCloud;
+    else if(code===3) inner = darkCloud+'<path d="M'+(s*0.3)+' '+(s*0.55)+' a'+(s*0.12)+' '+(s*0.12)+' 0 0 1 '+(s*0.1)+' '+(s*-0.22)+' a'+(s*0.15)+' '+(s*0.15)+' 0 0 1 '+(s*0.25)+' '+(s*-0.03)+' a'+(s*0.1)+' '+(s*0.1)+' 0 0 1 '+(s*0.1)+' '+(s*0.12)+' z" fill="#94a3b8" opacity="0.5"/>';
+    else if(code>=45&&code<=48) inner = fog;
+    else if(code>=51&&code<=55) inner = cloud+rain;
+    else if(code>=61&&code<=65) inner = darkCloud+rain;
+    else if(code>=71&&code<=75) inner = darkCloud+snow;
+    else if(code>=80&&code<=82) inner = darkCloud+rain;
+    else if(code>=95) inner = darkCloud+rain+bolt;
+    else inner = night ? moon+stars : sun+rays;
+    return '<svg viewBox="0 0 '+s+' '+s+'" class="weather-svg-sm" style="width:'+size+'px;height:'+size+'px;">'+inner+'</svg>';
+  }
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); b.classList.add('text-slate-600','bg-white','border','border-slate-200'); });
+      this.classList.add('active'); this.classList.remove('text-slate-600','bg-white','border','border-slate-200');
+      document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.add('hidden'); });
+      document.getElementById('tab-' + this.getAttribute('data-tab')).classList.remove('hidden');
+    });
+  });
+
+  var hourlyData = null;
+  var sunriseHours = [];
+  var sunsetHours = [];
+
+  // ACTUAL tab data
+  var apiUrl = 'https://api.open-meteo.com/v1/forecast?latitude='+LAT+'&longitude='+LON+
+    '&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,cloud_cover,uv_index'+
+    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_direction_10m_dominant,sunrise,sunset'+
+    '&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m'+
+    '&timezone=America/Argentina/Buenos_Aires&forecast_days=7';
+
+  fetch(apiUrl).then(function(r){return r.json();}).then(function(data) {
+    var c = data.current;
+    var daily = data.daily;
+
+    // Store sunrise/sunset hours for night icon detection
+    for(var si=0;si<daily.sunrise.length;si++){
+      sunriseHours.push(parseInt(daily.sunrise[si].split('T')[1].split(':')[0]));
+      sunsetHours.push(parseInt(daily.sunset[si].split('T')[1].split(':')[0]));
+    }
+
+    // --- Populate tab content (day cards, hourly table) ---
+    var cardsHtml = '';
+    for(var i=0;i<daily.time.length;i++){
+      var dt = new Date(daily.time[i]+'T12:00:00');
+      var label = i===0 ? 'Hoy' : i===1 ? 'Mañana' : DAYS_SHORT[dt.getDay()]+' '+dt.getDate();
+      cardsHtml += '<div class="day-card rounded-xl bg-white p-4 text-center shadow-sm'+(i===0?' active':'')+'" data-day="'+i+'">' +
+        '<div class="text-[12px] font-medium text-slate-700 mb-2">'+label+'</div>'+
+        '<div class="flex justify-center mb-2">'+weatherSVG(daily.weather_code[i], 40)+'</div>'+
+        '<div class="text-[12px] text-slate-500 mb-3">'+( WMO[daily.weather_code[i]] || '').split(' ').slice(0,2).join(' ')+'</div>'+
+        '<div class="flex justify-center gap-2 text-[14px]">'+
+          '<span class="font-serif font-light text-slate-800">'+Math.round(daily.temperature_2m_max[i])+'°</span>'+
+          '<span class="font-serif font-light text-slate-400">'+Math.round(daily.temperature_2m_min[i])+'°</span>'+
+        '</div>'+
+        '<div class="mt-2"><div class="progress-bar"><div class="progress-fill" style="width:'+daily.precipitation_probability_max[i]+'%;background:'+(daily.precipitation_probability_max[i]>50?'#488A0F':'#C7A54E')+'"></div></div>'+
+        '<div class="text-[10px] text-slate-400 mt-1">'+daily.precipitation_probability_max[i]+'% lluvia</div></div>'+
+        '</div>';
+    }
+    document.getElementById('day-cards').innerHTML = cardsHtml;
+
+    hourlyData = data.hourly;
+    showHourly(0);
+
+    document.querySelectorAll('.day-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.day-card').forEach(function(c){c.classList.remove('active');});
+        this.classList.add('active');
+        var idx = parseInt(this.getAttribute('data-day'));
+        var dt = new Date(daily.time[idx]+'T12:00:00');
+        document.getElementById('hourly-title').textContent = idx===0?'Hoy':idx===1?'Mañana':DAYS_SHORT[dt.getDay()]+' '+dt.getDate()+' '+MONTHS_S[dt.getMonth()];
+        showHourly(idx);
+      });
+    });
+  }).catch(function(){});
+
+  function showHourly(dayIdx) {
+    if(!hourlyData) return;
+    var hBody = document.getElementById('hourly-body');
+    var start = dayIdx*24, end = start+24, html = '';
+    var srH = sunriseHours[dayIdx] || 7;
+    var ssH = sunsetHours[dayIdx] || 19;
+    for(var h=start;h<end&&h<hourlyData.time.length;h++){
+      var hour = new Date(hourlyData.time[h]).getHours();
+      var isNight = hour < srH || hour >= ssH;
+      var isNow = dayIdx===0 && hour===new Date().getHours();
+      html += '<tr class="border-b border-slate-100 '+(isNow?'bg-coriander/5 font-medium':'hover:bg-cream/30')+' transition-colors">' +
+        '<td class="py-2.5 px-1 md:px-2 text-[12px] md:text-[13px] text-slate-700 whitespace-nowrap">'+(isNow?'<span class="inline-block w-1.5 h-1.5 rounded-full bg-coriander mr-1.5"></span>Ahora':hour.toString().padStart(2,'0')+':00')+'</td>'+
+        '<td class="py-2.5 px-1 md:px-2 text-center">'+weatherSVG(hourlyData.weather_code[h], 22, isNight)+'</td>'+
+        '<td class="py-2.5 px-1 md:px-2 text-center font-serif text-base md:text-lg text-slate-800">'+Math.round(hourlyData.temperature_2m[h])+'°</td>'+
+        '<td class="hidden md:table-cell py-2.5 px-2 text-center text-[13px] text-slate-500">'+Math.round(hourlyData.apparent_temperature[h])+'°</td>'+
+        '<td class="hidden md:table-cell py-2.5 px-2 text-center text-[13px] text-slate-600">'+hourlyData.relative_humidity_2m[h]+'%</td>'+
+        '<td class="hidden md:table-cell py-2.5 px-2 text-center text-[13px] text-slate-600">'+hourlyData.precipitation[h]+' mm</td>'+
+        '<td class="py-2.5 px-1 md:px-2 text-center text-[12px] md:text-[13px] text-slate-600">'+hourlyData.precipitation_probability[h]+'%</td>'+
+        '<td class="py-2.5 px-1 md:px-2 text-center text-[12px] md:text-[13px] text-slate-600 whitespace-nowrap">'+Math.round(hourlyData.wind_speed_10m[h])+' km/h</td>'+
+        '</tr>';
+    }
+    hBody.innerHTML = html;
+  }
+
+  // MONTHLY tab — selectable month with archive API for past months
+  var monthNow = new Date().getMonth();
+  var yearNow = new Date().getFullYear();
+  var dayOfMonth = new Date().getDate();
+  var monthlyCache = {};
+
+  // Build month selector buttons (Jan → current month)
+  (function buildMonthSelector(){
+    var sel = document.getElementById('month-selector');
+    var html = '';
+    for(var mi=0;mi<=monthNow;mi++){
+      html += '<button class="month-btn px-3 py-1.5 rounded-full text-[11px] md:text-[12px] uppercase tracking-luxe font-medium bg-white text-slate-600'+(mi===monthNow?' active':'')+'" data-month="'+mi+'">'+MONTHS_S[mi]+'</button>';
+    }
+    sel.innerHTML = html;
+    sel.querySelectorAll('.month-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        sel.querySelectorAll('.month-btn').forEach(function(b){b.classList.remove('active');});
+        this.classList.add('active');
+        loadMonth(parseInt(this.getAttribute('data-month')));
+      });
+    });
+  })();
+
+  function loadMonth(monthIdx){
+    var grid = document.getElementById('monthly-grid');
+    // Show loading
+    grid.innerHTML = '<div class="md:col-span-2 py-12 text-center"><div class="inline-block w-6 h-6 border-2 border-coriander/30 border-t-coriander rounded-full animate-spin"></div><p class="text-slate-400 font-light mt-3 text-[13px]">Cargando datos de '+MONTHS[monthIdx]+'...</p></div>';
+
+    // Check cache
+    if(monthlyCache[monthIdx]){ renderMonth(monthIdx, monthlyCache[monthIdx]); return; }
+
+    var isCurrentMonth = monthIdx === monthNow;
+
+    if(isCurrentMonth){
+      // Current month: use forecast API with past_days
+      var pastD = dayOfMonth - 1;
+      var remainD = new Date(yearNow, monthNow+1, 0).getDate() - dayOfMonth;
+      var fcastD = Math.min(remainD + 1, 16);
+      var url = 'https://api.open-meteo.com/v1/forecast?latitude='+LAT+'&longitude='+LON+
+        '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max'+
+        '&timezone=America/Argentina/Buenos_Aires&past_days='+pastD+'&forecast_days='+fcastD;
+      fetch(url).then(function(r){return r.json();}).then(function(data){
+        if(!data.daily||!data.daily.time){grid.innerHTML='<p class="text-center text-slate-500 py-8 md:col-span-2">No se pudieron cargar los datos.</p>';return;}
+        var filtered = filterMonth(data.daily, monthIdx);
+        monthlyCache[monthIdx] = filtered;
+        renderMonth(monthIdx, filtered);
+      }).catch(function(){grid.innerHTML='<p class="text-center text-slate-500 py-8 md:col-span-2">Error al cargar datos.</p>';});
+    } else {
+      // Past month: use archive API
+      var startDate = yearNow+'-'+(monthIdx+1).toString().padStart(2,'0')+'-01';
+      var lastDay = new Date(yearNow, monthIdx+1, 0).getDate();
+      var endDate = yearNow+'-'+(monthIdx+1).toString().padStart(2,'0')+'-'+lastDay.toString().padStart(2,'0');
+      var url = 'https://archive-api.open-meteo.com/v1/archive?latitude='+LAT+'&longitude='+LON+
+        '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max'+
+        '&timezone=America/Argentina/Buenos_Aires&start_date='+startDate+'&end_date='+endDate;
+      fetch(url).then(function(r){return r.json();}).then(function(data){
+        if(!data.daily||!data.daily.time||data.daily.time.length===0){grid.innerHTML='<p class="text-center text-slate-500 py-8 md:col-span-2">Sin datos disponibles para '+MONTHS[monthIdx]+'.</p>';return;}
+        var d = data.daily;
+        // Archive API doesn't return precipitation_probability_max, add empty
+        if(!d.precipitation_probability_max){d.precipitation_probability_max=[];for(var k=0;k<d.time.length;k++)d.precipitation_probability_max.push(null);}
+        if(!d.wind_speed_10m_max){d.wind_speed_10m_max=[];for(var k=0;k<d.time.length;k++)d.wind_speed_10m_max.push(0);}
+        monthlyCache[monthIdx] = d;
+        renderMonth(monthIdx, d);
+      }).catch(function(){grid.innerHTML='<p class="text-center text-slate-500 py-8 md:col-span-2">Error al cargar datos de '+MONTHS[monthIdx]+'.</p>';});
+    }
+  }
+
+  function filterMonth(raw, monthIdx){
+    var d = {time:[],weather_code:[],temperature_2m_max:[],temperature_2m_min:[],precipitation_sum:[],precipitation_probability_max:[],wind_speed_10m_max:[]};
+    var prefix = yearNow+'-'+(monthIdx+1).toString().padStart(2,'0')+'-';
+    for(var i=0;i<raw.time.length;i++){
+      if(raw.time[i].substring(0,8)===prefix){
+        d.time.push(raw.time[i]);d.weather_code.push(raw.weather_code[i]);
+        d.temperature_2m_max.push(raw.temperature_2m_max[i]);d.temperature_2m_min.push(raw.temperature_2m_min[i]);
+        d.precipitation_sum.push(raw.precipitation_sum[i]||0);
+        d.precipitation_probability_max.push(raw.precipitation_probability_max?raw.precipitation_probability_max[i]:null);
+        d.wind_speed_10m_max.push(raw.wind_speed_10m_max[i]||0);
+      }
+    }
+    return d;
+  }
+
+  function renderMonth(monthIdx, d){
+    var grid = document.getElementById('monthly-grid');
+    if(!d.time||d.time.length===0){grid.innerHTML='<p class="text-center text-slate-500 py-8 md:col-span-2">Sin datos disponibles para '+MONTHS[monthIdx]+'.</p>';return;}
+    var n = d.time.length;
+    var avgMax=0,avgMin=0,totalRain=0,rainDays=0,maxWind=0,maxTemp=-99,minTemp=99;
+    for(var i=0;i<n;i++){
+      avgMax+=d.temperature_2m_max[i]; avgMin+=d.temperature_2m_min[i];
+      totalRain+=(d.precipitation_sum[i]||0);
+      if((d.precipitation_sum[i]||0)>0.5) rainDays++;
+      if((d.wind_speed_10m_max[i]||0)>maxWind) maxWind=d.wind_speed_10m_max[i]||0;
+      if(d.temperature_2m_max[i]>maxTemp) maxTemp=d.temperature_2m_max[i];
+      if(d.temperature_2m_min[i]<minTemp) minTemp=d.temperature_2m_min[i];
+    }
+    avgMax/=n; avgMin/=n;
+
+    var isCurrentMonth = monthIdx === monthNow;
+    var todayStr = new Date().toISOString().split('T')[0];
+
+    var cards = [
+      {icon:weatherSVG(0,48), label:'Temp. maxima promedio', val:Math.round(avgMax*10)/10+'°C', sub:'Maxima registrada: '+Math.round(maxTemp)+'°C'},
+      {icon:weatherSVG(3,48), label:'Temp. minima promedio', val:Math.round(avgMin*10)/10+'°C', sub:'Minima registrada: '+Math.round(minTemp)+'°C'},
+      {icon:weatherSVG(63,48), label:'Precipitacion total', val:Math.round(totalRain)+' mm', sub:rainDays+' dias con lluvia de '+n},
+      {icon:weatherSVG(2,48), label:'Viento maximo', val:Math.round(maxWind)+' km/h', sub:'Racha maxima del mes'},
+    ];
+    var html = '';
+    cards.forEach(function(c){
+      html += '<div class="weather-card bg-white rounded-xl p-6 shadow-sm flex items-start gap-5 fade-in">' +
+        '<div class="flex-shrink-0 w-14 h-14 flex items-center justify-center">'+c.icon+'</div>' +
+        '<div><div class="text-[11px] uppercase tracking-luxe text-slate-400 mb-1">'+c.label+'</div>' +
+        '<div class="font-serif text-3xl font-light text-slate-800">'+c.val+'</div>' +
+        '<div class="text-[12px] text-slate-500 mt-1">'+c.sub+'</div></div></div>';
+    });
+    // Daily breakdown table
+    html += '<div class="md:col-span-2 bg-white rounded-xl p-4 md:p-6 shadow-sm fade-in"><h3 class="font-serif font-light text-slate-800 text-xl mb-4">Dia a dia — '+MONTHS[monthIdx]+' '+yearNow+'</h3>';
+    html += '<table class="w-full"><thead><tr class="border-b-2 border-coriander/20">';
+    html += '<th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 text-left">Dia</th>';
+    html += '<th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 text-center">Cond.</th>';
+    html += '<th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 text-center">Max</th>';
+    html += '<th class="py-2 px-1 md:px-2 text-[10px] uppercase tracking-luxe text-slate-400 text-center">Min</th>';
+    html += '<th class="hidden md:table-cell py-2 px-2 text-[10px] uppercase tracking-luxe text-slate-400 text-center">Lluvia</th>';
+    html += '<th class="hidden md:table-cell py-2 px-2 text-[10px] uppercase tracking-luxe text-slate-400 text-center">Viento</th>';
+    html += '</tr></thead><tbody>';
+    for(var i=0;i<n;i++){
+      var dt = new Date(d.time[i]+'T12:00:00');
+      var isTod = isCurrentMonth && d.time[i] === todayStr;
+      var isPast = isCurrentMonth && dt < new Date(new Date().toDateString());
+      var isPastMonth = !isCurrentMonth;
+      html += '<tr class="border-b border-slate-100 '+(isTod?'bg-coriander/5 font-medium':'')+' hover:bg-cream/30 transition-colors">';
+      html += '<td class="py-2 px-1 md:px-2 text-[12px] md:text-[13px] text-slate-700 whitespace-nowrap">'+(isTod?'<span class="text-coriander font-medium">Hoy</span>':DAYS_SHORT[dt.getDay()]+' '+dt.getDate())+'</td>';
+      html += '<td class="py-2 px-1 md:px-2 text-center">'+weatherSVG(d.weather_code[i],20)+'</td>';
+      html += '<td class="py-2 px-1 md:px-2 text-center font-serif text-slate-800 text-[13px] md:text-base">'+Math.round(d.temperature_2m_max[i])+'°</td>';
+      html += '<td class="py-2 px-1 md:px-2 text-center font-serif text-slate-400 text-[13px] md:text-base">'+Math.round(d.temperature_2m_min[i])+'°</td>';
+      html += '<td class="hidden md:table-cell py-2 px-2 text-center text-[13px] text-slate-600">'+Math.round((d.precipitation_sum[i]||0)*10)/10+' mm</td>';
+      html += '<td class="hidden md:table-cell py-2 px-2 text-center text-[13px] text-slate-600">'+Math.round(d.wind_speed_10m_max[i]||0)+' km/h</td>';
+      html += '</tr>';
+    }
+    html += '</tbody></table></div>';
+    grid.innerHTML = html;
+  }
+
+  // Load current month on init
+  loadMonth(monthNow);
+
+  // ANNUAL tab — climate normals (historical averages for this region)
+  var annualData = [
+    {mes:'Enero',max:31,min:18,rain:95,rainD:8,sun:290},
+    {mes:'Febrero',max:29,min:17,rain:90,rainD:7,sun:255},
+    {mes:'Marzo',max:27,min:15,rain:100,rainD:8,sun:230},
+    {mes:'Abril',max:22,min:11,rain:80,rainD:7,sun:195},
+    {mes:'Mayo',max:18,min:7,rain:60,rainD:6,sun:170},
+    {mes:'Junio',max:14,min:4,rain:40,rainD:5,sun:150},
+    {mes:'Julio',max:14,min:4,rain:40,rainD:5,sun:160},
+    {mes:'Agosto',max:16,min:5,rain:45,rainD:5,sun:180},
+    {mes:'Septiembre',max:19,min:7,rain:55,rainD:6,sun:200},
+    {mes:'Octubre',max:23,min:11,rain:85,rainD:8,sun:240},
+    {mes:'Noviembre',max:26,min:14,rain:85,rainD:7,sun:265},
+    {mes:'Diciembre',max:30,min:17,rain:90,rainD:8,sun:290},
+  ];
+  var aBody = document.getElementById('annual-body');
+  var aHtml = '';
+  var maxRain = 100;
+  // Only show months up to and including the current month (future months haven't happened)
+  for(var ai=0;ai<=monthNow;ai++){
+    var m = annualData[ai];
+    var isCur = ai === monthNow;
+    aHtml += '<tr class="border-b border-slate-100 '+(isCur?'bg-coriander/5 font-medium':'')+' hover:bg-cream/30 transition-colors">';
+    aHtml += '<td class="py-2.5 px-1 md:px-2 text-[12px] md:text-[13px] text-slate-700">'+(isCur?'<span class="inline-block w-1.5 h-1.5 rounded-full bg-coriander mr-1.5"></span>':'')+m.mes+'</td>';
+    aHtml += '<td class="py-2.5 px-1 md:px-2 text-center"><span class="font-serif text-slate-800 text-[13px] md:text-base">'+m.max+'°</span></td>';
+    aHtml += '<td class="py-2.5 px-1 md:px-2 text-center"><span class="font-serif text-slate-400 text-[13px] md:text-base">'+m.min+'°</span></td>';
+    aHtml += '<td class="py-2.5 px-1 md:px-2 text-center"><div class="flex items-center justify-center gap-1.5 md:gap-2"><div class="progress-bar w-10 md:w-16"><div class="progress-fill bg-coriander" style="width:'+Math.round(m.rain/maxRain*100)+'%"></div></div><span class="text-[12px] md:text-[13px] text-slate-600">'+m.rain+'</span></div></td>';
+    aHtml += '<td class="hidden md:table-cell py-2.5 px-2 text-center text-[13px] text-slate-600">'+m.rainD+'</td>';
+    aHtml += '<td class="hidden md:table-cell py-2.5 px-2 text-center text-[13px] text-slate-600">'+m.sun+'h</td>';
+    aHtml += '</tr>';
+  }
+  aBody.innerHTML = aHtml;
+})();
+</script>
+
+</Layout>

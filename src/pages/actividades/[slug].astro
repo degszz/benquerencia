@@ -1,0 +1,219 @@
+﻿---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'polo' } },
+    { params: { slug: 'tenis' } },
+    { params: { slug: 'golf' } },
+    { params: { slug: 'caballos' } },
+    { params: { slug: 'futbol' } },
+  ];
+}
+
+const { slug } = Astro.params;
+
+const activities: Record<string, {
+  title: string; subtitle: string; heroDesc: string; video: string; image: string;
+  description: string[]; stats: { value: string; label: string }[];
+  leftTitle: string; leftSubtitle: string; leftItems: string[];
+  rightTitle: string; rightSubtitle: string; rightContent: string;
+  rightItems?: { title: string; desc: string }[];
+}> = {
+  polo: {
+    title: 'Polo', subtitle: 'Una de las perlas de Benquerencia',
+    heroDesc: 'Punto de encuentro para jugadores, acompanantes y espectadores',
+    video: '/video/polo.mp4', image: '/img/actividades/polo-full.jpg',
+    description: [
+      'El polo es una de las perlas de Benquerencia y un punto de encuentro para jugadores, acompanantes y espectadores. Disenado originalmente con 8 canchas (actualmente 2 en uso intensivo), cuenta con tablas, ramas de sauce, marcadores, paddocks con sombra, lavadero de caballos, quincho con parrilla y banos.',
+      'Se ofrecen clases, practicas y torneos con sistema de handicap invitacional.',
+    ],
+    stats: [
+      { value: '8', label: 'Canchas disenadas' }, { value: '2', label: 'En uso intensivo' },
+      { value: 'Mayo', label: 'Copa Revolucion de Mayo' }, { value: 'Dic', label: 'Copa Tres Cardos' },
+    ],
+    leftTitle: 'Instalaciones', leftSubtitle: 'Infraestructura completa',
+    leftItems: ['Tablas, ramas de sauce y marcadores','Paddocks con sombra','Lavadero de caballos','Quincho con parrilla y banos'],
+    rightTitle: 'Torneos tradicionales', rightSubtitle: 'Tradicion polera', rightContent: '',
+    rightItems: [
+      { title: 'Copa de la Revolucion de Mayo', desc: 'Torneo tradicional celebrado en mayo' },
+      { title: 'Copa Tres Cardos', desc: 'Torneo de diciembre, cierre de temporada' },
+      { title: 'Torneos invitacionales', desc: 'Con sistema de handicap' },
+    ],
+  },
+  tenis: {
+    title: 'Tenis', subtitle: 'Una experiencia unica',
+    heroDesc: 'Canchas sinteticas rodeadas de naturaleza en el casco de la estancia',
+    video: '/video/tenis.mp4', image: '/img/actividades/tenis-full.jpg',
+    description: [
+      'El tenis en Benquerencia ofrece una experiencia unica en un entorno natural y campestre. Las canchas estan rodeadas de cercos de ligustro y arboles que brindan privacidad y proteccion contra el viento.',
+      'Su proximidad a La Matera permite disfrutar de un refrigerio post-partido en un entorno unico.',
+    ],
+    stats: [{ value: '2', label: 'Canchas sinteticas' },{ value: 'Casco', label: 'Ubicacion' },{ value: 'Si', label: 'Clases disponibles' }],
+    leftTitle: 'Instalaciones', leftSubtitle: 'Canchas en el casco',
+    leftItems: ['2 canchas de superficie sintetica','Rodeadas de cercos de ligustro y arboles','Proteccion contra el viento','Proximidad a La Matera'],
+    rightTitle: 'Servicios', rightSubtitle: 'Clases y practica libre',
+    rightContent: 'Clases individuales y grupales disponibles para todos los niveles y edades. Practica libre con reserva previa.',
+  },
+  golf: {
+    title: 'Golf', subtitle: 'Naturaleza, desafios y buenos momentos',
+    heroDesc: '9 hoyos disenados por Caprile & Capdepont (Gary Player Group)',
+    video: '/video/golf.mp4', image: '/img/actividades/golf-full.jpg',
+    description: [
+      'La cancha de golf de Benquerencia combina naturaleza, desafios deportivos y buenos momentos en paisajes abiertos con sus caracteristicos nandues.',
+      '9 hoyos disenados por Caprile & Capdepont (Gary Player Group) con 9 opciones de tee alternativas. Par 74 total. Inscripta en la AAG.',
+    ],
+    stats: [{ value: '9', label: 'Hoyos' },{ value: 'Par 74', label: 'Total' },{ value: 'AAG', label: 'Inscripta' },{ value: '18', label: 'Con tees alternativos' }],
+    leftTitle: 'Diseno', leftSubtitle: 'Caprile & Capdepont', leftItems: [],
+    rightTitle: 'Instalaciones', rightSubtitle: 'Facilidades', rightContent: '',
+    rightItems: [
+      { title: 'Cancha de practica', desc: 'Driving range' },
+      { title: 'Green de approach', desc: 'Practica de juego corto' },
+      { title: 'Putting green', desc: 'Practica de putt' },
+      { title: 'Clases', desc: 'Individuales y grupales' },
+      { title: 'Bar de Golf', desc: 'Con vistas a hoyos 9 y 5 y laguna' },
+    ],
+  },
+  caballos: {
+    title: 'Caballos', subtitle: 'Un tema central en Benquerencia',
+    heroDesc: '25 km de senderos arbolados de uso exclusivo ecuestre',
+    video: '/video/caballos.mp4', image: '/img/actividades/caballos-full.jpg',
+    description: [
+      'El caballo es un tema central en el diseno de Benquerencia Farm Club. Las cabalgatas van desde salidas breves hasta tardes completas recorriendo los 25 km de senderos arbolados.',
+      'Cuenta con dos pistas de equitacion totalmente alambradas en el casco, boxes, corrales, paddocks y servicio de ensillada por personal especializado.',
+    ],
+    stats: [{ value: '25 km', label: 'Senderos arbolados' },{ value: '2', label: 'Pistas de equitacion' },{ value: 'Si', label: 'Servicio de ensillada' },{ value: 'Si', label: 'Pastoreo comun' }],
+    leftTitle: 'Instalaciones', leftSubtitle: 'Infraestructura ecuestre',
+    leftItems: ['Dos pistas de equitacion totalmente alambradas','Boxes, corrales y paddocks','Palenques y monturas','Servicio de ensillada por personal especializado','Areas de pastoreo comun para caballos de propietarios'],
+    rightTitle: 'Senderos', rightSubtitle: '25 km de recorridos',
+    rightContent: 'Veinticinco kilometros ininterrumpidos de senderos arbolados de uso exclusivo ecuestre. Recorridos que van desde paseos breves hasta tardes completas.',
+  },
+  futbol: {
+    title: 'Futbol', subtitle: 'Una experiencia distintiva',
+    heroDesc: 'Cancha en el casco, inserta en un paisaje natural y distendido',
+    video: '/video/polo.mp4', image: '/img/actividades/futbol-full.jpg',
+    description: [
+      'La cancha de futbol de Benquerencia ofrece una experiencia de juego claramente distintiva, inserta en un paisaje natural y distendido. Ubicada en el casco, permite equipos de 8-9 jugadores por lado.',
+      'Su cercania a La Matera permite compartir un momento despues del partido en un entorno unico.',
+    ],
+    stats: [{ value: '8-9', label: 'Jugadores por lado' },{ value: 'Casco', label: 'Ubicacion' },{ value: 'Si', label: 'Cerca de La Matera' }],
+    leftTitle: 'La cancha', leftSubtitle: 'En el corazon del casco',
+    leftItems: ['Ubicada en el casco de la estancia','Equipos de 8-9 jugadores por lado','Paisaje natural y distendido','Proximidad a La Matera'],
+    rightTitle: 'Experiencia', rightSubtitle: 'Deporte y naturaleza',
+    rightContent: 'Una experiencia de juego claramente distintiva que combina la practica deportiva con el paisaje natural de la pampa.',
+  },
+};
+
+const activity = activities[slug!];
+if (!activity) return Astro.redirect('/');
+---
+
+<Layout title={`${activity.title} - Benquerencia Farm Club`} activePage="actividades"
+  description={`${activity.title} en Benquerencia Farm Club`}>
+
+<section class="relative min-h-screen w-full overflow-hidden bg-forestDeep">
+  <div class="absolute inset-0 z-0">
+    <video class="yt-cover" autoplay muted loop playsinline preload="auto"
+      style="object-fit:cover;width:100%;height:100%;position:absolute;top:0;left:0;transform:none;min-width:0;min-height:0;">
+      <source src={activity.video} type="video/mp4" />
+    </video>
+  </div>
+  <div class="absolute inset-0 z-10 bg-black/50"></div>
+  <div class="absolute inset-x-0 top-0 h-32 z-10 bg-gradient-to-b from-forest/60 to-transparent"></div>
+  <div class="relative z-20 min-h-screen flex flex-col items-center justify-center px-6 md:px-8 text-center text-white">
+    <div class="uppercase text-[11px] tracking-luxe font-light text-roti anim-fade-up delay-1">Actividades</div>
+    <div class="mt-7 mb-6 h-px bg-roti anim-rule delay-2"></div>
+    <h1 class="font-serif font-light text-white leading-[1.05] tracking-wide text-5xl md:text-7xl lg:text-[7.5rem] anim-fade-up delay-2">{activity.title}</h1>
+    <p class="mt-8 max-w-xl mx-auto text-[14px] md:text-base font-light leading-relaxed text-white/85 anim-fade-up delay-3">{activity.heroDesc}</p>
+    <a href="#contenido" class="absolute bottom-6 left-1/2 -translate-x-1/2 scroll-arrow text-white/70 hover:text-white transition-colors">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><polyline points="8,13 18,24 28,13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</section>
+
+<section id="contenido" class="py-20 md:py-28">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+    <div class="reveal grid md:grid-cols-2 gap-10 items-center mb-20">
+      <div class="rounded-sm overflow-hidden">
+        <img src={activity.image} alt={`${activity.title} en Benquerencia`} class="w-full h-[300px] md:h-[420px] object-cover" />
+      </div>
+      <div>
+        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">{activity.title}</p>
+        <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">{activity.subtitle}</h2>
+        {activity.description.map((p) => (
+          <p class="text-[15px] leading-[1.85] text-slate-600 font-light mb-4">{p}</p>
+        ))}
+      </div>
+    </div>
+    <div class={`reveal grid grid-cols-2 md:grid-cols-${activity.stats.length > 3 ? '4' : '3'} gap-6 mb-20`}>
+      {activity.stats.map((stat) => (
+        <div class="text-center p-6 bg-cream/40 rounded-sm">
+          <div class="font-serif text-4xl text-coriander font-light">{stat.value}</div>
+          <div class="text-[12px] uppercase tracking-luxe text-slate-500 mt-2">{stat.label}</div>
+        </div>
+      ))}
+    </div>
+    <div class="reveal bg-cream rounded-sm px-6 md:px-16 py-12 md:py-16">
+      <div class="grid md:grid-cols-2 gap-10">
+        <div>
+          <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">{activity.leftTitle}</p>
+          <h3 class="font-serif font-light text-slate-800 text-2xl md:text-3xl tracking-wide mb-6">{activity.leftSubtitle}</h3>
+          {activity.leftItems.length > 0 ? (
+            <ul class="space-y-3 text-[15px] leading-[1.85] text-slate-600 font-light">
+              {activity.leftItems.map((item) => (
+                <li class="flex items-start gap-3"><span class="text-coriander mt-1">&#9679;</span>{item}</li>
+              ))}
+            </ul>
+          ) : (
+            <p class="text-[15px] leading-[1.85] text-slate-600 font-light">{activity.description[1]}</p>
+          )}
+        </div>
+        <div>
+          <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">{activity.rightTitle}</p>
+          <h3 class="font-serif font-light text-slate-800 text-2xl md:text-3xl tracking-wide mb-6">{activity.rightSubtitle}</h3>
+          {activity.rightContent && <p class="text-[15px] leading-[1.85] text-slate-600 font-light">{activity.rightContent}</p>}
+          {activity.rightItems && (
+            <div class="space-y-6">
+              {activity.rightItems.map((item) => (
+                <div>
+                  <h4 class="text-slate-800 font-medium text-[15px] mb-1">{item.title}</h4>
+                  <p class="text-[14px] text-slate-600 font-light">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-cream/30 py-16 md:py-20">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+    <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide text-center mb-10 reveal">Otras actividades</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 reveal">
+      {Object.entries(activities).filter(([key]) => key !== slug).map(([key, act]) => (
+        <a href={`/actividades/${key}`} class="group relative aspect-[3/4] block rounded-sm overflow-hidden">
+          <img src={act.image} alt={act.title} class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60 group-hover:to-black/70 transition-all duration-500"></div>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
+            <div class="w-8 h-px bg-white/80 mb-4"></div>
+            <h3 class="font-serif font-light text-2xl md:text-3xl tracking-wide">{act.title}</h3>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="py-16">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="h-px w-16 bg-roti mx-auto mb-8"></div>
+    <a href="/" class="inline-flex items-center gap-2 text-slate-500 hover:text-coriander transition-colors text-[13px] uppercase tracking-luxe">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"/></svg>
+      Volver al inicio
+    </a>
+  </div>
+</section>
+
+</Layout>

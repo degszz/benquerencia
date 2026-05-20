@@ -1,0 +1,69 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Reglamento — Benquerencia Farm Club" activePage=""
+  description="Reglamento de convivencia de Benquerencia Farm Club. Normas de seguridad y convivencia.">
+
+<section class="relative min-h-[45vh] w-full overflow-hidden bg-forestDeep">
+  <img src="/img/reglamento/reglamento.png" alt="Reglamento Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-30" />
+  <div class="absolute inset-0 bg-forestDeep/60"></div>
+  <div class="relative z-10 min-h-[45vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20">
+    <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Convivencia</p>
+    <h1 class="font-serif font-light text-white text-5xl md:text-7xl tracking-wide">Reglamento</h1>
+    <div class="mt-6 mx-auto w-12 h-px bg-roti"></div>
+    <p class="mt-6 max-w-xl text-white/80 font-light text-[15px]">Normas de convivencia para el disfrute de todos.</p>
+  </div>
+</section>
+
+<section class="bg-white py-20 md:py-28">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 reveal">
+      {[
+        { img: '40kmh', title: 'Velocidad en caminos', highlight: '40 km/hora', desc: 'Velocidad maxima permitida en todos los caminos internos del barrio.' },
+        { img: '10kmh', title: 'Espacios comunes', highlight: '10 km/hora', desc: 'Velocidad reducida en zonas de esparcimiento, cerca de canchas y parques.' },
+        { img: 'traccion', title: 'Senderos', highlight: 'Traccion a sangre', desc: 'Los senderos son de uso exclusivo ecuestre, ciclistas y peatonal. Sin vehiculos a motor.' },
+        { img: 'mascotas', title: 'Mascotas', highlight: 'Correa y chapa', desc: 'Las mascotas en areas comunes deben ir siempre con correa y chapa identificatoria.' },
+      ].map(r => (
+        <div class="reglamento-card flex flex-col items-center text-center p-6 rounded-sm bg-cream/50 border border-roti/10">
+          <img src={`/img/reglamento/${r.img}.png`} alt={r.title} class="w-20 h-20 object-contain mb-5" />
+          <h3 class="font-medium text-slate-800 text-[15px] mb-2">{r.title}</h3>
+          <p class="text-coriander font-medium text-[14px] mb-3">{r.highlight}</p>
+          <p class="text-[13px] text-slate-600 font-light leading-relaxed">{r.desc}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-20 reveal">
+      <div class="bg-cream/40 rounded-sm px-6 md:px-16 py-12 md:py-16">
+        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Informacion adicional</p>
+        <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-8">Normas de convivencia</h2>
+        <div class="grid md:grid-cols-2 gap-8 text-[15px] leading-[1.85] text-slate-600 font-light">
+          <div class="space-y-4">
+            <p class="flex items-start gap-3"><span class="text-coriander mt-1">●</span>Respetar los horarios de silencio (22:00 a 08:00 hs).</p>
+            <p class="flex items-start gap-3"><span class="text-coriander mt-1">●</span>No encender fuego en zonas no habilitadas.</p>
+            <p class="flex items-start gap-3"><span class="text-coriander mt-1">●</span>Depositar residuos en los contenedores habilitados.</p>
+            <p class="flex items-start gap-3"><span class="text-coriander mt-1">●</span>Respetar la flora y fauna autoctona del barrio.</p>
+          </div>
+          <div class="space-y-4">
+            <p class="flex items-start gap-3"><span class="text-coriander mt-1">●</span>Los visitantes deben ser anunciados por el propietario en porteria.</p>
+            <p class="flex items-start gap-3"><span class="text-coriander mt-1">●</span>Las obras en chacras requieren autorizacion previa de la administracion.</p>
+            <p class="flex items-start gap-3"><span class="text-coriander mt-1">●</span>Uso responsable de las instalaciones comunes.</p>
+            <p class="flex items-start gap-3"><span class="text-coriander mt-1">●</span>Mantener el orden y la limpieza en espacios compartidos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 bg-cream/20">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="h-px w-16 bg-roti mx-auto mb-10"></div>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/contacto" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium bg-coriander text-white hover:bg-forestDeep transition-all duration-300 rounded-sm">Contactar administracion</a>
+      <a href="/" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium border border-coriander text-coriander hover:bg-coriander hover:text-white transition-all duration-300 rounded-sm">Volver al inicio</a>
+    </div>
+  </div>
+</section>
+
+</Layout>

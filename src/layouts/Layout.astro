@@ -1,24 +1,339 @@
 ---
 import '../styles/globals.css';
-
-interface Props {
-  title: string;
-  description?: string;
-}
-
-const { title, description = 'Estancia Benquerencia Farm Club' } = Astro.props;
+const { title = 'Benquerencia Farm Club', description = 'El club de chacras mas grande de Argentina, a 130 km de Capital Federal.', activePage = '' } = Astro.props;
 ---
-
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <link rel="icon" type="image/png" href="/logo.png" />
-    <title>{title} — Estancia Benquerencia</title>
-  </head>
-  <body class="min-h-screen bg-white text-slate-700">
-    <slot />
-  </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content={description} />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" href="/logo.png" />
+<link rel="stylesheet" href="/tailwind.css" />
+<title>{title}</title>
+<style is:inline>
+  html { scroll-behavior: smooth; scrollbar-width: none; }
+  body { -ms-overflow-style: none; }
+  ::-webkit-scrollbar { display: none; }
+  /* Custom overlay scrollbar */
+  #custom-scroll {
+    position: fixed; top: 0; right: 0; width: 8px; height: 100vh; z-index: 9999; pointer-events: none;
+  }
+  #custom-scroll-thumb {
+    position: absolute; right: 0; width: 8px; min-height: 40px;
+    background: #C7A54E; border-radius: 20px;
+    opacity: 0; transition: opacity 0.4s ease, width 0.2s ease;
+    pointer-events: auto; cursor: grab;
+  }
+  #custom-scroll-thumb:hover, #custom-scroll-thumb.active {
+    width: 10px; background: #d4b35c; opacity: 1 !important;
+  }
+  #custom-scroll.visible #custom-scroll-thumb { opacity: 0.7; }
+  video::-webkit-media-controls,
+  video::-webkit-media-controls-enclosure,
+  video::-webkit-media-controls-panel,
+  video::-webkit-media-controls-overlay-play-button,
+  video::-webkit-media-controls-start-playback-button { display: none !important; }
+  .tracking-luxe { letter-spacing: 0.18em; }
+  .tracking-mid  { letter-spacing: 0.06em; }
+
+  @keyframes fadeUp    { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
+  @keyframes ruleGrow  { from { width:0; opacity:0; } to { width:96px; opacity:1; } }
+  @keyframes heroFadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes arrowBounce { 0%,100% { transform:translate(-50%,0); } 50% { transform:translate(-50%,10px); } }
+
+  .anim-fade-up { animation: fadeUp 1.2s cubic-bezier(.2,.7,.2,1) both; }
+  .anim-rule    { animation: ruleGrow 1.6s cubic-bezier(.2,.7,.2,1) both; }
+  .delay-1 { animation-delay:.2s; }
+  .delay-2 { animation-delay:.6s; }
+  .delay-3 { animation-delay:1s; }
+
+  .reveal { transition: opacity .9s ease-out, transform .9s cubic-bezier(.2,.7,.2,1); }
+  .reveal.reveal-ready { opacity:0; transform:translateY(24px); }
+  .reveal.visible { opacity:1 !important; transform:none !important; }
+
+  .yt-cover {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:100vw; height:56.25vw;
+    min-width:177.77vh; min-height:100vh;
+    pointer-events:none;
+  }
+
+  .activity-card { overflow:hidden; }
+  .activity-card .activity-img { transition:transform 900ms cubic-bezier(.2,.7,.2,1); }
+  .activity-card:hover .activity-img { transform:scale(1.06); }
+
+  .btn-coriander { background:#488A0F; color:white; transition:all 400ms cubic-bezier(.2,.7,.2,1); letter-spacing:.14em; }
+  .btn-coriander:hover { background:#3a7a08; box-shadow:0 18px 40px -12px rgba(72,138,15,.4); transform:translateY(-1px); }
+
+  .nav-link { position:relative; padding-bottom:6px; }
+  .nav-link::after { content:''; position:absolute; left:50%; bottom:0; width:0; height:2px; background:#C7A54E; transform:translateX(-50%); transition:width 400ms ease; }
+  .nav-link:hover::after, .nav-link.active::after { width:24px; }
+
+  .svc-card { transition:transform 400ms ease, box-shadow 400ms ease; }
+  .svc-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px -8px rgba(0,0,0,.1); }
+
+  .header-scrolled { background:#364936; }
+  .header-menu-open { background:rgba(58,74,50,.82); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); }
+  .header-scrolled.header-menu-open { background:#364936; backdrop-filter:none; -webkit-backdrop-filter:none; }
+
+  .hero-content { opacity:0; transition: opacity 1.2s ease; }
+  .hero-content.show { opacity:1; }
+  .hero-content.hero-static { animation: heroFadeIn 1.4s ease .4s both; }
+  .scroll-arrow  { animation: arrowBounce 2s ease-in-out infinite; }
+
+  .mobile-menu { max-height:0; overflow:hidden; transition:max-height .4s ease, opacity .3s ease; opacity:0; }
+  .mobile-menu.open { max-height:500px; opacity:1; }
+
+  .reglamento-card { transition:transform 400ms ease; }
+  .reglamento-card:hover { transform:translateY(-2px); }
+</style>
+</head>
+<body class="bg-white text-slate-700 font-sans antialiased">
+<div id="custom-scroll"><div id="custom-scroll-thumb"></div></div>
+
+<!-- HEADER -->
+<header class="fixed top-0 inset-x-0 z-50 transition-all duration-500" id="site-header">
+  <nav class="max-w-[1400px] mx-auto px-6 md:px-8 h-[68px] flex items-center justify-between text-white relative">
+    <ul class="hidden lg:flex items-center gap-7 text-[12px] tracking-mid font-light">
+      <li><a href="/" class={`nav-link ${activePage === 'home' ? 'active text-roti' : ''}`}>Inicio</a></li>
+      <li><a href="/benquerencia" class={`nav-link ${activePage === 'benquerencia' ? 'active text-roti' : ''}`}>Benquerencia</a></li>
+      <li><a href="/actividades/polo" class={`nav-link ${activePage === 'actividades' ? 'active text-roti' : ''}`}>Actividades</a></li>
+      <li><a href="/servicios" class={`nav-link ${activePage === 'servicios' ? 'active text-roti' : ''}`}>Servicios</a></li>
+      <li>
+        <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener" class="hover:text-roti transition-colors">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.facebook.com/benquerenciafc" target="_blank" rel="noopener" class="hover:text-roti transition-colors">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </li>
+    </ul>
+
+    <a href="/" class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
+      <div class="w-[52px] h-[52px] rounded-full ring-1 ring-white/40 bg-forestDeep flex items-center justify-center overflow-hidden">
+        <img src="/img/logo-benquerencia-verde.png" alt="Estancia Benquerencia" class="w-11 h-11 object-contain" />
+      </div>
+    </a>
+
+    <ul class="hidden lg:flex items-center gap-5 text-[12px] tracking-mid font-light">
+      <li><a href="/ubicacion" class={`nav-link ${activePage === 'ubicacion' ? 'active text-roti' : ''}`}>Ubicacion</a></li>
+      <li><a href="/contacto" class={`nav-link ${activePage === 'contacto' ? 'active text-roti' : ''}`}>Contacto</a></li>
+      <li><a href="/senderos" class={`nav-link ${activePage === 'senderos' ? 'active text-roti' : ''}`}>Senderos</a></li>
+      <li><a href="/clima" class={`nav-link ${activePage === 'clima' ? 'active text-roti' : ''}`}>Clima</a></li>
+      
+      <li class="pl-4 ml-1 border-l border-white/20">
+        <a href="https://www.simplesolutions.com.ar/benque/" target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 px-4 py-1.5 text-[11px] uppercase tracking-luxe font-medium rounded-sm border border-roti/60 text-roti hover:bg-roti hover:text-forestDeep transition-all duration-300">
+          Propietarios
+        </a>
+      </li>
+    </ul>
+
+    <button class="lg:hidden ml-auto text-white z-10" id="menu-toggle" aria-label="Menu">
+      <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="1.5" d="M6 6l12 12M6 18L18 6"/></svg>
+    </button>
+  </nav>
+
+  <div class="mobile-menu lg:hidden bg-forestDeep/97 backdrop-blur-md border-t border-white/10" id="mobile-menu">
+    <div class="px-6 py-5 space-y-1 text-[14px] font-light text-white/90">
+      <a href="/" class="block py-2 border-b border-white/5">Inicio</a>
+      <a href="/benquerencia" class="block py-2 border-b border-white/5">Benquerencia</a>
+      <a href="/actividades/polo" class="block py-2 border-b border-white/5">Actividades</a>
+      <a href="/servicios" class="block py-2 border-b border-white/5">Servicios</a>
+      <a href="/senderos" class="block py-2 border-b border-white/5">Senderos</a>
+      <a href="/clima" class="block py-2 border-b border-white/5">Clima</a>
+      <a href="/ubicacion" class="block py-2 border-b border-white/5">Ubicacion</a>
+      <a href="/contacto" class="block py-2 border-b border-white/5">Contacto</a>
+      <div class="pt-4 flex items-center gap-5 text-white/70">
+        <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-roti transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+          Instagram
+        </a>
+        <a href="https://www.facebook.com/benquerenciafc" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-roti transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          Facebook
+        </a>
+      </div>
+      <div class="pt-3">
+        <a href="https://www.simplesolutions.com.ar/benque/" target="_blank" rel="noopener"
+           class="block text-center py-2.5 text-[12px] uppercase tracking-luxe font-medium border border-roti/60 text-roti rounded-sm hover:bg-roti hover:text-forestDeep transition-all duration-300">
+          Propietarios
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<slot />
+
+<!-- FOOTER -->
+<footer class="bg-[#364936] text-white/80">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-12 md:py-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-10">
+    <div class="md:col-span-4">
+      <div class="flex items-center gap-4">
+        <img src="/img/logo-benquerencia-verde.png" alt="Logo" class="w-14 h-14 object-contain"/>
+        <div>
+          <div class="font-serif text-2xl font-light text-white">Benquerencia</div>
+          <div class="text-[11px] uppercase tracking-luxe text-roti">Farm Club</div>
+        </div>
+      </div>
+      <p class="mt-6 text-[13px] leading-relaxed text-white/65 font-light max-w-sm">
+        Ruta 41 - Km 26 S/N — San Miguel del Monte (7220), Provincia de Buenos Aires. A 130 km de Capital Federal.
+      </p>
+    </div>
+    <div class="md:col-span-2">
+      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Navegacion</div>
+      <ul class="space-y-2 text-[13px] font-light">
+        <li><a href="/" class="hover:text-roti transition-colors">Inicio</a></li>
+        <li><a href="/benquerencia" class="hover:text-roti transition-colors">Benquerencia</a></li>
+        <li><a href="/actividades/polo" class="hover:text-roti transition-colors">Actividades</a></li>
+        <li><a href="/servicios" class="hover:text-roti transition-colors">Servicios</a></li>
+        <li><a href="/senderos" class="hover:text-roti transition-colors">Senderos</a></li>
+        <li><a href="/clima" class="hover:text-roti transition-colors">Clima</a></li>
+      </ul>
+    </div>
+    <div class="md:col-span-2">
+      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Informacion</div>
+      <ul class="space-y-2 text-[13px] font-light">
+        <li><a href="/ubicacion" class="hover:text-roti transition-colors">Ubicacion</a></li>
+        <li><a href="/contacto" class="hover:text-roti transition-colors">Contacto</a></li>
+        <li><a href="https://www.simplesolutions.com.ar/benque/" target="_blank" class="hover:text-roti transition-colors">Propietarios</a></li>
+      </ul>
+    </div>
+    <div class="md:col-span-4">
+      <div class="text-[11px] uppercase tracking-luxe text-roti mb-5">Redes Sociales</div>
+      <ul class="space-y-3 text-[13px] font-light">
+        <li>
+          <a href="https://www.instagram.com/benquerencia_oficial/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-roti transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+            @benquerencia_oficial
+          </a>
+        </li>
+        <li>
+          <a href="https://www.instagram.com/Benquerencia_propietarios/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-roti transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+            @benquerencia_propietarios
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="max-w-[1400px] mx-auto px-6 md:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] text-white/50">
+      <div>&copy; 2026 Benquerencia Farm Club. Todos los derechos reservados.</div>
+      <div class="uppercase tracking-luxe">Desde 1780</div>
+    </div>
+  </div>
+</footer>
+
+<script is:inline>
+  (function(){
+    var track = document.getElementById('custom-scroll');
+    var thumb = document.getElementById('custom-scroll-thumb');
+    var hideTimer = null;
+    var dragging = false;
+    var dragStartY = 0;
+    var dragStartScroll = 0;
+
+    function updateThumb() {
+      var docH = document.documentElement.scrollHeight;
+      var winH = window.innerHeight;
+      if (docH <= winH) { track.classList.remove('visible'); return; }
+      var ratio = winH / docH;
+      var thumbH = Math.max(40, ratio * winH);
+      var scrollFrac = window.scrollY / (docH - winH);
+      var maxTop = winH - thumbH;
+      thumb.style.height = thumbH + 'px';
+      thumb.style.top = (scrollFrac * maxTop) + 'px';
+    }
+
+    function showScroll() {
+      track.classList.add('visible');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(function() {
+        if (!dragging) track.classList.remove('visible');
+      }, 1200);
+    }
+
+    window.addEventListener('scroll', function() { updateThumb(); showScroll(); }, { passive: true });
+    window.addEventListener('resize', updateThumb);
+
+    // Drag to scroll
+    thumb.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      dragging = true;
+      dragStartY = e.clientY;
+      dragStartScroll = window.scrollY;
+      thumb.classList.add('active');
+      thumb.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mousemove', function(e) {
+      if (!dragging) return;
+      var docH = document.documentElement.scrollHeight;
+      var winH = window.innerHeight;
+      var ratio = winH / docH;
+      var thumbH = Math.max(40, ratio * winH);
+      var maxTop = winH - thumbH;
+      var maxScroll = docH - winH;
+      var dy = e.clientY - dragStartY;
+      var scrollDelta = (dy / maxTop) * maxScroll;
+      window.scrollTo(0, dragStartScroll + scrollDelta);
+    });
+    window.addEventListener('mouseup', function() {
+      if (!dragging) return;
+      dragging = false;
+      thumb.classList.remove('active');
+      thumb.style.cursor = 'grab';
+      hideTimer = setTimeout(function() { track.classList.remove('visible'); }, 1200);
+    });
+
+    // Click on track to jump
+    track.addEventListener('click', function(e) {
+      if (e.target === thumb) return;
+      var docH = document.documentElement.scrollHeight;
+      var winH = window.innerHeight;
+      var frac = e.clientY / winH;
+      window.scrollTo({ top: frac * (docH - winH), behavior: 'smooth' });
+    });
+
+    updateThumb();
+  })();
+</script>
+
+<script is:inline>
+  (function() {
+    var siteHeader = document.getElementById('site-header');
+    var mobileMenu = document.getElementById('mobile-menu');
+    var menuToggle = document.getElementById('menu-toggle');
+    var iconOpen   = document.getElementById('menu-icon-open');
+    var iconClose  = document.getElementById('menu-icon-close');
+    var menuOpen = false;
+    function updateHeader() {
+      var scrolled = window.scrollY > 80;
+      siteHeader.classList.toggle('header-scrolled', scrolled);
+      siteHeader.classList.toggle('header-menu-open', menuOpen);
+    }
+    function openMenu() { menuOpen=true; mobileMenu.classList.add('open'); iconOpen.classList.add('hidden'); iconClose.classList.remove('hidden'); updateHeader(); }
+    function closeMenu() { menuOpen=false; mobileMenu.classList.remove('open'); iconOpen.classList.remove('hidden'); iconClose.classList.add('hidden'); updateHeader(); }
+    menuToggle.addEventListener('click', function() { menuOpen ? closeMenu() : openMenu(); });
+    window.addEventListener('scroll', updateHeader, { passive: true });
+    mobileMenu.querySelectorAll('a').forEach(function(l) { l.addEventListener('click', closeMenu); });
+    updateHeader();
+    var reveals = document.querySelectorAll('.reveal');
+    reveals.forEach(function(el) { el.classList.add('reveal-ready'); });
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.08, rootMargin: '0px 0px -4% 0px' });
+    requestAnimationFrame(function() { reveals.forEach(function(el) { io.observe(el); }); });
+  })();
+</script>
+</body>
 </html>

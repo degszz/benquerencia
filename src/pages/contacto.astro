@@ -1,0 +1,68 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Contacto — Benquerencia Farm Club" activePage="contacto"
+  description="Contacto de Benquerencia Farm Club. Administracion, porteria, gerencia y atencion a propietarios.">
+
+<section class="relative min-h-[45vh] w-full overflow-hidden bg-forestDeep">
+  <img src="/img/historia/header.jpg" alt="Contacto Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-30" />
+  <div class="absolute inset-0 bg-forestDeep/60"></div>
+  <div class="relative z-10 min-h-[45vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20">
+    <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Estamos para ayudarte</p>
+    <h1 class="font-serif font-light text-white text-5xl md:text-7xl tracking-wide">Contacto</h1>
+    <div class="mt-6 mx-auto w-12 h-px bg-roti"></div>
+  </div>
+</section>
+
+<section class="bg-white py-20 md:py-28">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-8">
+    <div class="text-center mb-16 reveal">
+      <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Contacto</p>
+      <h2 class="font-serif font-light text-slate-800 text-4xl md:text-5xl tracking-wide">Pongase en contacto</h2>
+      <div class="mt-6 w-12 h-px bg-roti mx-auto"></div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 reveal">
+      {[
+        { img: 'admin', label: 'Administracion Comba', desc: 'Consultas generales y administrativas del barrio.' },
+        { img: 'propietarios', label: 'Atencion a Propietarios', desc: 'Soporte y consultas exclusivas para propietarios.' },
+        { img: 'porteria', label: 'Porteria', email: 'porteria@benquerencia.com.ar', desc: 'Ingreso de visitantes y control de acceso.' },
+        { img: 'gerencia', label: 'Gerencia', email: 'juan.becerra@benquerencia.com.ar', desc: 'Consultas de gestion y direccion del club.' },
+      ].map(c => (
+        <div class="svc-card bg-cream/40 rounded-sm p-8 text-center">
+          <img src={`/img/contacto/${c.img}.png`} alt={c.label} class="w-16 h-16 object-contain mx-auto mb-5" />
+          <h3 class="text-[15px] font-medium text-slate-800 mb-2">{c.label}</h3>
+          <p class="text-[13px] text-slate-500 font-light leading-relaxed mb-3">{c.desc}</p>
+          {c.email && (
+            <a href={`mailto:${c.email}`} class="text-[12px] text-coriander hover:underline break-all">{c.email}</a>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-20 reveal">
+      <div class="bg-cream/40 rounded-sm px-6 md:px-16 py-12 md:py-16 text-center">
+        <p class="uppercase text-[11px] tracking-luxe text-coriander mb-3">Propietarios</p>
+        <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">Portal de Propietarios</h2>
+        <p class="text-[15px] leading-[1.85] text-slate-600 font-light max-w-lg mx-auto mb-8">
+          Accede al portal exclusivo para propietarios de Benquerencia Farm Club para gestion de reservas,
+          informacion y novedades del barrio.
+        </p>
+        <a href="https://www.simplesolutions.com.ar/benque/" target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium border border-roti/60 text-roti hover:bg-roti hover:text-forestDeep transition-all duration-300 rounded-sm">
+          Ingresar al portal
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 bg-cream/20">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="h-px w-16 bg-roti mx-auto mb-10"></div>
+    <a href="/" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium border border-coriander text-coriander hover:bg-coriander hover:text-white transition-all duration-300 rounded-sm">Volver al inicio</a>
+  </div>
+</section>
+
+</Layout>

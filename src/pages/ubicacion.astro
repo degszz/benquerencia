@@ -1,0 +1,80 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Como llegar — Benquerencia Farm Club" activePage="ubicacion"
+  description="Como llegar a Benquerencia Farm Club. Ruta 41 Km 26, San Miguel del Monte, Buenos Aires.">
+
+<section class="relative min-h-[45vh] w-full overflow-hidden bg-forestDeep">
+  <img src="/img/ubicacion/mapa.jpg" alt="Ubicacion Benquerencia" class="absolute inset-0 w-full h-full object-cover opacity-40" />
+  <div class="absolute inset-0 bg-forestDeep/50"></div>
+  <div class="relative z-10 min-h-[45vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20">
+    <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">130 km de Capital Federal</p>
+    <h1 class="font-serif font-light text-white text-5xl md:text-7xl tracking-wide">Como llegar</h1>
+    <div class="mt-6 mx-auto w-12 h-px bg-roti"></div>
+  </div>
+</section>
+
+<section class="bg-white py-20 md:py-28">
+  <div class="max-w-[1400px] mx-auto px-6 md:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-start mb-16 reveal">
+      <div class="md:col-span-5">
+        <div class="relative rounded-sm overflow-hidden border border-slate-200">
+          <iframe src="https://www.google.com/maps/embed?pb=!4v1778648012657!6m8!1m7!1sstZAH2nLN35U3cpjZ1eYtQ!2m2!1d-35.57369820184869!2d-58.64012969475917!3f64.82686425569696!4f1.1668424769443249!5f1.7431718349436869" width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+      <div class="md:col-span-4">
+        <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">Instrucciones</p>
+        <h2 class="font-serif font-light text-slate-800 text-3xl md:text-4xl tracking-wide mb-6">Ruta desde Buenos Aires</h2>
+        <div class="space-y-4 text-[15px] leading-[1.85] font-light text-slate-600">
+          <p>Desde Capital Federal, salir por <span class="font-medium text-slate-700">AU 25 de Mayo</span> y continuar por Autopista Dellepiane / Ricchieri en direccion al aeropuerto de Ezeiza.</p>
+          <p>Desde zona Norte, tomar Av. General Paz direccion Riachuelo, salir en Autopista Ricchieri, direccion al aeropuerto de Ezeiza.</p>
+          <p>Continuar por <span class="font-medium text-slate-700">Ruta 3</span> hacia Cañuelas, luego tomar <span class="font-medium text-slate-700">Ruta 41</span> hasta San Miguel del Monte.</p>
+        </div>
+      </div>
+      <div class="md:col-span-3">
+        <div class="rounded-xl bg-cream p-6">
+          <div class="flex items-center gap-2 text-[12px] text-forest mb-4">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 C8 2 5 5 5 9 C5 14 12 22 12 22 C12 22 19 14 19 9 C19 5 16 2 12 2 Z"></path><circle cx="12" cy="9" r="2.5"></circle></svg>
+            Benquerencia Farm Club
+          </div>
+          <div class="space-y-4 text-[13px] font-light">
+            <div>
+              <div class="text-[11px] uppercase tracking-luxe text-slate-500 mb-1">Direccion postal</div>
+              <div>Ruta 41 - Km 26 S/N</div>
+              <div>San Miguel del Monte (7220)</div>
+            </div>
+            <div>
+              <div class="text-[11px] uppercase tracking-luxe text-slate-500 mb-1">Coordenadas GPS</div>
+              <div class="text-slate-700 text-[12px]">-35.571710, -58.640587</div>
+            </div>
+            <div>
+              <div class="text-[11px] uppercase tracking-luxe text-slate-500 mb-1">Distancia</div>
+              <div class="font-serif text-2xl text-roti font-light">130 <span class="text-base">km</span></div>
+              <div class="text-slate-500 text-[12px]">desde Capital Federal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="relative rounded-sm overflow-hidden border border-slate-200">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3262.5!2d-58.6401297!3d-35.5736982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bd58d1f28c9cbd%3A0x5825df19988d190a!2sEstancia%20Benquerencia%20Farm%20Club!5e1!3m2!1ses-419!2sar!4v1"
+          width="100%" height="420" style="border:0;" allowfullscreen loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 bg-cream/20">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="h-px w-16 bg-roti mx-auto mb-10"></div>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/contacto" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium bg-coriander text-white hover:bg-forestDeep transition-all duration-300 rounded-sm">Contactar porteria</a>
+      <a href="/" class="inline-flex items-center gap-2 px-8 py-3 text-[12px] uppercase tracking-luxe font-medium border border-coriander text-coriander hover:bg-coriander hover:text-white transition-all duration-300 rounded-sm">Volver al inicio</a>
+    </div>
+  </div>
+</section>
+
+</Layout>
