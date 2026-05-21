@@ -174,7 +174,8 @@ import Layout from "../layouts/Layout.astro";
   <style is:inline>
     .act-card { display:block; position:relative; overflow:hidden; border-radius:2px; }
     .act-img  { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 0.8s ease,opacity 0.7s ease; }
-    .act-video{ position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.7s ease;pointer-events:none; }
+    .act-video{ position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.3s ease;pointer-events:none; }
+    .act-video-zoom{ transform:scale(1.35); }
     .act-grad { position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.2) 45%,rgba(0,0,0,0.04) 100%); }
     .act-meta { position:absolute;inset-inline:0;bottom:0;padding:1.25rem;color:#fff; }
     .act-cta  { display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0);margin-top:8px;transform:translateY(6px);transition:color 0.35s ease,transform 0.35s ease; }
@@ -197,7 +198,7 @@ import Layout from "../layouts/Layout.astro";
 
         <a href="/actividades/polo" class="act-card aspect-[3/4] md:aspect-[3/5]">
           <img src="/img/actividades/polo-full.jpg" alt="Polo" class="act-img" />
-          <video class="act-video" muted playsinline preload="none"><source src="/video/polo.mp4" type="video/mp4" /></video>
+          <video class="act-video" muted playsinline preload="auto"><source src="/video/polo.mp4" type="video/mp4" /></video>
           <div class="act-grad"></div>
           <div class="act-meta">
             <p class="text-[9px] md:text-[10px] uppercase tracking-luxe text-roti mb-1.5">Actividades</p>
@@ -210,7 +211,7 @@ import Layout from "../layouts/Layout.astro";
 
         <a href="/actividades/tenis" class="act-card aspect-[3/4] md:aspect-[3/5]">
           <img src="/img/actividades/tenis-full.jpg" alt="Tenis" class="act-img" />
-          <video class="act-video" muted playsinline preload="none"><source src="/video/tenis.mp4" type="video/mp4" /></video>
+          <video class="act-video act-video-zoom" muted playsinline preload="auto"><source src="/video/tenis.mp4" type="video/mp4" /></video>
           <div class="act-grad"></div>
           <div class="act-meta">
             <p class="text-[9px] md:text-[10px] uppercase tracking-luxe text-roti mb-1.5">Actividades</p>
@@ -223,7 +224,7 @@ import Layout from "../layouts/Layout.astro";
 
         <a href="/actividades/golf" class="act-card aspect-[3/4] md:aspect-[3/5]">
           <img src="/img/actividades/golf-full.jpg" alt="Golf" class="act-img" />
-          <video class="act-video" muted playsinline preload="none"><source src="/video/golf.mp4" type="video/mp4" /></video>
+          <video class="act-video" muted playsinline preload="auto"><source src="/video/golf.mp4" type="video/mp4" /></video>
           <div class="act-grad"></div>
           <div class="act-meta">
             <p class="text-[9px] md:text-[10px] uppercase tracking-luxe text-roti mb-1.5">Actividades</p>
@@ -236,7 +237,7 @@ import Layout from "../layouts/Layout.astro";
 
         <a href="/actividades/caballos" class="act-card aspect-[3/4] md:aspect-[3/5]">
           <img src="/img/actividades/caballos-full.jpg" alt="Caballos" class="act-img" />
-          <video class="act-video" muted playsinline preload="none"><source src="/video/caballos.mp4" type="video/mp4" /></video>
+          <video class="act-video" muted playsinline preload="auto"><source src="/video/caballos.mp4" type="video/mp4" /></video>
           <div class="act-grad"></div>
           <div class="act-meta">
             <p class="text-[9px] md:text-[10px] uppercase tracking-luxe text-roti mb-1.5">Actividades</p>
@@ -249,7 +250,7 @@ import Layout from "../layouts/Layout.astro";
 
         <a href="/actividades/futbol" class="act-card col-span-2 md:col-span-1 aspect-[8/5] md:aspect-[3/5]">
           <img src="/img/actividades/futbol-full.jpg" alt="Futbol" class="act-img" />
-          <video class="act-video" muted playsinline preload="none"><source src="/video/polo.mp4" type="video/mp4" /></video>
+          <video class="act-video" muted playsinline preload="auto"><source src="/video/polo.mp4" type="video/mp4" /></video>
           <div class="act-grad"></div>
           <div class="act-meta">
             <p class="text-[9px] md:text-[10px] uppercase tracking-luxe text-roti mb-1.5">Actividades</p>
@@ -287,11 +288,16 @@ import Layout from "../layouts/Layout.astro";
             bar.style.transition = 'width ' + (DURATION / 1000) + 's linear';
             bar.style.width = '100%';
             if (hasVideo && video) {
-              video.style.opacity = '1';
-              img.style.opacity = '0';
-              img.style.transform = 'scale(1.06)';
               video.currentTime = 0;
-              video.play().catch(function(){});
+              video.play().then(function(){
+                video.style.opacity = '1';
+                img.style.opacity = '0';
+                img.style.transform = 'scale(1.06)';
+              }).catch(function(){
+                video.style.opacity = '1';
+                img.style.opacity = '0';
+                img.style.transform = 'scale(1.06)';
+              });
             }
           } else {
             card.classList.remove('act-playing');
