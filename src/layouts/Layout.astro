@@ -105,9 +105,32 @@ const siteUrl = 'https://benquerencia.vercel.app';
 
   .reglamento-card { transition:transform 400ms ease; }
   .reglamento-card:hover { transform:translateY(-2px); }
+
+  /* Scroll progress bar */
+  #scroll-bar {
+    position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+    z-index: 10000; pointer-events: none;
+    opacity: 0; transform: scaleX(0); transform-origin: left center;
+    transition: opacity 0.6s ease;
+  }
+  #scroll-bar.revealed { opacity: 1; }
+  #scroll-bar-fill {
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, #C7A54E 0%, #e2c97a 40%, #C7A54E 60%, #d4b35c 100%);
+    background-size: 300% 100%;
+    transform-origin: left center;
+    transform: scaleX(0);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%   { background-position: 100% 0; }
+    50%  { background-position: 0% 0; }
+    100% { background-position: 100% 0; }
+  }
 </style>
 </head>
 <body class="bg-white text-slate-700 font-sans antialiased">
+<div id="scroll-bar"><div id="scroll-bar-fill"></div></div>
 <div id="custom-scroll"><div id="custom-scroll-thumb"></div></div>
 
 <!-- HEADER -->
@@ -252,10 +275,25 @@ const siteUrl = 'https://benquerencia.vercel.app';
   (function(){
     var track = document.getElementById('custom-scroll');
     var thumb = document.getElementById('custom-scroll-thumb');
+    var scrollBar = document.getElementById('scroll-bar');
+    var scrollBarFill = document.getElementById('scroll-bar-fill');
+    var barRevealed = false;
     var hideTimer = null;
     var dragging = false;
     var dragStartY = 0;
     var dragStartScroll = 0;
+
+    function updateProgressBar() {
+      var docH = document.documentElement.scrollHeight;
+      var winH = window.innerHeight;
+      if (docH <= winH) return;
+      var frac = window.scrollY / (docH - winH);
+      scrollBarFill.style.transform = 'scaleX(' + frac + ')';
+      if (!barRevealed && window.scrollY > 10) {
+        barRevealed = true;
+        scrollBar.classList.add('revealed');
+      }
+    }
 
     function updateThumb() {
       var docH = document.documentElement.scrollHeight;
@@ -277,7 +315,7 @@ const siteUrl = 'https://benquerencia.vercel.app';
       }, 1200);
     }
 
-    window.addEventListener('scroll', function() { updateThumb(); showScroll(); }, { passive: true });
+    window.addEventListener('scroll', function() { updateThumb(); showScroll(); updateProgressBar(); }, { passive: true });
     window.addEventListener('resize', updateThumb);
 
     // Drag to scroll
@@ -319,6 +357,7 @@ const siteUrl = 'https://benquerencia.vercel.app';
     });
 
     updateThumb();
+    updateProgressBar();
   })();
 </script>
 
