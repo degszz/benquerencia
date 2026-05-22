@@ -32,6 +32,30 @@ import Layout from '../layouts/Layout.astro';
     <p class="uppercase text-[11px] tracking-luxe text-roti mb-4">San Miguel del Monte, Buenos Aires</p>
     <h1 class="font-serif font-light text-white text-5xl md:text-7xl tracking-wide leading-tight">Clima</h1>
     <div class="mt-6 mx-auto w-12 h-px bg-roti"></div>
+
+    <!-- Current weather widget -->
+    <div id="clima-hero" class="mt-8 flex items-center gap-5 px-6 py-4 rounded-xl bg-white/[0.06] backdrop-blur-md border border-white/[0.1] opacity-0 translate-y-3" style="transition:opacity 0.6s ease,transform 0.6s ease;">
+      <div id="clima-hero-icon" class="flex-shrink-0"></div>
+      <div class="flex flex-col items-start leading-none">
+        <span id="clima-hero-temp" class="font-serif text-[42px] md:text-[52px] font-light tracking-wide text-white">--°</span>
+        <span id="clima-hero-desc" class="text-[10px] uppercase tracking-luxe text-white/50 mt-1">Cargando</span>
+      </div>
+      <div class="h-12 w-px bg-white/10 mx-1"></div>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+          <span class="text-[12px] text-white/70 font-light">Sens. <span id="clima-hero-feels" class="text-white font-medium">--°</span></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5"><path d="M12 2v6M12 22v-2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="4"/></svg>
+          <span class="text-[12px] text-white/70 font-light">Hum. <span id="clima-hero-hum" class="text-white font-medium">--%</span></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+          <span class="text-[12px] text-white/70 font-light"><span id="clima-hero-wind" class="text-white font-medium">--</span> km/h</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -441,6 +465,41 @@ import Layout from '../layouts/Layout.astro';
     aHtml += '</tr>';
   }
   aBody.innerHTML = aHtml;
+})();
+</script>
+
+<!-- Clima hero widget fetch -->
+<script is:inline>
+(function(){
+  var DESC={0:'Despejado',1:'Mayormente despejado',2:'Parcialmente nublado',3:'Nublado',45:'Niebla',48:'Niebla',51:'Llovizna',53:'Llovizna',55:'Llovizna',61:'Lluvia',63:'Lluvia moderada',65:'Lluvia fuerte',71:'Nieve',73:'Nieve moderada',75:'Nieve fuerte',80:'Chaparrones',81:'Chaparrones',82:'Chaparrones fuertes',95:'Tormenta',96:'Tormenta con granizo',99:'Tormenta fuerte'};
+  function heroIcon(code,night){
+    var sun='<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="4" fill="#C7A54E" stroke="none"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>';
+    var moon='<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="#C7A54E" stroke="none"/></svg>';
+    var cloud='<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>';
+    var rain='<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M16 13V21M8 13V21M12 15V23M20 9.35A5.5 5.5 0 0 0 18 0h-.5A7.5 7.5 0 0 0 3 6.5V7a4 4 0 0 0 .8 8" transform="translate(0,2) scale(0.9)"/></svg>';
+    var storm='<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"/><polyline points="13 11 9 17 15 17 11 23" fill="none"/></svg>';
+    var fog='<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C7A54E" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h16M4 16h12M4 20h16M4 8h8"/></svg>';
+    if(code<=1) return night?moon:sun;
+    if(code<=3) return cloud;
+    if(code>=45&&code<=48) return fog;
+    if(code>=95) return storm;
+    if((code>=51&&code<=82)) return rain;
+    return night?moon:sun;
+  }
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=-35.4397&longitude=-58.7062&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,is_day')
+    .then(function(r){return r.json()})
+    .then(function(d){
+      var c=d.current;
+      var el=document.getElementById('clima-hero');
+      document.getElementById('clima-hero-icon').innerHTML=heroIcon(c.weather_code,!c.is_day);
+      document.getElementById('clima-hero-temp').textContent=Math.round(c.temperature_2m)+'°';
+      document.getElementById('clima-hero-desc').textContent=DESC[c.weather_code]||'--';
+      document.getElementById('clima-hero-feels').textContent=Math.round(c.apparent_temperature)+'°';
+      document.getElementById('clima-hero-hum').textContent=Math.round(c.relative_humidity_2m)+'%';
+      document.getElementById('clima-hero-wind').textContent=Math.round(c.wind_speed_10m);
+      el.style.opacity='1';
+      el.style.transform='translateY(0)';
+    }).catch(function(){});
 })();
 </script>
 
