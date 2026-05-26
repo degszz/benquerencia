@@ -242,6 +242,39 @@ import Layout from "../layouts/Layout.astro";
         >
           <!-- JS fills -->
         </div>
+        <!-- Day summary panel (same as index) -->
+        <div id="clima-summary" class="mb-6" style="display:none;">
+          <div class="bg-white rounded-xl p-5 md:p-6 shadow-sm transition-all duration-300">
+            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+              <div id="cs-icon" class="flex-shrink-0"></div>
+              <div class="flex-1 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start gap-3 mb-1">
+                  <h3 id="cs-day" class="font-serif font-light text-slate-800 text-xl md:text-2xl tracking-wide">Hoy</h3>
+                  <span id="cs-condition" class="text-[12px] text-slate-500 font-light"></span>
+                </div>
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-x-5 gap-y-2 mt-3">
+                  <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-roti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v1m0 16v1m-8-9H3m18 0h-1m-2.636-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m11.314 11.314l.707.707" stroke-linecap="round"/><circle cx="12" cy="12" r="4"/></svg>
+                    <span class="text-[13px] text-slate-700"><span id="cs-max" class="font-medium"></span> / <span id="cs-min" class="text-slate-400"></span></span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-coriander" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span id="cs-rain" class="text-[13px] text-slate-700"></span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+                    <span id="cs-wind" class="text-[13px] text-slate-700"></span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span id="cs-precip" class="text-[13px] text-slate-700"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Hourly detail -->
         <div
           id="hourly-section"
@@ -883,6 +916,7 @@ import Layout from "../layouts/Layout.astro";
 
           hourlyData = data.hourly;
           showHourly(0);
+          showSummary(0, daily);
 
           document.querySelectorAll(".day-card").forEach(function (card) {
             card.addEventListener("click", function () {
@@ -903,10 +937,32 @@ import Layout from "../layouts/Layout.astro";
                       " " +
                       MONTHS_S[dt.getMonth()];
               showHourly(idx);
+              showSummary(idx, daily);
             });
           });
         })
         .catch(function () {});
+
+      function showSummary(i, d) {
+        var dt = new Date(d.time[i] + "T12:00:00");
+        var label = i === 0 ? "Hoy" : i === 1 ? "Mañana" : DAYS_SHORT[dt.getDay()] + " " + dt.getDate();
+        var isNight = false;
+        if (i === 0 && d.sunrise && d.sunset) {
+          var nowH = new Date().getHours();
+          var srH = parseInt(d.sunrise[0].split("T")[1].split(":")[0]);
+          var ssH = parseInt(d.sunset[0].split("T")[1].split(":")[0]);
+          isNight = nowH < srH || nowH >= ssH;
+        }
+        document.getElementById("cs-day").textContent = label;
+        document.getElementById("cs-condition").textContent = WMO[d.weather_code[i]] || "";
+        document.getElementById("cs-icon").innerHTML = weatherSVG(d.weather_code[i], 48, isNight);
+        document.getElementById("cs-max").textContent = Math.round(d.temperature_2m_max[i]) + "°";
+        document.getElementById("cs-min").textContent = Math.round(d.temperature_2m_min[i]) + "°";
+        document.getElementById("cs-rain").textContent = (d.precipitation_probability_max[i] || 0) + "% prob. lluvia";
+        document.getElementById("cs-wind").textContent = Math.round(d.wind_speed_10m_max[i]) + " km/h";
+        document.getElementById("cs-precip").textContent = Math.round(d.precipitation_sum[i] * 10) / 10 + " mm acum.";
+        document.getElementById("clima-summary").style.display = "";
+      }
 
       function showHourly(dayIdx) {
         if (!hourlyData) return;
