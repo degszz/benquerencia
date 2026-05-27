@@ -96,11 +96,13 @@ import Layout from "../layouts/Layout.astro";
   </style>
 
   <!-- PAGE HERO -->
-  <section class="relative min-h-[40vh] w-full overflow-hidden bg-forestDeep">
-    <div
-      class="absolute inset-0 bg-gradient-to-b from-forestDeep via-forestDeep/90 to-forestDeep/70"
-    >
-    </div>
+  <section class="relative min-h-[40vh] w-full overflow-hidden bg-black">
+    <video autoplay muted loop playsinline preload="auto"
+      disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback"
+      class="absolute inset-0 w-full h-full object-cover opacity-70">
+      <source src="/video/clima.mp4" type="video/mp4" />
+    </video>
+    <div class="absolute inset-0 bg-black/40"></div>
     <div
       class="relative z-10 min-h-[40vh] flex flex-col items-center justify-center px-6 text-center text-white pt-20"
     >
